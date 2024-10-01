@@ -1,5 +1,5 @@
 # Team Hydrogen - 2025 NASA App Development Challenge
-Team Hydrogen's application for the 2024 NASA App Development Challenge.
+Team Hydrogen's application for the 2025 NASA App Development Challenge.
 
 ## Challenge
 In the 2025 NASA App Development Challenge, high school teams have 10 weeks to create a video showcasing their application visualizing the flight path of Artemis II while indicating which of SCaN’s antennas are available to communicate with Earth in real-time.
