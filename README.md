@@ -7,7 +7,7 @@ Talk about cloning the repo, opening it, etc.
 ## Highlights
 
 ### Feature 1
-Talk about feature 1. Remember to add images and/or GIFs with captions that say "Figure 1: _"
+Talk about feature 1. Remember to add images and/or GIFs with captions that say "Figure 1: ___"
 
 ### Feature 2
 _
@@ -15,7 +15,7 @@ _
 ### Feature 3
 _
 
-# Challenge Information
+## Challenge Information
 In the 2025 NASA App Development Challenge, high school teams have 10 weeks to create a video showcasing their application visualizing the flight path of Artemis II while indicating which of SCaN’s antennas are available to communicate with Earth in real-time.
 
 ## Team Members
@@ -27,9 +27,10 @@ In the 2025 NASA App Development Challenge, high school teams have 10 weeks to c
 
 ## Special Contributions
 Team Hydrogen would like to thank the following people for their unwavering support and encouragement throughout the development of our application.
-- Jayson Harriott, for _
-- Leonel Cruz, for _
-- Suchin Ravi, for _
+- Jayson Harriott, for ___
+- Leonel Cruz, for ___
+- Suchin Ravi, for ___
+- Vishal Raina, for ___
 
 ## Software and Tools
 - Unity Editor (version 2022.3.48f1 LTS)
