@@ -2,7 +2,7 @@
 Team Hydrogen's application for the 2025 NASA App Development Challenge.
 
 ## Download Instructions
-Talk about cloning the repo, opening it, etc.
+Talk about cloning the repoistory, opening it, etc.
 
 ## Highlights
 
@@ -29,6 +29,7 @@ In the 2025 NASA App Development Challenge, high school teams have 10 weeks to c
 Team Hydrogen would like to thank the following people for their unwavering support and encouragement throughout the development of our application.
 - Jayson Harriott, for ___
 - Leonel Cruz, for ___
+- Parasanna Gurumallapla, for ___
 - Suchin Ravi, for ___
 - Vishal Raina, for ___
 
