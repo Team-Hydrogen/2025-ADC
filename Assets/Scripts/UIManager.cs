@@ -125,27 +125,41 @@ public class UIManager : MonoBehaviour
         distanceFromMoon.text = fromMoon.ToString("N0");
     }
     
-    
-    // Trajectory Algorithm
-    // 1. Read the CSV file for the data points.
-    // 2. Convert the data points into a Vector3 list.
-    // 3. Write the coordinates into "Positions" property of Future Trajectory
-    // 4. For each coordinate the satellite passes by
-    //    a. Take the first coordinate of the Future Trajectory
-    //    b. Put it as the last coordinate of the Past Trajectory
+    /// <summary>
+    /// Plots the trajectory of the Artemis II
+    /// </summary>
     private void PlotTrajectory()
     {
-        List<List<string>> rawPoints = ReadCsvFile("Assets/Resources/hsdata.csv");
-        List<Vector3> trajectoryPoints = new List<Vector3>();
+        // The CSV data containing the coordinates of the trajectory is read.
+        const string trajectoryPointsFilepath = "Assets/Resources/hsdata.csv";
+        var pointsData = ReadCsvFile(trajectoryPointsFilepath);
+        // The first row is removed, so only the numerical data remains.
+        pointsData.RemoveAt(0);
         
-        foreach (var point in rawPoints)
+        // An array of trajectory points is constructed by reading the processed CSV file.
+        var numberOfPoints = pointsData.Count;
+        var futureTrajectoryPoints = new Vector3[numberOfPoints];
+        for (var index = 0; index < pointsData.Count; index++)
         {
-            Debug.Log(point.ToArray());
-            trajectoryPoints.Add(new Vector3(float.Parse(point[0]), float.Parse(point[1]), float.Parse(point[2])));
+            var point = pointsData[index];
+            var pointAsVector = new Vector3(float.Parse(point[0]), float.Parse(point[1]), float.Parse(point[2]));
+            futureTrajectoryPoints[index] = pointAsVector;
         }
         
-        Debug.Log("PART 4");
-        futureTrajectory.SetPositions(trajectoryPoints.ToArray());
-        Debug.Log("PART 5");
+        // The processed points are pushed to the future trajectory line.
+        futureTrajectory.positionCount = numberOfPoints;
+        futureTrajectory.SetPositions(futureTrajectoryPoints);
+
+        // REMAINING TRAJECTORY ALGORITHM
+        // if (trajectoryPoints.Contains(satellite.transform.position) == false)
+        // {
+        //      pastTrajectory.positionCount = numberOfPoints - futureTrajectory.positionCount + 1;
+        //      pastTrajectory.SetPosition(pastTrajectory.positionCount - 1, satellite.transform.position);
+        // }
+        // else
+        // {
+        //      var newFutureTrajectoryPoints = new Vector3[];
+        //      Put it as the last coordinate of the Past Trajectory
+        // }
     }
 }

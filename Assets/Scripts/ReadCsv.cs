@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class ReadCsv : MonoBehaviour
 {
-    public static List<List<string>> ReadCsvFile(string filePath)
+    public static List<string[]> ReadCsvFile(string filePath)
     {
-        List<List<string>> data = new List<List<string>>();
+        List<string[]> data = new List<string[]>();
         var streamReader = new StreamReader(filePath);
         bool endOfFile = false;
         while (!endOfFile)
@@ -18,8 +18,7 @@ public class ReadCsv : MonoBehaviour
                 endOfFile = true;
                 break;
             }
-            
-            var values = line.Split(',').ToList();
+            var values = line.Split(',');
             data.Add(values);
         }
         return data;
