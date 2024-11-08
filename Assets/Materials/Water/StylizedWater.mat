@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: EarthSurfaceMaterial
-  m_Shader: {fileID: -6465566751694194690, guid: 2f389301bef030f4bae145aa652e6355,
+  m_Name: StylizedWater
+  m_Shader: {fileID: -6465566751694194690, guid: b1313f00d22f42746886c7ea72e85863,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -24,20 +24,12 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _EarthDayTexture:
-        m_Texture: {fileID: 2800000, guid: 8674de9228ec6634c96358a8bc060992, type: 3}
+    - _NoiseTexture:
+        m_Texture: {fileID: 2800000, guid: 3d7bfbc364206dd41a92c11cabd8f36b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _EarthNightTexture:
-        m_Texture: {fileID: 2800000, guid: ee4fd007aacd9ef4eb78fea0ac84fd91, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SphericalTextureSubGraph_71bee3018d5145f5b6b6ae405b1b1331_Texture_1303653629_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 20a12dd7bc6dc6248958e9b694f05962, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _SphericalTexture_71bee3018d5145f5b6b6ae405b1b1331_Texture_1303653629_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 20a12dd7bc6dc6248958e9b694f05962, type: 3}
+    - _NoiseTexture2:
+        m_Texture: {fileID: 2800000, guid: 77cfbb42743144e46b0f06fbb99b639f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -54,14 +46,21 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _DepthFade: 0.6
+    - _FoamDistance: 0.56
+    - _Metallic: 0
+    - _NoiseScale: 0.017
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _TextureOffset: 0
+    - _Refraction: 0.1
+    - _Smoothness: 0.713
+    - _Transparency: 1
+    - _WaveSpeed: 0.00573
     m_Colors:
-    - _RotationSpeed: {r: -0.005, g: 0, b: 0, a: 0}
-    - _TextureOffset: {r: 0, g: 0, b: 0, a: 0}
+    - _FoamColor: {r: 1, g: 1, b: 1, a: 0.4627451}
+    - _WaterColor: {r: 0, g: 0.07843113, b: 1, a: 0.64705884}
   m_BuildTextureStacks: []
---- !u!114 &207879943899652782
+--- !u!114 &6460257840110288791
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

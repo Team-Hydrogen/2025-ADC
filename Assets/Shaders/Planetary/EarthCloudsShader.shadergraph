@@ -602,6 +602,21 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
+    "m_ObjectId": "1d77533788584c7f8c920645cc4018a7",
+    "m_Id": -1663463894,
+    "m_DisplayName": "Offset",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "_Offset",
+    "m_StageCapability": 2,
+    "m_Value": 0.0,
+    "m_DefaultValue": 0.0,
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
     "m_ObjectId": "2a68b1b6c5e94e37a4e29464e50fbc73",
     "m_Id": 0,
@@ -663,7 +678,7 @@
     "m_SlotType": 0,
     "m_Hidden": false,
     "m_ShaderOutputName": "_Rotation_Speed_Multiplier",
-    "m_StageCapability": 2,
+    "m_StageCapability": 3,
     "m_Value": {
         "x": 0.0,
         "y": 0.0
@@ -1464,7 +1479,7 @@
     "m_Group": {
         "m_Id": ""
     },
-    "m_Name": "SphericalTextureSubGraph",
+    "m_Name": "SphericalTexture",
     "m_DrawState": {
         "m_Expanded": true,
         "m_Position": {
@@ -1483,6 +1498,9 @@
             "m_Id": "2ffcb5b788184188a07eca675e4c457f"
         },
         {
+            "m_Id": "1d77533788584c7f8c920645cc4018a7"
+        },
+        {
             "m_Id": "a4f4713318164b84880ecb706149551d"
         }
     ],
@@ -1497,11 +1515,13 @@
     "m_SerializedSubGraph": "{\n    \"subGraph\": {\n        \"fileID\": -5475051401550479605,\n        \"guid\": \"29f708bf0975c5b45b53f410c10a56d6\",\n        \"type\": 3\n    }\n}",
     "m_PropertyGuids": [
         "3f03f9ff-f683-4e34-b8a3-5acb3980d9f7",
-        "c1fd07fb-8fbe-4f65-a4e8-871a56cd7d99"
+        "c1fd07fb-8fbe-4f65-a4e8-871a56cd7d99",
+        "02f3aaec-d476-4e7d-b7cb-2faa073b787a"
     ],
     "m_PropertyIds": [
         1303653629,
-        224570807
+        224570807,
+        -1663463894
     ],
     "m_Dropdowns": [],
     "m_DropdownSelectedEntries": []
