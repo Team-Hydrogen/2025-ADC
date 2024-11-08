@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static ReadCsv;
 
 public class UIManager : MonoBehaviour
 {
@@ -29,12 +30,17 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI totalDistanceTravelled;
     [SerializeField] private TextMeshProUGUI distanceFromEarth;
     [SerializeField] private TextMeshProUGUI distanceFromMoon;
+    
+    [Header("Trajectory")]
+    [SerializeField] private LineRenderer pastTrajectory;
+    [SerializeField] private LineRenderer futureTrajectory;
 
     // Start is called before the first frame update
     void Start()
     {
-        UpdateAntenna("DSS24", 0);
-        UpdateAntenna("DSS34", 789010);
+        // UpdateAntenna("DSS24", 0);
+        // UpdateAntenna("DSS34", 789010);
+        PlotTrajectory();
     }
 
     // Update is called once per frame
@@ -117,5 +123,36 @@ public class UIManager : MonoBehaviour
         totalDistanceTravelled.text = totalDistance.ToString("N0");
         distanceFromEarth.text = fromEarth.ToString("N0");
         distanceFromMoon.text = fromMoon.ToString("N0");
+    }
+    
+    
+    // Trajectory Algorithm
+    // 1. Read the CSV file for the data points.
+    // 2. Convert the data points into a Vector3 list.
+    // 3. Write the coordinates into "Positions" property of Future Trajectory
+    // 4. For each coordinate the satellite passes by
+    //    a. Take the first coordinate of the Future Trajectory
+    //    b. Put it as the last coordinate of the Past Trajectory
+    private void PlotTrajectory()
+    { 
+        Debug.Log("PART 1");
+        List<List<string>> rawPoints = ReadCsvFile("Assets/Resources/hsdata.csv");
+        Debug.Log("PART 2");
+        
+        List<Vector3> trajectoryPoints = new List<Vector3>();
+        
+        Debug.Log("PART 3");
+        
+        foreach (var point in rawPoints)
+        {
+            Debug.Log(point.ToArray());
+            trajectoryPoints.Add(new Vector3(float.Parse(point[0]), float.Parse(point[1]), float.Parse(point[2])));
+        }
+        
+        Debug.Log("PART 4");
+        
+        futureTrajectory.SetPositions(trajectoryPoints.ToArray());
+        
+        Debug.Log("PART 5");
     }
 }
