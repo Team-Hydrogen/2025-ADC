@@ -131,7 +131,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 17614485}
-  - component: {fileID: 17614486}
   m_Layer: 0
   m_Name: === MANAGERS ===
   m_TagString: Untagged
@@ -155,35 +154,6 @@ Transform:
   - {fileID: 512236117}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &17614486
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 17614484}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1195315d6558411a8fcd60d6c0d3f1b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  antennaNames: []
-  antennaText: []
-  antennaTextColor: []
-  antennaSpeeds: 
-  disabledAntennaTextColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
-  dayCounter: {fileID: 0}
-  hourCounter: {fileID: 0}
-  minuteCounter: {fileID: 0}
-  secondCounter: {fileID: 0}
-  xCoordinate: {fileID: 0}
-  yCoordinate: {fileID: 0}
-  zCoordinate: {fileID: 0}
-  totalDistanceTravelled: {fileID: 0}
-  distanceFromEarth: {fileID: 0}
-  distanceFromMoon: {fileID: 0}
-  pastTrajectory: {fileID: 0}
-  futureTrajectory: {fileID: 0}
 --- !u!1 &33588369
 GameObject:
   m_ObjectHideFlags: 0
