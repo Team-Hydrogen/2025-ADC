@@ -134,14 +134,9 @@ public class UIManager : MonoBehaviour
     //    a. Take the first coordinate of the Future Trajectory
     //    b. Put it as the last coordinate of the Past Trajectory
     private void PlotTrajectory()
-    { 
-        Debug.Log("PART 1");
+    {
         List<List<string>> rawPoints = ReadCsvFile("Assets/Resources/hsdata.csv");
-        Debug.Log("PART 2");
-        
         List<Vector3> trajectoryPoints = new List<Vector3>();
-        
-        Debug.Log("PART 3");
         
         foreach (var point in rawPoints)
         {
@@ -150,9 +145,7 @@ public class UIManager : MonoBehaviour
         }
         
         Debug.Log("PART 4");
-        
         futureTrajectory.SetPositions(trajectoryPoints.ToArray());
-        
         Debug.Log("PART 5");
     }
 }
