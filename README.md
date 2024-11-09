@@ -10,19 +10,19 @@ Talk about cloning the repoistory, opening it, etc.
 Talk about feature 1. Remember to add images and/or GIFs with captions that say "Figure 1: ___"
 
 ### Feature 2
-_
+Talk about feature 2. Remember to add images and/or GIFs with captions that say "Figure 2: ___"
 
 ### Feature 3
-_
+Talk about feature 3. Remember to add images and/or GIFs with captions that say "Figure 3: ___"
 
 ## Challenge Information
 In the 2025 NASA App Development Challenge, high school teams have 10 weeks to create a video showcasing their application visualizing the flight path of Artemis II while indicating which of SCaN’s antennas are available to communicate with Earth in real-time.
 
 ## Team Members
 - Aarav Dave, Lead Developer
-- Aarin Dave, Lead Developer
+- Aarin Dave, Project Manager
 - Jacob Liu, Lead Designer
-- Nathan Apte, Project Manager
+- Nathan Apte, Lead Developer
 - Vignesha Jayakumar, Data Specialist and Machine Learning
 
 ## Special Contributions
