@@ -34,6 +34,6 @@ Team Hydrogen would like to thank the following people for their unwavering supp
 - Vishal Raina, for ___
 
 ## Software and Tools
-- Unity Editor (version 2022.3.51f1 LTS)
+- Unity Editor (version 2022.3.52f1 LTS)
 - JetBrains Rider (version 2024.2.7)
 - Blender (version 4.2 LTS)
