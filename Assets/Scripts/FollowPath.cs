@@ -19,12 +19,11 @@ public class FollowPath : MonoBehaviour
     {
         transform.position = pathRenderer.GetPosition(_currentPositionIndex);
         
-        
-        print("ITERATION " + _currentPositionIndex);
-        print(pathRenderer.GetPosition(_currentPositionIndex));
-        print(transform.position);
-        print(transform.position == pathRenderer.GetPosition(_currentPositionIndex));
-        print("END OF ITERATION");
+        // print("ITERATION " + _currentPositionIndex);
+        // print(pathRenderer.GetPosition(_currentPositionIndex));
+        // print(transform.position);
+        // print(transform.position == pathRenderer.GetPosition(_currentPositionIndex));
+        // print("END OF ITERATION");
         
         if (_currentPositionIndex < pathRenderer.positionCount - 1)
         {
