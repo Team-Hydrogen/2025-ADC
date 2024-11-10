@@ -9,8 +9,9 @@ using static ReadCsv;
 public class UIManager : MonoBehaviour
 {
     [Header("Antennas")]
+    [SerializeField] Transform antennasGrid;
     [SerializeField] private List<string> antennaNames = new List<string>();
-    [SerializeField] private List<TextMeshProUGUI> antennaText = new List<TextMeshProUGUI>();
+    [SerializeField] private List<TextMeshProUGUI> antennaTextObjects = new List<TextMeshProUGUI>();
     [SerializeField] private List<Color> antennaTextColor = new List<Color>();
     [SerializeField] private List<int> antennaSpeeds = new List<int>();
     [SerializeField] private Color disabledAntennaTextColor = new Color(0.8f, 0.8f, 0.8f);
@@ -46,7 +47,7 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        ReorderAttennaLabels();
     }
 
     public void DisableAntenna()
@@ -60,17 +61,17 @@ public class UIManager : MonoBehaviour
         // Gets the index of the antenna name and maps it to its text object.
         int index = antennaNames.IndexOf(antennaName);
         // The default display of the antenna name is added.
-        antennaText[index].text = antennaName;
-        antennaText[index].color = disabledAntennaTextColor;
-        antennaText[index].GetComponentInChildren<Image>().color = disabledAntennaTextColor;
+        antennaTextObjects[index].text = antennaName;
+        antennaTextObjects[index].color = disabledAntennaTextColor;
+        antennaTextObjects[index].GetComponentInChildren<Image>().color = disabledAntennaTextColor;
         // If the connection speed exceeds 0, it is displayed.
         if (connectionSpeed <= 0)
         {
             return;
         }
-        antennaText[index].text += ": " + connectionSpeed.ToString("N0") + " " + connectionSpeedUnit;
-        antennaText[index].color = antennaTextColor[index];
-        antennaText[index].GetComponentInChildren<Image>().color = antennaTextColor[index];
+        antennaTextObjects[index].text += ": " + connectionSpeed.ToString("N0") + " " + connectionSpeedUnit;
+        antennaTextObjects[index].color = antennaTextColor[index];
+        antennaTextObjects[index].GetComponentInChildren<Image>().color = antennaTextColor[index];
     }
 
     public void SetTime(int days, int hours, int minutes, int seconds)
@@ -161,5 +162,26 @@ public class UIManager : MonoBehaviour
         //      var newFutureTrajectoryPoints = new Vector3[];
         //      Put it as the last coordinate of the Past Trajectory
         // }
+    }
+
+    // Reorders antenna labels by distance, by changing hierarchy.
+    private void ReorderAttennaLabels()
+    {
+        Transform[] antennaLabels = antennasGrid.GetComponentsInChildren<Transform>();
+        foreach (Transform antennaLabel in antennaLabels)
+        {
+            
+        }
+
+        //TextMeshProUGUI[] antennaObjects = antennasGrid.GetComponentsInChildren<TextMeshProUGUI>();
+
+        //for (int i = 0; i < antennasGrid.childCount; i++)
+        //{
+        //    TextMeshProUGUI antennaLabel = antennaObjects[i];
+        //    string antennaText = antennaLabel.text;
+
+        //    string[] splitAntennaTexts = antennaText.Split(" ");
+        //    string antennaName = splitAntennaTexts[0];
+        //}
     }
 }
