@@ -40,9 +40,6 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UpdateAntenna("DSS24", 0);
-        UpdateAntenna("DSS34", 78910);
-
         PlotTrajectory();
     }
 
@@ -88,12 +85,11 @@ public class UIManager : MonoBehaviour
 
         for (int i = 0; i < antennaTexts.Length; i++)
         {
-            antennaTexts[i].color = antennaTextColor[i];
+            antennaTexts[i].color = antennaTextColor[antennaIndex];
         }
 
         colonText.text = ":";
         connectionSpeedText.text = connectionSpeed.ToString("N0");
-        print(connectionSpeedText.text);
         unitsText.text = " " + connectionSpeedUnit;
         antennaLabel.GetComponentInChildren<Image>().color = antennaTextColor[antennaIndex];
 
@@ -183,7 +179,7 @@ public class UIManager : MonoBehaviour
             .Select(antennaLabel => new
             {
                 Label = antennaLabel,
-                ConnectionSpeed = float.TryParse(antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[2].text, out float speed) ? speed : float.MaxValue
+                ConnectionSpeed = float.TryParse(antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[2].text, out float speed) ? speed : float.MinValue
             })
         .OrderByDescending(item => item.ConnectionSpeed)
         .Select(item => item.Label)
