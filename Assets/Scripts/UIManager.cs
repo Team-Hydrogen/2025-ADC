@@ -9,12 +9,13 @@ using static ReadCsv;
 
 public class UIManager : MonoBehaviour
 {
+    [SerializeField] private CanvasGroup canvasGroup;
+
     [Header("Antennas")]
     [SerializeField] Transform antennasGrid;
     [SerializeField] private List<string> antennaNames = new List<string>();
     [SerializeField] private List<Transform> antennaLabelObjects = new List<Transform>();
     [SerializeField] private List<Color> antennaTextColor = new List<Color>();
-    [SerializeField] private List<int> antennaSpeeds = new List<int>();
     [SerializeField] private Color disabledAntennaTextColor = new Color(0.8f, 0.8f, 0.8f);
 
     [Header("Time Counter")]
@@ -22,20 +23,30 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hourCounter;
     [SerializeField] private TextMeshProUGUI minuteCounter;
     [SerializeField] private TextMeshProUGUI secondCounter;
-    
+
     [Header("Coordinate")]
     [SerializeField] private TextMeshProUGUI xCoordinate;
     [SerializeField] private TextMeshProUGUI yCoordinate;
     [SerializeField] private TextMeshProUGUI zCoordinate;
-    
+
     [Header("Distance")]
     [SerializeField] private TextMeshProUGUI totalDistanceTravelled;
     [SerializeField] private TextMeshProUGUI distanceFromEarth;
     [SerializeField] private TextMeshProUGUI distanceFromMoon;
-    
+
     [Header("Trajectory")]
     [SerializeField] private LineRenderer pastTrajectory;
     [SerializeField] private LineRenderer futureTrajectory;
+
+    [Header("UI Settings")]
+    [SerializeField] private float uiFadeSpeed;
+    [SerializeField] private float inputInactivityTime;
+    [Range(0, 1f)]
+    [SerializeField] private float minimumUIVisiblity;
+
+    private Vector3 lastMousePosition;
+    private float inactivityTimer = 0f;
+    private bool isFadingOut = false;
 
     // Start is called before the first frame update
     void Start()
@@ -46,12 +57,7 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-    }
-
-    public void DisableAntenna()
-    {
-        
+        HandleUIVisibility();
     }
 
     public void UpdateAntenna(string antennaName, int connectionSpeed)
@@ -125,7 +131,7 @@ public class UIManager : MonoBehaviour
         distanceFromEarth.text = fromEarth.ToString("N0");
         distanceFromMoon.text = fromMoon.ToString("N0");
     }
-    
+
     /// <summary>
     /// Plots the trajectory of the Artemis II
     /// </summary>
@@ -136,7 +142,7 @@ public class UIManager : MonoBehaviour
         var pointsData = ReadCsvFile(trajectoryPointsFilepath);
         // The first row is removed, so only the numerical data remains.
         pointsData.RemoveAt(0);
-        
+
         // An array of trajectory points is constructed by reading the processed CSV file.
         var numberOfPoints = pointsData.Count;
         var futureTrajectoryPoints = new Vector3[numberOfPoints];
@@ -146,7 +152,7 @@ public class UIManager : MonoBehaviour
             var pointAsVector = new Vector3(float.Parse(point[0]), float.Parse(point[1]), float.Parse(point[2]));
             futureTrajectoryPoints[index] = pointAsVector;
         }
-        
+
         // The processed points are pushed to the future trajectory line.
         futureTrajectory.positionCount = numberOfPoints;
         futureTrajectory.SetPositions(futureTrajectoryPoints);
@@ -174,7 +180,7 @@ public class UIManager : MonoBehaviour
         {
             antennaLabels[i] = antennasGrid.GetChild(i);
         }
-            
+
         var sortedLabels = antennaLabels
             .Select(antennaLabel => new
             {
@@ -189,5 +195,47 @@ public class UIManager : MonoBehaviour
         {
             label.SetSiblingIndex(sortedLabels.IndexOf(label));
         }
+    }
+
+    private void HandleUIVisibility()
+    {
+        if (Input.anyKey || Input.mousePosition != lastMousePosition)
+        {
+            inactivityTimer = 0f;
+            isFadingOut = false;
+            StartCoroutine(FadeUIIn());
+        }
+        else
+        {
+            inactivityTimer += Time.deltaTime;
+
+            if (inactivityTimer >= inputInactivityTime && canvasGroup.alpha > 0)
+            {
+                isFadingOut = true;
+            }
+        }
+
+        if (isFadingOut)
+        {
+            FadeUIOut();
+        }
+
+        lastMousePosition = Input.mousePosition;
+    }
+
+    private void FadeUIOut()
+    {
+        canvasGroup.alpha = Mathf.Max(minimumUIVisiblity, canvasGroup.alpha - uiFadeSpeed * Time.deltaTime);
+    }
+
+    private IEnumerator FadeUIIn()
+    {
+        while (canvasGroup.alpha < 1)
+        {
+            canvasGroup.alpha += uiFadeSpeed * Time.deltaTime;
+            yield return null;
+        }
+
+        canvasGroup.alpha = 1;
     }
 }
