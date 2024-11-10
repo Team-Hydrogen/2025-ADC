@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,7 +12,7 @@ public class UIManager : MonoBehaviour
     [Header("Antennas")]
     [SerializeField] Transform antennasGrid;
     [SerializeField] private List<string> antennaNames = new List<string>();
-    [SerializeField] private List<TextMeshProUGUI> antennaTextObjects = new List<TextMeshProUGUI>();
+    [SerializeField] private List<Transform> antennaLabelObjects = new List<Transform>();
     [SerializeField] private List<Color> antennaTextColor = new List<Color>();
     [SerializeField] private List<int> antennaSpeeds = new List<int>();
     [SerializeField] private Color disabledAntennaTextColor = new Color(0.8f, 0.8f, 0.8f);
@@ -39,15 +40,16 @@ public class UIManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // UpdateAntenna("DSS24", 0);
-        // UpdateAntenna("DSS34", 789010);
+        UpdateAntenna("DSS24", 0);
+        UpdateAntenna("DSS34", 78910);
+
         PlotTrajectory();
     }
 
     // Update is called once per frame
     void Update()
     {
-        ReorderAttennaLabels();
+
     }
 
     public void DisableAntenna()
@@ -58,20 +60,44 @@ public class UIManager : MonoBehaviour
     public void UpdateAntenna(string antennaName, int connectionSpeed)
     {
         const string connectionSpeedUnit = "kbps";
+
         // Gets the index of the antenna name and maps it to its text object.
-        int index = antennaNames.IndexOf(antennaName);
-        // The default display of the antenna name is added.
-        antennaTextObjects[index].text = antennaName;
-        antennaTextObjects[index].color = disabledAntennaTextColor;
-        antennaTextObjects[index].GetComponentInChildren<Image>().color = disabledAntennaTextColor;
-        // If the connection speed exceeds 0, it is displayed.
-        if (connectionSpeed <= 0)
+        int antennaIndex = antennaNames.IndexOf(antennaName);
+        Transform antennaLabel = antennaLabelObjects[antennaIndex];
+
+        TextMeshProUGUI[] antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
+
+        TextMeshProUGUI titleText = antennaTexts[0];
+        TextMeshProUGUI colonText = antennaTexts[1];
+        TextMeshProUGUI connectionSpeedText = antennaTexts[2];
+        TextMeshProUGUI unitsText = antennaTexts[3];
+
+        if (connectionSpeed == 0)
         {
+            titleText.color = disabledAntennaTextColor;
+            antennaLabel.GetComponentInChildren<Image>().color = disabledAntennaTextColor;
+
+            for (int i = 1; i < antennaTexts.Length; i++)
+            {
+                antennaTexts[i].color = disabledAntennaTextColor;
+                antennaTexts[i].text = "";
+            }
+
             return;
         }
-        antennaTextObjects[index].text += ": " + connectionSpeed.ToString("N0") + " " + connectionSpeedUnit;
-        antennaTextObjects[index].color = antennaTextColor[index];
-        antennaTextObjects[index].GetComponentInChildren<Image>().color = antennaTextColor[index];
+
+        //for (int i = 0; i < antennaTexts.Length; i++)
+        //{
+        //    antennaTexts[i].color = antennaTextColor[i];
+        //}
+
+        colonText.text = ":";
+        connectionSpeedText.text = connectionSpeed.ToString("N0");
+        print(connectionSpeedText.text);
+        unitsText.text = " " + connectionSpeedUnit;
+        antennaLabel.GetComponentInChildren<Image>().color = antennaTextColor[antennaIndex];
+
+        ReorderAttennaLabels();
     }
 
     public void SetTime(int days, int hours, int minutes, int seconds)
@@ -88,28 +114,6 @@ public class UIManager : MonoBehaviour
         hourCounter.text = (int.Parse(hourCounter.text) - changeInHours).ToString();
         minuteCounter.text = (int.Parse(minuteCounter.text) - changeInMinutes).ToString();
         secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
-    }
-
-    private void PrioritizeAntennas(List<GameObject> antennaArray)
-    {
-        GridLayout gridLayout = gameObject.GetComponent<GridLayout>();
-        
-        // var arrayLength = antennaArray.Length;
-        // for (int i = 0; i < arrayLength - 1; i++)
-        // {
-        //     var smallestVal = i;
-        //     for (int j = i + 1; j < arrayLength; j++)
-        //     {
-        //         if (antennaArray[j] < antennaArray[smallestVal])
-        //         {
-        //             smallestVal = j;
-        //         }
-        //     }
-        //     var tempVar = antennaArray[smallestVal];
-        //     antennaArray[smallestVal] = antennaArray[i];
-        //     antennaArray[i] = tempVar;
-        // }
-        // return NumArray;
     }
 
     private void SetCoordinates(float x, float y, float z)
@@ -167,21 +171,27 @@ public class UIManager : MonoBehaviour
     // Reorders antenna labels by distance, by changing hierarchy.
     private void ReorderAttennaLabels()
     {
-        Transform[] antennaLabels = antennasGrid.GetComponentsInChildren<Transform>();
-        foreach (Transform antennaLabel in antennaLabels)
+        int childCount = antennasGrid.childCount;
+        Transform[] antennaLabels = new Transform[childCount];
+
+        for (int i = 0; i < childCount; i++)
         {
-            
+            antennaLabels[i] = antennasGrid.GetChild(i);
         }
+            
+        var sortedLabels = antennaLabels
+            .Select(antennaLabel => new
+            {
+                Label = antennaLabel,
+                ConnectionSpeed = float.TryParse(antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[2].text, out float speed) ? speed : float.MaxValue
+            })
+        .OrderByDescending(item => item.ConnectionSpeed)
+        .Select(item => item.Label)
+        .ToList();
 
-        //TextMeshProUGUI[] antennaObjects = antennasGrid.GetComponentsInChildren<TextMeshProUGUI>();
-
-        //for (int i = 0; i < antennasGrid.childCount; i++)
-        //{
-        //    TextMeshProUGUI antennaLabel = antennaObjects[i];
-        //    string antennaText = antennaLabel.text;
-
-        //    string[] splitAntennaTexts = antennaText.Split(" ");
-        //    string antennaName = splitAntennaTexts[0];
-        //}
+        foreach (var label in sortedLabels)
+        {
+            label.SetSiblingIndex(sortedLabels.IndexOf(label));
+        }
     }
 }
