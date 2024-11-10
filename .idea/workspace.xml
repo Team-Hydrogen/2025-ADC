@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a5d525bd-175b-415e-b599-5ab0d8110937" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Assets/Fonts/RethinkSans-Bold SDF.asset" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Fonts/RethinkSans-Bold SDF.asset.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Images/Buttons.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Images/Buttons/Simulation.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Images/Buttons/Simulation/BackTenMinutes.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Images/Buttons/Simulation/BackTenMinutes.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Images/Buttons/Simulation/ForwardTenMinutes.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Images/Buttons/Simulation/ForwardTenMinutes.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Images/Buttons/Simulation/Pause.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Images/Buttons/Simulation/Pause.png.meta" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Images/Buttons/Simulation/Play.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Assets/Images/Buttons/Simulation/Play.png.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Home.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Home.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scenes/SpaceScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/SpaceScene.unity" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/TextMesh Pro/Resources/Fonts &amp; Materials/LiberationSans SDF - Fallback.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "aarindave"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Team-Hydrogen/NASA-ADC-App",
+    "accountId": "d28a6786-354a-420d-b472-b4bc9039c9d3"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 4
+}]]></component>
+  <component name="ProjectId" id="2nRzXOYOcU7VS4uACfCR5nkxJbB" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "#14 on Rebasing aarin-dave",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-WS-242.23339.15" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a5d525bd-175b-415e-b599-5ab0d8110937" name="Changes" comment="" />
+      <created>1728950714929</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1728950714929</updated>
+      <workItem from="1728950716468" duration="39000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
