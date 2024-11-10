@@ -86,10 +86,10 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        //for (int i = 0; i < antennaTexts.Length; i++)
-        //{
-        //    antennaTexts[i].color = antennaTextColor[i];
-        //}
+        for (int i = 0; i < antennaTexts.Length; i++)
+        {
+            antennaTexts[i].color = antennaTextColor[i];
+        }
 
         colonText.text = ":";
         connectionSpeedText.text = connectionSpeed.ToString("N0");
