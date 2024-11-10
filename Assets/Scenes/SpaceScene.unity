@@ -459,14 +459,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 74908605}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.009824729, y: -0.083486155, z: 0.0008231425, w: 0.9964602}
-  m_LocalPosition: {x: 3.375, y: 0.4, z: -20}
+  m_LocalRotation: {x: 0.009998502, y: 0, z: 0, w: 0.99995005}
+  m_LocalPosition: {x: 0, y: 0.4, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 531673802}
   m_Father: {fileID: 75343230}
-  m_LocalEulerAnglesHint: {x: 10, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &74908607
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1710,8 +1710,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 411558178}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.009824729, y: -0.083486155, z: 0.0008231425, w: 0.9964602}
-  m_LocalPosition: {x: 3.375, y: 0.4, z: -20}
+  m_LocalRotation: {x: 0.009998502, y: 0, z: 0, w: 0.99995005}
+  m_LocalPosition: {x: 0, y: 0.4, z: -20}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2205,7 +2205,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Damping: {x: 0, y: 0, z: 0}
-  ShoulderOffset: {x: 3.375, y: 0, z: 0}
+  ShoulderOffset: {x: 0, y: 0, z: 0}
   VerticalArmLength: 0.4
   CameraSide: 1
   CameraDistance: 20
