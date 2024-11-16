@@ -133,7 +133,7 @@ public class UIManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Plots the trajectory of the Artemis II
+    /// Plots the trajectory of the Orion capsule
     /// </summary>
     private void PlotTrajectory()
     {
@@ -142,7 +142,9 @@ public class UIManager : MonoBehaviour
         var pointsData = ReadCsvFile(trajectoryPointsFilepath);
         // The first row is removed, so only the numerical data remains.
         pointsData.RemoveAt(0);
-
+        
+        print(pointsData[0]);
+        print(pointsData[1]);
         // An array of trajectory points is constructed by reading the processed CSV file.
         var numberOfPoints = pointsData.Count;
         var futureTrajectoryPoints = new Vector3[numberOfPoints];
