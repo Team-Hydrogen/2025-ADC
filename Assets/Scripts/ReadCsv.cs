@@ -7,20 +7,22 @@ public class ReadCsv : MonoBehaviour
 {
     public static List<string[]> ReadCsvFile(string filePath)
     {
-        List<string[]> data = new List<string[]>();
+        var data = new List<string[]>();
         var streamReader = new StreamReader(filePath);
-        bool endOfFile = false;
-        while (!endOfFile)
+        var isEndOfFile = false;
+        
+        while (!isEndOfFile)
         {
             var line = streamReader.ReadLine();
             if (line == null)
             {
-                endOfFile = true;
+                isEndOfFile = true;
                 break;
             }
-            var values = line.Split(',');
+            var values = line.Split(",");
             data.Add(values);
         }
+        
         return data;
     }
 }

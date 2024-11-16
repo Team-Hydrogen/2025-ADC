@@ -5,23 +5,25 @@ using UnityEngine;
 
 public class CameraPan : MonoBehaviour
 {
-    [SerializeField] private float panSpeed = 5.0f;
+    [SerializeField] private float panSpeed = 20.0f;
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
+    private CinemachineOrbitalTransposer _orbitalTransposer;
     
-    // Start is called before the first frame update
     void Start()
     {
+        _orbitalTransposer = virtualCamera.GetCinemachineComponent<CinemachineOrbitalTransposer>();
         if (virtualCamera == null)
         {
             virtualCamera = GetComponent<CinemachineVirtualCamera>();
         }
     }
-
-    // Update is called once per frame
-    void Update()
+    
+    private void Update()
     {
-        var thirdPersonFollow = virtualCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
-        var netScrollSpeed = panSpeed * Input.GetAxis("Mouse X");
-        thirdPersonFollow.ShoulderOffset += new Vector3(netScrollSpeed, 0, 0);
+        if (Input.GetMouseButton(0))
+        {
+            var netScrollSpeed = panSpeed * Input.GetAxis("Mouse X");
+            _orbitalTransposer.m_XAxis.Value += netScrollSpeed;
+        }
     }
 }
