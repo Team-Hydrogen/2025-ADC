@@ -2300,6 +2300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trajectoryScale: 0.001
+  satellite: {fileID: 1804169520}
   pastTrajectory: {fileID: 1187994444}
   futureTrajectory: {fileID: 943471396}
 --- !u!1001 &555256269
@@ -3659,8 +3660,7 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Positions:
-  - {x: 0, y: 0, z: 0}
+  m_Positions: []
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -4933,7 +4933,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 52ccf505aa2a4455ca4ba91e9df6da6c, type: 2}
+  - {fileID: 2100000, guid: 62f78ce1db7bf492eb49f0d2e180ccd4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4954,9 +4954,7 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Positions:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 1}
+  m_Positions: []
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -7300,7 +7298,6 @@ GameObject:
   - component: {fileID: 1804169524}
   - component: {fileID: 1804169523}
   - component: {fileID: 1804169522}
-  - component: {fileID: 1804169525}
   m_Layer: 0
   m_Name: Satellite
   m_TagString: Untagged
@@ -7394,19 +7391,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1804169520}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1804169525
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1804169520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f505d8b66f7344701a801281017d641c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pathRenderer: {fileID: 943471396}
 --- !u!1 &1808743358
 GameObject:
   m_ObjectHideFlags: 0

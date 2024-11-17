@@ -1,18 +1,29 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SatelliteManager : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float trajectoryScale;
-
+    
+    [Header("Satellite")]
+    [SerializeField] private GameObject satellite;
+    
     [Header("Trajectory")]
     [SerializeField] private LineRenderer pastTrajectory;
     [SerializeField] private LineRenderer futureTrajectory;
 
     private void Start()
     {
+        pastTrajectory.positionCount = 0;
         PlotTrajectory();
+    }
+
+    private void Update()
+    {
+        UpdateSatellitePosition();
+        UpdateTrajectory();
     }
 
     /// <summary>
@@ -47,9 +58,28 @@ public class SatelliteManager : MonoBehaviour
         // The processed points are pushed to the future trajectory line.
         futureTrajectory.positionCount = numberOfPoints;
         futureTrajectory.SetPositions(futureTrajectoryPoints);
-
-        // REMAINING TRAJECTORY ALGORITHM
-        // if (trajectoryPoints.Contains(satellite.transform.position) == false)
+    }
+    
+    /// <summary>
+    /// Updates the trajectory of the Orion capsule
+    /// </summary>
+    private void UpdateTrajectory()
+    {
+        Vector3[] futureTrajectoryPoints = new Vector3[futureTrajectory.positionCount];
+        futureTrajectory.GetPositions(futureTrajectoryPoints);
+        
+        List<Vector3> newFutureTrajectoryPoints = futureTrajectoryPoints.ToList();
+        newFutureTrajectoryPoints.RemoveAt(0);
+        
+        pastTrajectory.positionCount++;
+        pastTrajectory.SetPosition(pastTrajectory.positionCount - 1, futureTrajectoryPoints[0]);
+        
+        futureTrajectoryPoints = newFutureTrajectoryPoints.ToArray();
+        futureTrajectory.positionCount--;
+        futureTrajectory.SetPositions(futureTrajectoryPoints);
+        
+        
+        // if (futureTrajectoryPoints.Contains(satellite.transform.position) == false)
         // {
         //      pastTrajectory.positionCount = numberOfPoints - futureTrajectory.positionCount + 1;
         //      pastTrajectory.SetPosition(pastTrajectory.positionCount - 1, satellite.transform.position);
@@ -59,5 +89,10 @@ public class SatelliteManager : MonoBehaviour
         //      var newFutureTrajectoryPoints = new Vector3[];
         //      Put it as the last coordinate of the Past Trajectory
         // }
+    }
+
+    private void UpdateSatellitePosition()
+    {
+        satellite.transform.position = futureTrajectory.GetPosition(0);
     }
 }
