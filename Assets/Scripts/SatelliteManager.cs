@@ -77,22 +77,16 @@ public class SatelliteManager : MonoBehaviour
         futureTrajectoryPoints = newFutureTrajectoryPoints.ToArray();
         futureTrajectory.positionCount--;
         futureTrajectory.SetPositions(futureTrajectoryPoints);
-        
-        
-        // if (futureTrajectoryPoints.Contains(satellite.transform.position) == false)
-        // {
-        //      pastTrajectory.positionCount = numberOfPoints - futureTrajectory.positionCount + 1;
-        //      pastTrajectory.SetPosition(pastTrajectory.positionCount - 1, satellite.transform.position);
-        // }
-        // else
-        // {
-        //      var newFutureTrajectoryPoints = new Vector3[];
-        //      Put it as the last coordinate of the Past Trajectory
-        // }
     }
 
+    /// <summary>
+    /// Updates the position of the Orion capsule
+    /// </summary>
     private void UpdateSatellitePosition()
     {
-        satellite.transform.position = futureTrajectory.GetPosition(0);
+        if (futureTrajectory.positionCount > 0)
+        {
+            satellite.transform.position = futureTrajectory.GetPosition(0);
+        }
     }
 }
