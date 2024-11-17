@@ -1357,7 +1357,7 @@ GameObject:
   - component: {fileID: 363155652}
   - component: {fileID: 363155651}
   m_Layer: 5
-  m_Name: Spherical
+  m_Name: Cartesian
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1853,9 +1853,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'cartesian
-
-'
+  m_text: spherical
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4b009e6b9d07d4f59a95453bcb8c61a8, type: 2}
   m_sharedMaterial: {fileID: 1508867962351748385, guid: 4b009e6b9d07d4f59a95453bcb8c61a8,
@@ -8018,9 +8016,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'spherical
-
-'
+  m_text: cartesian
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4b009e6b9d07d4f59a95453bcb8c61a8, type: 2}
   m_sharedMaterial: {fileID: 1508867962351748385, guid: 4b009e6b9d07d4f59a95453bcb8c61a8,
@@ -9178,7 +9174,7 @@ GameObject:
   - component: {fileID: 2080019404}
   - component: {fileID: 2080019403}
   m_Layer: 5
-  m_Name: Cartesian
+  m_Name: Spherical
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
