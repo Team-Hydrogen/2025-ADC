@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
@@ -29,9 +30,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI zCoordinate;
 
     [Header("Distance")]
-    [SerializeField] private TextMeshProUGUI totalDistanceTravelled;
-    [SerializeField] private TextMeshProUGUI distanceFromEarth;
-    [SerializeField] private TextMeshProUGUI distanceFromMoon;
+    [SerializeField] private TextMeshProUGUI totalDistanceTravelledText;
+    [SerializeField] private TextMeshProUGUI distanceFromEarthText;
+    [SerializeField] private TextMeshProUGUI distanceFromMoonText;
 
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
@@ -43,6 +44,12 @@ public class UIManager : MonoBehaviour
     private float inactivityTimer = 0f;
     private bool isFadingOut = false;
 
+    private LengthUnit currentLengthUnit = LengthUnit.Kilometers;
+
+    private Vector3 currentCoordinates;
+    private float totalDistanceTravelled;
+    private float distanceFromEarth;
+    private float distanceFromMoon;
 
     void Update()
     {
@@ -65,18 +72,62 @@ public class UIManager : MonoBehaviour
         secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
     }
 
-    private void SetCoordinates(float x, float y, float z)
+    private void SetCoordinates(Vector3 position)
     {
-        xCoordinate.text = x.ToString("N0");
-        yCoordinate.text = y.ToString("N0");
-        zCoordinate.text = z.ToString("N0");
+        if (currentLengthUnit == LengthUnit.Kilometers)
+        {
+            xCoordinate.text = position.x.ToString("N0");
+            yCoordinate.text = position.y.ToString("N0");
+            zCoordinate.text = position.z.ToString("N0");
+        } else if (currentLengthUnit == LengthUnit.Miles)
+        {
+
+            xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.x).ToString("N0");
+            yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.y).ToString("N0");
+            zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.z).ToString("N0");
+        }
     }
 
-    private void SetDistance(float totalDistance, float fromEarth, float fromMoon)
+    private void SetDistances(float totalDistance, float fromEarth, float fromMoon)
     {
-        totalDistanceTravelled.text = totalDistance.ToString("N0");
-        distanceFromEarth.text = fromEarth.ToString("N0");
-        distanceFromMoon.text = fromMoon.ToString("N0");
+        SetTotalDistance(totalDistance);
+        SetDistanceFromEarth(fromEarth);
+        SetDistanceFromMoon(fromMoon);
+    }
+
+    private void SetDistanceFromEarth(float fromEarth)
+    {
+        if (currentLengthUnit == LengthUnit.Kilometers)
+        {
+            distanceFromEarthText.text = fromEarth.ToString("N0");
+        } else if (currentLengthUnit == LengthUnit.Miles)
+        {
+            distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(fromEarth).ToString("N0");
+        }
+    }
+
+    private void SetDistanceFromMoon(float fromMoon)
+    {
+        if (currentLengthUnit == LengthUnit.Kilometers)
+        {
+            distanceFromEarthText.text = fromMoon.ToString("N0");
+        }
+        else if (currentLengthUnit == LengthUnit.Miles)
+        {
+            distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(fromMoon).ToString("N0");
+        }
+    }
+
+    private void SetTotalDistance(float totalDistance)
+    {
+        if (currentLengthUnit == LengthUnit.Kilometers)
+        {
+            distanceFromEarthText.text = totalDistance.ToString("N0");
+        }
+        else if (currentLengthUnit == LengthUnit.Miles)
+        {
+            distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(totalDistance).ToString("N0");
+        }
     }
 
     public void UpdateAntenna(string antennaName, int connectionSpeed)
@@ -188,5 +239,10 @@ public class UIManager : MonoBehaviour
         }
 
         canvasGroup.alpha = 1;
+    }
+
+    private enum LengthUnit {
+        Kilometers,
+        Miles
     }
 }
