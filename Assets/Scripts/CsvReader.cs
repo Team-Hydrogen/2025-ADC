@@ -1,9 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using UnityEngine;
 
-public class ReadCsv : MonoBehaviour
+public static class CsvReader
 {
     public static List<string[]> ReadCsvFile(string filePath)
     {
