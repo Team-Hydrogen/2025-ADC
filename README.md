@@ -30,8 +30,8 @@ Team Hydrogen would like to thank the following people for their unwavering supp
 - Jayson Harriott, for ___
 - Leonel Cruz, for ___
 - Parasanna Gurumallapla, for ___
+- Shivendra Singh, for ___
 - [Suchin Ravi](https://github.com/wonksknowsuchin), for ___
-- Vishal Raina, for ___
 
 ## Software and Tools
 - Unity Editor (version 2022.3.52f1 LTS)
