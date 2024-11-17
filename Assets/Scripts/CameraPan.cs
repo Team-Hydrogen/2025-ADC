@@ -5,25 +5,39 @@ using UnityEngine;
 
 public class CameraPan : MonoBehaviour
 {
-    [SerializeField] private float panSpeed = 20.0f;
-    [SerializeField] private CinemachineVirtualCamera virtualCamera;
-    private CinemachineOrbitalTransposer _orbitalTransposer;
+    [SerializeField] private float horizontalPanSpeed = 20.0f;
+    [SerializeField] private float verticalPanSpeed = 0.1f;
+    [SerializeField] private CinemachineFreeLook freeLookCamera;
     
-    void Start()
+    private void Start()
     {
-        _orbitalTransposer = virtualCamera.GetCinemachineComponent<CinemachineOrbitalTransposer>();
-        if (virtualCamera == null)
+        if (freeLookCamera == null)
         {
-            virtualCamera = GetComponent<CinemachineVirtualCamera>();
+            freeLookCamera = GetComponent<CinemachineFreeLook>();
         }
     }
     
     private void Update()
     {
+        HorizontalPan();
+        VerticalPan();
+    }
+    
+    private void HorizontalPan()
+    {
         if (Input.GetMouseButton(0))
         {
-            var netScrollSpeed = panSpeed * Input.GetAxis("Mouse X");
-            _orbitalTransposer.m_XAxis.Value += netScrollSpeed;
+            var netScrollSpeed = horizontalPanSpeed * Input.GetAxis("Mouse X");
+            freeLookCamera.m_XAxis.Value += netScrollSpeed;
+        }
+    }
+
+    private void VerticalPan()
+    {
+        if (Input.GetMouseButton(0))
+        {
+            var netScrollSpeed = verticalPanSpeed * Input.GetAxis("Mouse Y");
+            freeLookCamera.m_YAxis.Value += netScrollSpeed;
         }
     }
 }

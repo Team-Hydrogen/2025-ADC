@@ -6,7 +6,7 @@ using UnityEngine;
 public class CameraZoom : MonoBehaviour
 {
     [SerializeField] private float scrollSpeed = 5.0f;
-    [SerializeField] private CinemachineVirtualCamera virtualCamera;
+    [SerializeField] private CinemachineFreeLook freeLookCamera;
     private CinemachineOrbitalTransposer _orbitalTransposer;
     
     [SerializeField] private const float MinimumCameraDistance = 10.0f;
@@ -14,18 +14,27 @@ public class CameraZoom : MonoBehaviour
     
     void Start()
     {
-        _orbitalTransposer = virtualCamera.GetCinemachineComponent<CinemachineOrbitalTransposer>();
-        if (virtualCamera == null)
+        if (freeLookCamera == null)
         {
-            virtualCamera = GetComponent<CinemachineVirtualCamera>();
+            freeLookCamera = GetComponent<CinemachineFreeLook>();
         }
+        _orbitalTransposer = freeLookCamera.GetComponent<CinemachineOrbitalTransposer>();
     }
     
     private void Update()
     {
         var netScrollSpeed = scrollSpeed * Input.GetAxis("Mouse ScrollWheel");
-        var newCameraDistance = _orbitalTransposer.m_FollowOffset.z + netScrollSpeed;
-        _orbitalTransposer.m_FollowOffset.z = Mathf.Clamp(
-            newCameraDistance, MinimumCameraDistance, MaximumCameraDistance);
+        var newCameraRadius = freeLookCamera.m_Orbits[1].m_Radius + netScrollSpeed;
+        
+        freeLookCamera.m_Orbits[0].m_Radius = Mathf.Clamp(
+            newCameraRadius / 100f, MinimumCameraDistance / 100f, MaximumCameraDistance / 100f);
+        freeLookCamera.m_Orbits[0].m_Height = newCameraRadius;
+        
+        freeLookCamera.m_Orbits[1].m_Radius = Mathf.Clamp(
+            newCameraRadius, MinimumCameraDistance, MaximumCameraDistance);
+        
+        freeLookCamera.m_Orbits[2].m_Radius = Mathf.Clamp(
+            newCameraRadius / 100f, MinimumCameraDistance / 100f, MaximumCameraDistance / 100f);
+        freeLookCamera.m_Orbits[2].m_Height = -newCameraRadius;
     }
 }
