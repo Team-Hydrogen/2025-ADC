@@ -2137,9 +2137,9 @@ MonoBehaviour:
   xCoordinate: {fileID: 0}
   yCoordinate: {fileID: 0}
   zCoordinate: {fileID: 0}
-  totalDistanceTravelled: {fileID: 0}
-  distanceFromEarth: {fileID: 0}
-  distanceFromMoon: {fileID: 0}
+  totalDistanceTravelledText: {fileID: 0}
+  distanceFromEarthText: {fileID: 0}
+  distanceFromMoonText: {fileID: 0}
   uiFadeSpeed: 0.4
   inputInactivityTime: 5
   minimumUIVisiblity: 0.2
