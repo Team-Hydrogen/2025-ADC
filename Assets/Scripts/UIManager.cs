@@ -5,7 +5,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static ReadCsv;
 
 public class UIManager : MonoBehaviour
 {
@@ -34,10 +33,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI distanceFromEarth;
     [SerializeField] private TextMeshProUGUI distanceFromMoon;
 
-    [Header("Trajectory")]
-    [SerializeField] private LineRenderer pastTrajectory;
-    [SerializeField] private LineRenderer futureTrajectory;
-
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
     [SerializeField] private float inputInactivityTime;
@@ -48,16 +43,40 @@ public class UIManager : MonoBehaviour
     private float inactivityTimer = 0f;
     private bool isFadingOut = false;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        PlotTrajectory();
-    }
 
-    // Update is called once per frame
     void Update()
     {
         HandleUIVisibility();
+    }
+
+    public void SetTime(int days, int hours, int minutes, int seconds)
+    {
+        dayCounter.text = days.ToString();
+        hourCounter.text = hours.ToString();
+        minuteCounter.text = minutes.ToString();
+        secondCounter.text = seconds.ToString();
+    }
+
+    public void IncrementTime(int changeInDays, int changeInHours, int changeInMinutes, int changeInSeconds)
+    {
+        dayCounter.text = (int.Parse(dayCounter.text) - changeInDays).ToString();
+        hourCounter.text = (int.Parse(hourCounter.text) - changeInHours).ToString();
+        minuteCounter.text = (int.Parse(minuteCounter.text) - changeInMinutes).ToString();
+        secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
+    }
+
+    private void SetCoordinates(float x, float y, float z)
+    {
+        xCoordinate.text = x.ToString("N0");
+        yCoordinate.text = y.ToString("N0");
+        zCoordinate.text = z.ToString("N0");
+    }
+
+    private void SetDistance(float totalDistance, float fromEarth, float fromMoon)
+    {
+        totalDistanceTravelled.text = totalDistance.ToString("N0");
+        distanceFromEarth.text = fromEarth.ToString("N0");
+        distanceFromMoon.text = fromMoon.ToString("N0");
     }
 
     public void UpdateAntenna(string antennaName, int connectionSpeed)
@@ -99,81 +118,11 @@ public class UIManager : MonoBehaviour
         unitsText.text = " " + connectionSpeedUnit;
         antennaLabel.GetComponentInChildren<Image>().color = antennaTextColor[antennaIndex];
 
-        ReorderAttennaLabels();
-    }
-
-    public void SetTime(int days, int hours, int minutes, int seconds)
-    {
-        dayCounter.text = days.ToString();
-        hourCounter.text = hours.ToString();
-        minuteCounter.text = minutes.ToString();
-        secondCounter.text = seconds.ToString();
-    }
-
-    public void IncrementTime(int changeInDays, int changeInHours, int changeInMinutes, int changeInSeconds)
-    {
-        dayCounter.text = (int.Parse(dayCounter.text) - changeInDays).ToString();
-        hourCounter.text = (int.Parse(hourCounter.text) - changeInHours).ToString();
-        minuteCounter.text = (int.Parse(minuteCounter.text) - changeInMinutes).ToString();
-        secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
-    }
-
-    private void SetCoordinates(float x, float y, float z)
-    {
-        xCoordinate.text = x.ToString("N0");
-        yCoordinate.text = y.ToString("N0");
-        zCoordinate.text = z.ToString("N0");
-    }
-
-    private void SetDistance(float totalDistance, float fromEarth, float fromMoon)
-    {
-        totalDistanceTravelled.text = totalDistance.ToString("N0");
-        distanceFromEarth.text = fromEarth.ToString("N0");
-        distanceFromMoon.text = fromMoon.ToString("N0");
-    }
-
-    /// <summary>
-    /// Plots the trajectory of the Orion capsule
-    /// </summary>
-    private void PlotTrajectory()
-    {
-        // The CSV data containing the coordinates of the trajectory is read.
-        const string trajectoryPointsFilepath = "Assets/Resources/hsdata.csv";
-        var pointsData = ReadCsvFile(trajectoryPointsFilepath);
-        // The first row is removed, so only the numerical data remains.
-        pointsData.RemoveAt(0);
-        
-        print(pointsData[0]);
-        print(pointsData[1]);
-        // An array of trajectory points is constructed by reading the processed CSV file.
-        var numberOfPoints = pointsData.Count;
-        var futureTrajectoryPoints = new Vector3[numberOfPoints];
-        for (var index = 0; index < pointsData.Count; index++)
-        {
-            var point = pointsData[index];
-            var pointAsVector = new Vector3(float.Parse(point[0]), float.Parse(point[1]), float.Parse(point[2]));
-            futureTrajectoryPoints[index] = pointAsVector;
-        }
-
-        // The processed points are pushed to the future trajectory line.
-        futureTrajectory.positionCount = numberOfPoints;
-        futureTrajectory.SetPositions(futureTrajectoryPoints);
-
-        // REMAINING TRAJECTORY ALGORITHM
-        // if (trajectoryPoints.Contains(satellite.transform.position) == false)
-        // {
-        //      pastTrajectory.positionCount = numberOfPoints - futureTrajectory.positionCount + 1;
-        //      pastTrajectory.SetPosition(pastTrajectory.positionCount - 1, satellite.transform.position);
-        // }
-        // else
-        // {
-        //      var newFutureTrajectoryPoints = new Vector3[];
-        //      Put it as the last coordinate of the Past Trajectory
-        // }
+        PrioritizeAntennas();
     }
 
     // Reorders antenna labels by distance, by changing hierarchy.
-    private void ReorderAttennaLabels()
+    private void PrioritizeAntennas()
     {
         int childCount = antennasGrid.childCount;
         Transform[] antennaLabels = new Transform[childCount];
