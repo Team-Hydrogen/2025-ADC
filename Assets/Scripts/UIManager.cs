@@ -118,11 +118,11 @@ public class UIManager : MonoBehaviour
         unitsText.text = " " + connectionSpeedUnit;
         antennaLabel.GetComponentInChildren<Image>().color = antennaTextColor[antennaIndex];
 
-        ReorderAttennaLabels();
+        PrioritizeAntennas();
     }
 
     // Reorders antenna labels by distance, by changing hierarchy.
-    private void ReorderAttennaLabels()
+    private void PrioritizeAntennas()
     {
         int childCount = antennasGrid.childCount;
         Transform[] antennaLabels = new Transform[childCount];
