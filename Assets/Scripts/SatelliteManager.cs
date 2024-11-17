@@ -22,6 +22,7 @@ public class SatelliteManager : MonoBehaviour
 
     private void Update()
     {
+        UpdateSatellitePosition();
         UpdateTrajectory();
     }
 
@@ -88,5 +89,10 @@ public class SatelliteManager : MonoBehaviour
         //      var newFutureTrajectoryPoints = new Vector3[];
         //      Put it as the last coordinate of the Past Trajectory
         // }
+    }
+
+    private void UpdateSatellitePosition()
+    {
+        satellite.transform.position = futureTrajectory.GetPosition(0);
     }
 }
