@@ -2301,6 +2301,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 680ca114f9c2c8546a1c0d7937b19eba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  trajectoryScale: 0.001
   pastTrajectory: {fileID: 1187994444}
   futureTrajectory: {fileID: 943471396}
 --- !u!1001 &555256269
