@@ -39,16 +39,16 @@ public class UIManager : MonoBehaviour
     [Range(0, 1f)]
     [SerializeField] private float minimumUIVisiblity;
 
-    private Vector3 lastMousePosition;
-    private float inactivityTimer = 0f;
-    private bool isFadingOut = false;
+    private Vector3 _lastMousePosition;
+    private float _inactivityTimer = 0f;
+    private bool _isFadingOut = false;
 
-    private LengthUnit currentLengthUnit = LengthUnit.Kilometers;
+    private LengthUnit _currentLengthUnit = LengthUnit.Kilometers;
 
-    private Vector3 currentCoordinates;
-    private float totalDistanceTravelled;
-    private float distanceFromEarth;
-    private float distanceFromMoon;
+    private Vector3 _currentCoordinates;
+    private float _totalDistanceTravelled;
+    private float _distanceFromEarth;
+    private float _distanceFromMoon;
 
     private void Update()
     {
@@ -73,12 +73,12 @@ public class UIManager : MonoBehaviour
 
     private void SetCoordinates(Vector3 position)
     {
-        if (currentLengthUnit == LengthUnit.Kilometers)
+        if (_currentLengthUnit == LengthUnit.Kilometers)
         {
             xCoordinate.text = position.x.ToString("N0");
             yCoordinate.text = position.y.ToString("N0");
             zCoordinate.text = position.z.ToString("N0");
-        } else if (currentLengthUnit == LengthUnit.Miles)
+        } else if (_currentLengthUnit == LengthUnit.Miles)
         {
 
             xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.x).ToString("N0");
@@ -96,10 +96,10 @@ public class UIManager : MonoBehaviour
 
     private void SetDistanceFromEarth(float fromEarth)
     {
-        if (currentLengthUnit == LengthUnit.Kilometers)
+        if (_currentLengthUnit == LengthUnit.Kilometers)
         {
             distanceFromEarthText.text = fromEarth.ToString("N0");
-        } else if (currentLengthUnit == LengthUnit.Miles)
+        } else if (_currentLengthUnit == LengthUnit.Miles)
         {
             distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(fromEarth).ToString("N0");
         }
@@ -107,11 +107,11 @@ public class UIManager : MonoBehaviour
 
     private void SetDistanceFromMoon(float fromMoon)
     {
-        if (currentLengthUnit == LengthUnit.Kilometers)
+        if (_currentLengthUnit == LengthUnit.Kilometers)
         {
             distanceFromEarthText.text = fromMoon.ToString("N0");
         }
-        else if (currentLengthUnit == LengthUnit.Miles)
+        else if (_currentLengthUnit == LengthUnit.Miles)
         {
             distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(fromMoon).ToString("N0");
         }
@@ -119,11 +119,11 @@ public class UIManager : MonoBehaviour
 
     private void SetTotalDistance(float totalDistance)
     {
-        if (currentLengthUnit == LengthUnit.Kilometers)
+        if (_currentLengthUnit == LengthUnit.Kilometers)
         {
             distanceFromEarthText.text = totalDistance.ToString("N0");
         }
-        else if (currentLengthUnit == LengthUnit.Miles)
+        else if (_currentLengthUnit == LengthUnit.Miles)
         {
             distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(totalDistance).ToString("N0");
         }
@@ -200,28 +200,28 @@ public class UIManager : MonoBehaviour
 
     private void HandleUIVisibility()
     {
-        if (Input.anyKey || Input.mousePosition != lastMousePosition)
+        if (Input.anyKey || Input.mousePosition != _lastMousePosition)
         {
-            inactivityTimer = 0f;
-            isFadingOut = false;
+            _inactivityTimer = 0f;
+            _isFadingOut = false;
             StartCoroutine(FadeUIIn());
         }
         else
         {
-            inactivityTimer += Time.deltaTime;
+            _inactivityTimer += Time.deltaTime;
 
-            if (inactivityTimer >= inputInactivityTime && canvasGroup.alpha > 0)
+            if (_inactivityTimer >= inputInactivityTime && canvasGroup.alpha > 0)
             {
-                isFadingOut = true;
+                _isFadingOut = true;
             }
         }
 
-        if (isFadingOut)
+        if (_isFadingOut)
         {
             FadeUIOut();
         }
 
-        lastMousePosition = Input.mousePosition;
+        _lastMousePosition = Input.mousePosition;
     }
 
     private void FadeUIOut()
