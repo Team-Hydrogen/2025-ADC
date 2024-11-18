@@ -50,7 +50,7 @@ public class UIManager : MonoBehaviour
     private float distanceFromEarth;
     private float distanceFromMoon;
 
-    void Update()
+    private void Update()
     {
         HandleUIVisibility();
     }
