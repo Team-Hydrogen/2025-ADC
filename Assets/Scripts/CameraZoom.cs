@@ -1,16 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
 
 public class CameraZoom : MonoBehaviour
 {
-    [SerializeField] private float scrollSpeed = 5.0f;
-    [SerializeField] private CinemachineFreeLook freeLookCamera;
-    private CinemachineOrbitalTransposer _orbitalTransposer;
+    [SerializeField, Range(0.0f, 15.0f)]
+    private float scrollSpeed = 5.0f;
+    [SerializeField]
+    private CinemachineFreeLook freeLookCamera;
     
-    [SerializeField] private const float MinimumCameraDistance = 10.0f;
-    [SerializeField] private const float MaximumCameraDistance = 100.0f;
+    private const float MinimumCameraDistance = 10.0f;
+    private const float MaximumCameraDistance = 100.0f;
     
     private void Start()
     {
@@ -18,10 +17,14 @@ public class CameraZoom : MonoBehaviour
         {
             freeLookCamera = GetComponent<CinemachineFreeLook>();
         }
-        _orbitalTransposer = freeLookCamera.GetComponent<CinemachineOrbitalTransposer>();
     }
     
     private void Update()
+    {
+        Zoom();
+    }
+
+    private void Zoom()
     {
         var netScrollSpeed = scrollSpeed * Input.GetAxis("Mouse ScrollWheel");
         var newCameraRadius = freeLookCamera.m_Orbits[1].m_Radius + netScrollSpeed;

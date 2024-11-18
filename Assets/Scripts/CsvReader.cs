@@ -3,24 +3,21 @@ using System.IO;
 
 public static class CsvReader
 {
+    private const char Delimiter = ',';
+    
     public static List<string[]> ReadCsvFile(string filePath)
     {
-        var data = new List<string[]>();
         var streamReader = new StreamReader(filePath);
-        var isEndOfFile = false;
+        var csvData = new List<string[]>();
+        var csvRow = streamReader.ReadLine();
         
-        while (!isEndOfFile)
+        while (csvRow != null)
         {
-            var line = streamReader.ReadLine();
-            if (line == null)
-            {
-                isEndOfFile = true;
-                break;
-            }
-            var values = line.Split(",");
-            data.Add(values);
+            var csvRowValues = csvRow.Split(Delimiter);
+            csvData.Add(csvRowValues);
+            csvRow = streamReader.ReadLine();
         }
         
-        return data;
+        return csvData;
     }
 }
