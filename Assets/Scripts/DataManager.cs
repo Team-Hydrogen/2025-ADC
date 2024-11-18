@@ -8,6 +8,10 @@ public class DataManager : MonoBehaviour
     [Tooltip("How fast the data manager updates in data points per second"), Range(1, 400)]
     [SerializeField] private int updateSpeed;
     
+    [Header("Celestial Bodies")]
+    [SerializeField] private GameObject earth;
+    [SerializeField] private GameObject moon;
+    
     public UnityEvent<List<string[]>> onDataLoaded;
     public UnityEvent<string[]> onDataUpdated;
     

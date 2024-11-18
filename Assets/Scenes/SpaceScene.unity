@@ -2562,10 +2562,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trajectoryScale: 0.01
-  trajectorySpeed: 180
   satellite: {fileID: 1804169520}
+  earth: {fileID: 1228062427}
+  moon: {fileID: 1207261695}
   pastTrajectory: {fileID: 1187994444}
   futureTrajectory: {fileID: 943471396}
+  onDistanceCalculated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: UpdateDistances
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &555256269
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2684,7 +2700,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aca708e62b3ba46ea85fe1629378ec2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateSpeed: 181
+  updateSpeed: 108
+  earth: {fileID: 0}
+  moon: {fileID: 0}
   onDataLoaded:
     m_PersistentCalls:
       m_Calls:
@@ -2705,8 +2723,32 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 512236118}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: UpdateCoordinates
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
         m_MethodName: UpdateTime
         m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 534708854}
+        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
+        m_MethodName: UpdateSatellitePosition
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2729,7 +2771,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 534708854}
         m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
-        m_MethodName: UpdateSatellitePosition
+        m_MethodName: CalculateDistance
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5714,6 +5756,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1193295615}
   m_CullTransparentMesh: 1
+--- !u!1 &1207261695 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5314488137069964330, guid: d59bb9e6d298ed94f9b461dbbcddfcce,
+    type: 3}
+  m_PrefabInstance: {fileID: 555256269}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1209198513
 GameObject:
   m_ObjectHideFlags: 0
@@ -5887,6 +5935,12 @@ RectTransform:
   m_AnchoredPosition: {x: 37, y: -372}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!1 &1228062427 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 147435142602920637, guid: 6ff407b5008f9d540bc3442c927026d1,
+    type: 3}
+  m_PrefabInstance: {fileID: 2095082123}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1283002591
 GameObject:
   m_ObjectHideFlags: 0
@@ -7940,7 +7994,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1762155281}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.000000019579517, y: -0.000000029802326, z: -6.438165e-16,
+  m_LocalRotation: {x: -0.0000000074020723, y: -0.000000030267056, z: -2.2614837e-16,
     w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
