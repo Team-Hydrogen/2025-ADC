@@ -12,7 +12,7 @@ public class CameraZoom : MonoBehaviour
     [SerializeField] private const float MinimumCameraDistance = 10.0f;
     [SerializeField] private const float MaximumCameraDistance = 100.0f;
     
-    void Start()
+    private void Start()
     {
         if (freeLookCamera == null)
         {

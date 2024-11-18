@@ -6,6 +6,8 @@ public class SatelliteManager : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float trajectoryScale;
+    [Tooltip("How fast the satellite moves in data points per second"), Range(1, 400)]
+    [SerializeField] private int trajectorySpeed;
     
     [Header("Satellite")]
     [SerializeField] private GameObject satellite;
@@ -13,17 +15,26 @@ public class SatelliteManager : MonoBehaviour
     [Header("Trajectory")]
     [SerializeField] private LineRenderer pastTrajectory;
     [SerializeField] private LineRenderer futureTrajectory;
+    
+    private float _timeSinceLastDataPoint = 0.0f;
+    private float _timePerDataPoint;
 
     private void Start()
     {
+        _timePerDataPoint =  1.0f / trajectorySpeed;
         pastTrajectory.positionCount = 0;
         PlotTrajectory();
     }
 
     private void Update()
     {
-        UpdateSatellitePosition();
-        UpdateTrajectory();
+        _timeSinceLastDataPoint += Time.deltaTime;
+        if (_timeSinceLastDataPoint >= _timePerDataPoint)
+        {
+            UpdateSatellitePosition();
+            UpdateTrajectory();
+            _timeSinceLastDataPoint -= _timePerDataPoint;
+        }
     }
 
     /// <summary>
@@ -46,7 +57,10 @@ public class SatelliteManager : MonoBehaviour
 
             try
             {
-                Vector3 pointAsVector = new Vector3(float.Parse(point[1]) * trajectoryScale, float.Parse(point[2]) * trajectoryScale, float.Parse(point[3]) * trajectoryScale);
+                Vector3 pointAsVector = new Vector3(
+                    float.Parse(point[1]) * trajectoryScale,
+                    float.Parse(point[2]) * trajectoryScale,
+                    float.Parse(point[3]) * trajectoryScale);
                 futureTrajectoryPoints[index] = pointAsVector;
             }
             catch
