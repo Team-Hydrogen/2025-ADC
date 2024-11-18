@@ -44,7 +44,9 @@ public class UIManager : MonoBehaviour
     private bool _isFadingOut = false;
 
     private LengthUnit _currentLengthUnit = LengthUnit.Kilometers;
-
+    private const string NoDecimalPlaces = "N0";
+    private const string ThreeDecimalPlaces = "N3";
+    
     private Vector3 _currentCoordinates;
     private float _totalDistanceTravelled;
     private float _distanceFromEarth;
@@ -55,7 +57,7 @@ public class UIManager : MonoBehaviour
         HandleUIVisibility();
     }
 
-    public void SetTime(int days, int hours, int minutes, int seconds)
+    private void SetTime(int days, int hours, int minutes, int seconds)
     {
         const int maxNumberLength = 2;
         dayCounter.text = days.ToString().PadLeft(maxNumberLength, '0');
@@ -100,22 +102,88 @@ public class UIManager : MonoBehaviour
         secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
     }
 
-    private void SetCoordinates(Vector3 position)
+    private void SetCoordinates(float x, float y, float z)
     {
+        string units;
+        
+        xCoordinate.text = "<b>X:</b> ";
+        yCoordinate.text = "<b>Y:</b> ";
+        zCoordinate.text = "<b>Z:</b> ";
+        
         if (_currentLengthUnit == LengthUnit.Kilometers)
         {
-            xCoordinate.text = position.x.ToString("N0");
-            yCoordinate.text = position.y.ToString("N0");
-            zCoordinate.text = position.z.ToString("N0");
+            units = " km";
+            xCoordinate.text += x.ToString("N0") + units;
+            yCoordinate.text += y.ToString("N0") + units;
+            zCoordinate.text += z.ToString("N0") + units;
         } else if (_currentLengthUnit == LengthUnit.Miles)
         {
+            units = " mi";
+            xCoordinate.text += UnitAndCoordinateConverter.KilometersToMiles(x).ToString("N0") + units;
+            yCoordinate.text += UnitAndCoordinateConverter.KilometersToMiles(y).ToString("N0") + units;
+            zCoordinate.text += UnitAndCoordinateConverter.KilometersToMiles(z).ToString("N0") + units;
+        }
+    }
+    
+    public void UpdateCoordinates(string[] currentData)
+    {
+        float x;
+        float y;
+        float z;
 
-            xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.x).ToString("N0");
-            yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.y).ToString("N0");
-            zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.z).ToString("N0");
+        try
+        {
+            x = float.Parse(currentData[1]);
+            y = float.Parse(currentData[2]);
+            z = float.Parse(currentData[3]);
+        }
+        catch
+        {
+            Debug.LogWarning("No positional data available!");
+            return;
+        }
+        
+        SetCoordinates(x, y, z);
+    }
+    
+    private void SetTotalDistance(float totalDistance)
+    {
+        totalDistanceTravelledText.text = "<b>Dist. Travelled:</b> ";
+        if (_currentLengthUnit == LengthUnit.Kilometers)
+        {
+            totalDistanceTravelledText.text += totalDistance.ToString(ThreeDecimalPlaces) + " km";
+        }
+        else if (_currentLengthUnit == LengthUnit.Miles)
+        {
+            totalDistanceTravelledText.text += UnitAndCoordinateConverter.KilometersToMiles(totalDistance).ToString(ThreeDecimalPlaces) + " mi";
         }
     }
 
+    private void SetDistanceFromEarth(float fromEarth)
+    {
+        distanceFromEarthText.text = "<b>Dist. from Earth:</b> ";
+        if (_currentLengthUnit == LengthUnit.Kilometers)
+        {
+            distanceFromEarthText.text += fromEarth.ToString(ThreeDecimalPlaces) + " km";
+        } else if (_currentLengthUnit == LengthUnit.Miles)
+        {
+            distanceFromEarthText.text += UnitAndCoordinateConverter.KilometersToMiles(fromEarth).ToString(ThreeDecimalPlaces) + " mi";
+        }
+    }
+
+    private void SetDistanceFromMoon(float fromMoon)
+    {
+        distanceFromMoonText.text = "<b>Dist. from Moon:</b> ";
+        if (_currentLengthUnit == LengthUnit.Kilometers)
+        {
+            distanceFromMoonText.text += fromMoon.ToString(ThreeDecimalPlaces) + " km";
+        }
+        else if (_currentLengthUnit == LengthUnit.Miles)
+        {
+            distanceFromMoonText.text += UnitAndCoordinateConverter.KilometersToMiles(fromMoon).ToString(ThreeDecimalPlaces) + " mi";
+        }
+    }
+    
     private void SetDistances(float totalDistance, float fromEarth, float fromMoon)
     {
         SetTotalDistance(totalDistance);
@@ -123,41 +191,11 @@ public class UIManager : MonoBehaviour
         SetDistanceFromMoon(fromMoon);
     }
 
-    private void SetDistanceFromEarth(float fromEarth)
+    public void UpdateDistances(float[] distanceData)
     {
-        if (_currentLengthUnit == LengthUnit.Kilometers)
-        {
-            distanceFromEarthText.text = fromEarth.ToString("N0");
-        } else if (_currentLengthUnit == LengthUnit.Miles)
-        {
-            distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(fromEarth).ToString("N0");
-        }
+        SetDistances(distanceData[0], distanceData[1], distanceData[2]);
     }
-
-    private void SetDistanceFromMoon(float fromMoon)
-    {
-        if (_currentLengthUnit == LengthUnit.Kilometers)
-        {
-            distanceFromEarthText.text = fromMoon.ToString("N0");
-        }
-        else if (_currentLengthUnit == LengthUnit.Miles)
-        {
-            distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(fromMoon).ToString("N0");
-        }
-    }
-
-    private void SetTotalDistance(float totalDistance)
-    {
-        if (_currentLengthUnit == LengthUnit.Kilometers)
-        {
-            distanceFromEarthText.text = totalDistance.ToString("N0");
-        }
-        else if (_currentLengthUnit == LengthUnit.Miles)
-        {
-            distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(totalDistance).ToString("N0");
-        }
-    }
-
+    
     public void UpdateAntenna(string antennaName, int connectionSpeed)
     {
         const string connectionSpeedUnit = "kbps";

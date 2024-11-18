@@ -1,20 +1,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class SatelliteManager : MonoBehaviour
 {
     [Header("Settings")]
     [SerializeField] private float trajectoryScale;
-    [Tooltip("How fast the satellite moves in data points per second"), Range(1, 400)]
-    [SerializeField] private int trajectorySpeed;
     
     [Header("Satellite")]
     [SerializeField] private GameObject satellite;
     
+    [Header("Target Bodies")]
+    [SerializeField] private GameObject earth;
+    [SerializeField] private GameObject moon;
+    
     [Header("Trajectory")]
     [SerializeField] private LineRenderer pastTrajectory;
     [SerializeField] private LineRenderer futureTrajectory;
+
+    private float _totalDistance = 0.0f;
+    public UnityEvent<float[]> onDistanceCalculated;
     
     /// <param name="pointsData">List containing data points in cartesian coordinates</param>
     /// <summary>
@@ -72,9 +78,20 @@ public class SatelliteManager : MonoBehaviour
     /// </summary>
     public void UpdateSatellitePosition()
     {
-        if (futureTrajectory.positionCount > 0)
+        if (futureTrajectory.positionCount <= 0)
         {
-            satellite.transform.position = futureTrajectory.GetPosition(0);
+            return;
         }
+        Vector3 newSatellitePosition = futureTrajectory.GetPosition(0);
+        _totalDistance += Vector3.Distance(satellite.transform.position, newSatellitePosition);
+        satellite.transform.position = newSatellitePosition;
+    }
+    
+    public void CalculateDistance()
+    {
+        float distanceToEarth = Vector3.Distance(satellite.transform.position, earth.transform.position);
+        float distanceToMoon = Vector3.Distance(satellite.transform.position, moon.transform.position);
+        float[] distances = { _totalDistance, distanceToEarth, distanceToMoon };
+        onDistanceCalculated.Invoke(distances);
     }
 }
