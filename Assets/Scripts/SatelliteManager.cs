@@ -16,38 +16,12 @@ public class SatelliteManager : MonoBehaviour
     [SerializeField] private LineRenderer pastTrajectory;
     [SerializeField] private LineRenderer futureTrajectory;
     
-    private float _timeSinceLastDataPoint = 0.0f;
-    private float _timePerDataPoint;
-
-    private void Start()
-    {
-        _timePerDataPoint =  1.0f / trajectorySpeed;
-        pastTrajectory.positionCount = 0;
-        PlotTrajectory();
-    }
-
-    private void Update()
-    {
-        _timeSinceLastDataPoint += Time.deltaTime;
-        if (_timeSinceLastDataPoint >= _timePerDataPoint)
-        {
-            UpdateSatellitePosition();
-            UpdateTrajectory();
-            _timeSinceLastDataPoint -= _timePerDataPoint;
-        }
-    }
-
+    /// <param name="pointsData">List containing data points in cartesian coordinates</param>
     /// <summary>
-    /// Plots the trajectory of the Orion capsule
+    /// Plots the provided data points into a visual trajectory. PlotTrajectory() is meant to be run only once.
     /// </summary>
-    private void PlotTrajectory()
+    public void PlotTrajectory(List<string[]> pointsData)
     {
-        // The CSV data containing the coordinates of the trajectory is read.
-        const string trajectoryPointsFilepath = "Assets/Data/hsdata.csv";
-        List<string[]> pointsData = CsvReader.ReadCsvFile(trajectoryPointsFilepath);
-        // The first row is removed, so only the numerical data remains.
-        pointsData.RemoveAt(0);
-
         // An array of trajectory points is constructed by reading the processed CSV file.
         int numberOfPoints = pointsData.Count;
         Vector3[] futureTrajectoryPoints = new Vector3[numberOfPoints];
@@ -68,7 +42,7 @@ public class SatelliteManager : MonoBehaviour
                 Debug.LogWarning("No positional data on line " + index + "!");
             }
         }
-
+        
         // The processed points are pushed to the future trajectory line.
         futureTrajectory.positionCount = numberOfPoints;
         futureTrajectory.SetPositions(futureTrajectoryPoints);
@@ -77,7 +51,7 @@ public class SatelliteManager : MonoBehaviour
     /// <summary>
     /// Updates the trajectory of the Orion capsule
     /// </summary>
-    private void UpdateTrajectory()
+    public void UpdateTrajectory()
     {
         Vector3[] futureTrajectoryPoints = new Vector3[futureTrajectory.positionCount];
         futureTrajectory.GetPositions(futureTrajectoryPoints);
@@ -96,7 +70,7 @@ public class SatelliteManager : MonoBehaviour
     /// <summary>
     /// Updates the position of the Orion capsule
     /// </summary>
-    private void UpdateSatellitePosition()
+    public void UpdateSatellitePosition()
     {
         if (futureTrajectory.positionCount > 0)
         {
