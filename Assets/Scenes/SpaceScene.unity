@@ -226,8 +226,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 512236117}
+  - {fileID: 573645243}
   - {fileID: 534708853}
+  - {fileID: 512236117}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &33588369
@@ -461,7 +462,7 @@ Transform:
   m_GameObject: {fileID: 74908605}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -28.99998}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -594,12 +595,12 @@ MonoBehaviour:
   m_BindingMode: 5
   m_SplineCurvature: 1
   m_Orbits:
-  - m_Height: 28.99998
-    m_Radius: 2.899998
+  - m_Height: 10
+    m_Radius: 1
   - m_Height: 0
-    m_Radius: 28.99998
-  - m_Height: -28.99998
-    m_Radius: 2.899998
+    m_Radius: 10
+  - m_Height: -10
+    m_Radius: 1
   m_LegacyHeadingBias: 3.4028235e+38
   m_Rigs:
   - {fileID: 1762155283}
@@ -699,7 +700,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94969701}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.036324956, y: -0.000000026291827, z: -9.556802e-10, w: 0.99934006}
+  m_LocalRotation: {x: -0.03632495, y: 0, z: 0, w: 0.99934006}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -948,7 +949,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 191728026}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.018189492, y: -0.000000012315859, z: -2.2405632e-10, w: 0.9998346}
+  m_LocalRotation: {x: -0.018189492, y: 0, z: 0, w: 0.9998346}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1973,7 +1974,7 @@ Transform:
   m_GameObject: {fileID: 411558178}
   serializedVersion: 2
   m_LocalRotation: {x: -0.01818948, y: -0.0000002899185, z: -0.0000000052743387, w: 0.9998346}
-  m_LocalPosition: {x: 0, y: 0, z: -28.99998}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2391,13 +2392,13 @@ MonoBehaviour:
   - {r: 0.2901961, g: 1, b: 0, a: 1}
   - {r: 0, g: 0.61960787, b: 1, a: 1}
   disabledAntennaTextColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
-  dayCounter: {fileID: 0}
-  hourCounter: {fileID: 0}
-  minuteCounter: {fileID: 0}
-  secondCounter: {fileID: 0}
-  xCoordinate: {fileID: 0}
-  yCoordinate: {fileID: 0}
-  zCoordinate: {fileID: 0}
+  dayCounter: {fileID: 1874787880}
+  hourCounter: {fileID: 1472817125}
+  minuteCounter: {fileID: 1193295617}
+  secondCounter: {fileID: 614187792}
+  xCoordinate: {fileID: 1562747786}
+  yCoordinate: {fileID: 222312507}
+  zCoordinate: {fileID: 1958478416}
   totalDistanceTravelledText: {fileID: 987625269}
   distanceFromEarthText: {fileID: 135262266}
   distanceFromMoonText: {fileID: 1308316164}
@@ -2639,6 +2640,105 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 555256269}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &573645242
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 573645243}
+  - component: {fileID: 573645244}
+  m_Layer: 0
+  m_Name: Data Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &573645243
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573645242}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 17614485}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &573645244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573645242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aca708e62b3ba46ea85fe1629378ec2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updateSpeed: 181
+  onDataLoaded:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 534708854}
+        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
+        m_MethodName: PlotTrajectory
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onDataUpdated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: UpdateTime
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 534708854}
+        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
+        m_MethodName: UpdateTrajectory
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 534708854}
+        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
+        m_MethodName: UpdateSatellitePosition
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &593197354
 GameObject:
   m_ObjectHideFlags: 0
@@ -2850,7 +2950,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 5
-  m_FollowOffset: {x: 0, y: 0, z: -28.99998}
+  m_FollowOffset: {x: 0, y: 0, z: -10}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -6461,7 +6561,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 5
-  m_FollowOffset: {x: 0, y: 0, z: -28.99998}
+  m_FollowOffset: {x: 0, y: 0, z: -10}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
@@ -7840,7 +7940,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1762155281}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.000000003535485, z: -2.798529e-18, w: 1}
+  m_LocalRotation: {x: -0.000000019579517, y: -0.000000029802326, z: -6.438165e-16,
+    w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -9337,7 +9438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 5
-  m_FollowOffset: {x: 0, y: 0, z: -28.99998}
+  m_FollowOffset: {x: 0, y: 0, z: -10}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1

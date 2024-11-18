@@ -57,10 +57,39 @@ public class UIManager : MonoBehaviour
 
     public void SetTime(int days, int hours, int minutes, int seconds)
     {
-        dayCounter.text = days.ToString();
-        hourCounter.text = hours.ToString();
-        minuteCounter.text = minutes.ToString();
-        secondCounter.text = seconds.ToString();
+        const int maxNumberLength = 2;
+        dayCounter.text = days.ToString().PadLeft(maxNumberLength, '0');
+        hourCounter.text = hours.ToString().PadLeft(maxNumberLength, '0');
+        minuteCounter.text = minutes.ToString().PadLeft(maxNumberLength, '0');
+        secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
+    }
+    
+    public void UpdateTime(string[] currentData)
+    {
+        const int minutesPerDay = 1440;
+        const int minutesPerHour = 60;
+        const int secondsPerMinute = 60;
+        
+        float totalTimeInMinutes;
+        try
+        {
+            totalTimeInMinutes = float.Parse(currentData[0]);
+        }
+        catch
+        {
+            Debug.LogWarning("No time data available!");
+            return;
+        }
+        
+        int days = Mathf.FloorToInt(totalTimeInMinutes / minutesPerDay);
+        totalTimeInMinutes %= minutesPerDay;
+        int hours = Mathf.FloorToInt(totalTimeInMinutes / minutesPerHour);
+        totalTimeInMinutes %= minutesPerHour;
+        int minutes = Mathf.FloorToInt(totalTimeInMinutes);
+        totalTimeInMinutes -= minutes;
+        int seconds = Mathf.FloorToInt(totalTimeInMinutes * secondsPerMinute);
+        
+        SetTime(days, hours, minutes, seconds);
     }
 
     public void IncrementTime(int changeInDays, int changeInHours, int changeInMinutes, int changeInSeconds)
