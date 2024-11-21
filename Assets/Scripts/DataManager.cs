@@ -1,10 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class DataManager : MonoBehaviour
 {
+    [Header("Scene View Settings")]
+    [SerializeField] private bool drawGizmos;
+    [SerializeField] private Color beginningGizmosLineColor;
+    [SerializeField] private Color endGizmosLineColor;
+    [SerializeField, Range(1f, 100f)] private int gizmosLevelOfDetail;
+
+    [Header("Settings")]
     [Tooltip("How fast the data manager updates in data points per second"), Range(1, 400)]
     [SerializeField] private int updateSpeed;
     
@@ -19,16 +28,17 @@ public class DataManager : MonoBehaviour
     
     private float _timeSinceLastDataPoint = 0.0f;
     private float _timePerDataPoint;
+
+    List<Vector3> positionVectorsForGizmos;
     
     // Start is called before the first frame update
     private void Start()
     {
         _currentDataIndex = 0;
         _timePerDataPoint =  1.0f / updateSpeed;
-        
-        dataValues = CsvReader.ReadCsvFile(TrajectoryPointsFilepath);
-        dataValues.RemoveAt(0);
-        
+
+        dataValues = ReadData();
+
         onDataLoaded.Invoke(dataValues);
     }
 
@@ -42,5 +52,75 @@ public class DataManager : MonoBehaviour
             _currentDataIndex++;
             _timeSinceLastDataPoint -= _timePerDataPoint;
         }
+    }
+
+    // DRAW TRAJECTORY IN EDITOR
+    private void OnDrawGizmos()
+    {
+        if (!drawGizmos)
+        {
+            return;
+        }
+
+        int midpoint = positionVectorsForGizmos.Count / 2;
+
+        Gizmos.color = beginningGizmosLineColor;
+        for (int i = 0; i < midpoint; i += gizmosLevelOfDetail)
+        {
+            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + 1]);
+        }
+
+        Gizmos.color = endGizmosLineColor;
+        for (int i = midpoint; i < positionVectorsForGizmos.Count - 1; i += gizmosLevelOfDetail)
+        {
+            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + 1]);
+        }
+    }
+
+    private List<string[]> ReadData()
+    {
+        dataValues = CsvReader.ReadCsvFile(TrajectoryPointsFilepath);
+        dataValues.RemoveAt(0);
+
+        return dataValues;
+    }
+
+    private void OnValidate()
+    {
+        if (drawGizmos)
+        {
+            LoadGizmosPathData();
+        }
+    }
+
+    [ContextMenu("Reload Gizmos Path Data")]
+    private void LoadGizmosPathData()
+    {
+        dataValues = ReadData();
+
+        float trajectoryScale = 0.01f;
+
+        // An array of trajectory points is constructed by reading the processed CSV file.
+        int numberOfPoints = dataValues.Count;
+        Vector3[] trajectoryPoints = new Vector3[numberOfPoints];
+        for (int i = 0; i < dataValues.Count; i++)
+        {
+            string[] point = dataValues[i];
+
+            try
+            {
+                Vector3 pointAsVector = new Vector3(
+                    float.Parse(point[1]) * trajectoryScale,
+                    float.Parse(point[2]) * trajectoryScale,
+                    float.Parse(point[3]) * trajectoryScale);
+                trajectoryPoints[i] = pointAsVector;
+            }
+            catch
+            {
+                Debug.LogWarning("Gizmos Line Rendering: no positional data on line " + i + "!");
+            }
+        }
+
+        positionVectorsForGizmos = trajectoryPoints.ToList();
     }
 }
