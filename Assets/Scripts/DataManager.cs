@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 public class DataManager : MonoBehaviour
 {
@@ -12,10 +13,14 @@ public class DataManager : MonoBehaviour
     [SerializeField] private Color beginningGizmosLineColor;
     [SerializeField] private Color endGizmosLineColor;
     [SerializeField, Range(1f, 100f)] private int gizmosLevelOfDetail;
-
+    
     [Header("Settings")]
-    [Tooltip("How fast the data manager updates in data points per second"), Range(1, 400)]
-    [SerializeField] private int updateSpeed;
+    [Tooltip("How fast the data manager updates in data points per second initially"), Range(0, 400)]
+    [SerializeField] private int initialUpdateSpeed;
+    [Tooltip("The maximum speed the data manager updates in data points per second"), Range(0, 400)]
+    [SerializeField] private int maximumUpdateSpeed;
+    [Tooltip("The acceleration of the speed."), Range(10, 50)]
+    [SerializeField] private int updateSpeedAcceleration;
     
     public UnityEvent<List<string[]>> onDataLoaded;
     public UnityEvent<string[]> onDataUpdated;
@@ -26,6 +31,7 @@ public class DataManager : MonoBehaviour
     private int _currentDataIndex;
     private string[] _currentData;
     
+    private float _currentUpdateSpeed;
     private float _timeSinceLastDataPoint = 0.0f;
     private float _timePerDataPoint;
 
@@ -35,7 +41,8 @@ public class DataManager : MonoBehaviour
     private void Start()
     {
         _currentDataIndex = 0;
-        _timePerDataPoint =  1.0f / updateSpeed;
+        _currentUpdateSpeed = initialUpdateSpeed;
+        _timePerDataPoint =  1.0f / _currentUpdateSpeed;
 
         dataValues = ReadData();
 
@@ -45,13 +52,19 @@ public class DataManager : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        // The tick variable updates.
         _timeSinceLastDataPoint += Time.deltaTime;
+        
         if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < dataValues.Count)
         {
             onDataUpdated.Invoke(dataValues[_currentDataIndex]);
             _currentDataIndex++;
             _timeSinceLastDataPoint -= _timePerDataPoint;
         }
+        
+        // The current update speed increases with acceleration.
+        _currentUpdateSpeed += updateSpeedAcceleration * Time.deltaTime;
+        _timePerDataPoint =  1.0f / _currentUpdateSpeed;
     }
 
     // DRAW TRAJECTORY IN EDITOR
