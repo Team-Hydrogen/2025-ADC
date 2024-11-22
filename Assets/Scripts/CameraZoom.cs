@@ -10,6 +10,8 @@ public class CameraZoom : MonoBehaviour
     
     private const float MinimumCameraDistance = 10.0f;
     private const float MaximumCameraDistance = 100.0f;
+
+    private const float TopBottomRadiusRatio = 0.01f;
     
     private void Start()
     {
@@ -30,14 +32,20 @@ public class CameraZoom : MonoBehaviour
         var newCameraRadius = freeLookCamera.m_Orbits[1].m_Radius + netScrollSpeed;
         
         freeLookCamera.m_Orbits[0].m_Radius = Mathf.Clamp(
-            newCameraRadius / 10f, MinimumCameraDistance / 10f, MaximumCameraDistance / 10f);
+            newCameraRadius * TopBottomRadiusRatio,
+            MinimumCameraDistance * TopBottomRadiusRatio,
+            MaximumCameraDistance * TopBottomRadiusRatio);
         freeLookCamera.m_Orbits[0].m_Height = newCameraRadius;
         
         freeLookCamera.m_Orbits[1].m_Radius = Mathf.Clamp(
-            newCameraRadius, MinimumCameraDistance, MaximumCameraDistance);
+            newCameraRadius,
+            MinimumCameraDistance,
+            MaximumCameraDistance);
         
         freeLookCamera.m_Orbits[2].m_Radius = Mathf.Clamp(
-            newCameraRadius / 10f, MinimumCameraDistance / 10f, MaximumCameraDistance / 10f);
+            newCameraRadius * TopBottomRadiusRatio,
+            MinimumCameraDistance * TopBottomRadiusRatio,
+            MaximumCameraDistance * TopBottomRadiusRatio);
         freeLookCamera.m_Orbits[2].m_Height = -newCameraRadius;
     }
 }
