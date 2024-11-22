@@ -41,6 +41,7 @@ public class CameraZoom : MonoBehaviour
             newCameraRadius,
             MinimumCameraDistance,
             MaximumCameraDistance);
+        freeLookCamera.m_Orbits[1].m_Height = 0.0f;
         
         freeLookCamera.m_Orbits[2].m_Radius = Mathf.Clamp(
             newCameraRadius * TopBottomRadiusRatio,
