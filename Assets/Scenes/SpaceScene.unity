@@ -700,7 +700,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 94969701}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.03632502, y: -0.00000001121083, z: -4.074952e-10, w: 0.99934006}
+  m_LocalRotation: {x: -0.03632495, y: 0, z: 0, w: 0.99934006}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -949,7 +949,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 191728026}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.01818954, y: -0.00000022470313, z: -0.000000004087921, w: 0.9998346}
+  m_LocalRotation: {x: -0.018189492, y: 0, z: 0, w: 0.9998346}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2695,7 +2695,7 @@ MonoBehaviour:
   beginningGizmosLineColor: {r: 0, g: 1, b: 0.013665199, a: 1}
   endGizmosLineColor: {r: 1, g: 0, b: 0, a: 1}
   gizmosLevelOfDetail: 1
-  updateSpeed: 60
+  updateSpeed: 310
   onDataLoaded:
     m_PersistentCalls:
       m_Calls:
@@ -3239,7 +3239,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3883386606203628544, guid: 5a86cc520430813469acd7671eca3542,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1381439232}
   m_SourcePrefab: {fileID: 100100000, guid: 5a86cc520430813469acd7671eca3542, type: 3}
 --- !u!4 &655111472 stripped
 Transform:
@@ -6534,6 +6538,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1379755721}
   m_CullTransparentMesh: 1
+--- !u!1 &1381439231 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3883386606203628544, guid: 5a86cc520430813469acd7671eca3542,
+    type: 3}
+  m_PrefabInstance: {fileID: 655111471}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1381439232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1381439231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b22c94f73e0315346b3b44c7c0d480fe, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetTransform: {fileID: 411558181}
 --- !u!1 &1402533746
 GameObject:
   m_ObjectHideFlags: 3
@@ -7987,7 +8010,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1762155281}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.0000001241841, y: 0.0000007377535, z: 1.0084562e-13, w: 1}
+  m_LocalRotation: {x: 0, y: 0.000000052154064, z: 1.7089252e-15, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
