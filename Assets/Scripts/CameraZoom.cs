@@ -28,7 +28,7 @@ public class CameraZoom : MonoBehaviour
 
     private void Zoom()
     {
-        var netScrollSpeed = scrollSpeed * Input.GetAxis("Mouse ScrollWheel");
+        var netScrollSpeed = -scrollSpeed * Input.GetAxis("Mouse ScrollWheel");
         var newCameraRadius = freeLookCamera.m_Orbits[1].m_Radius + netScrollSpeed;
         
         freeLookCamera.m_Orbits[0].m_Radius = Mathf.Clamp(
