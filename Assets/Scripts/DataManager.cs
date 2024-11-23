@@ -64,6 +64,10 @@ public class DataManager : MonoBehaviour
         
         // The current update speed increases with acceleration.
         _currentUpdateSpeed += updateSpeedAcceleration * Time.deltaTime;
+        if (_currentUpdateSpeed > maximumUpdateSpeed)
+        {
+            _currentUpdateSpeed = maximumUpdateSpeed;
+        }
         _timePerDataPoint =  1.0f / _currentUpdateSpeed;
     }
 
