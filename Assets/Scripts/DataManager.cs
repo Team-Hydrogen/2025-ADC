@@ -81,6 +81,16 @@ public class DataManager : MonoBehaviour
         _timePerDataPoint =  1.0f / _currentUpdateSpeed;
     }
 
+    public void SkipBackward(float timeInSeconds)
+    {
+
+    }
+
+    public void SkipForward(float timeInSeconds)
+    {
+
+    }
+
     // DRAW TRAJECTORY IN EDITOR
     private void OnDrawGizmos()
     {
