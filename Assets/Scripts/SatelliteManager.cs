@@ -48,7 +48,9 @@ public class SatelliteManager : MonoBehaviour
                 Debug.LogWarning("No positional data on line " + index + "!");
             }
         }
-        
+        // The first point of the pastTrajectory is added.
+        pastTrajectory.positionCount = 1;
+        pastTrajectory.SetPosition(0, futureTrajectoryPoints[0]);
         // The processed points are pushed to the future trajectory line.
         futureTrajectory.positionCount = numberOfPoints;
         futureTrajectory.SetPositions(futureTrajectoryPoints);
@@ -59,16 +61,15 @@ public class SatelliteManager : MonoBehaviour
     /// </summary>
     public void UpdateTrajectory()
     {
+        // The current future trajectory is loaded.
         Vector3[] futureTrajectoryPoints = new Vector3[futureTrajectory.positionCount];
         futureTrajectory.GetPositions(futureTrajectoryPoints);
-        
-        List<Vector3> newFutureTrajectoryPoints = futureTrajectoryPoints.ToList();
-        newFutureTrajectoryPoints.RemoveAt(0);
-        
+        // The past trajectory's list of positions expands, so the next future data point is added.
+        Vector3 nextTrajectoryPoint = futureTrajectoryPoints[1];
         pastTrajectory.positionCount++;
-        pastTrajectory.SetPosition(pastTrajectory.positionCount - 1, futureTrajectoryPoints[0]);
-        
-        futureTrajectoryPoints = newFutureTrajectoryPoints.ToArray();
+        pastTrajectory.SetPosition(pastTrajectory.positionCount - 1, nextTrajectoryPoint);
+        // The next point in the future trajectory gets removed.
+        futureTrajectoryPoints = futureTrajectoryPoints[1..^1];
         futureTrajectory.positionCount--;
         futureTrajectory.SetPositions(futureTrajectoryPoints);
     }
@@ -82,7 +83,8 @@ public class SatelliteManager : MonoBehaviour
         {
             return;
         }
-        Vector3 newSatellitePosition = futureTrajectory.GetPosition(0);
+        // The second point of the future trajectory is chosen because the first point is the satellite's position.
+        Vector3 newSatellitePosition = futureTrajectory.GetPosition(1);
         _totalDistance += Vector3.Distance(satellite.transform.position, newSatellitePosition);
         satellite.transform.position = newSatellitePosition;
     }
