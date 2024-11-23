@@ -46,16 +46,33 @@ public class UIManager : MonoBehaviour
     private LengthUnit _currentLengthUnit = LengthUnit.Kilometers;
     private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
-    
-    private Vector3 _currentCoordinates;
-    private float _totalDistanceTravelled;
-    private float _distanceFromEarth;
-    private float _distanceFromMoon;
 
     private void Update()
     {
         HandleUIVisibility();
     }
+
+    #region Manage Buttons
+    public void PlayButtonPressed()
+    {
+        
+    }
+
+    public void PauseButtonPressed()
+    {
+
+    }
+
+    public void ImperialButtonPressed()
+    {
+        _currentLengthUnit = LengthUnit.Miles;
+    }
+
+    public void MetricButtonPressed()
+    {
+        _currentLengthUnit = LengthUnit.Kilometers;
+    }
+    #endregion
 
     #region Manage Time
     private void SetTime(int days, int hours, int minutes, int seconds)
