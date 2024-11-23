@@ -53,15 +53,28 @@ public class UIManager : MonoBehaviour
     }
 
     #region Manage Buttons
+
+    #region Manage Timeline Buttons
     public void PlayButtonPressed()
     {
-        
+        Time.timeScale = 1f;
     }
 
     public void PauseButtonPressed()
     {
-
+        Time.timeScale = 0f;
     }
+
+    public void SkipForwardButtonPressed()
+    {
+        Debug.Log("Skipping forward not implemented!");
+    }
+
+    public void SkipBackwardButtonPressed()
+    {
+        Debug.Log("Skipping backward not implemented!");
+    }
+    #endregion
 
     public void ImperialButtonPressed()
     {

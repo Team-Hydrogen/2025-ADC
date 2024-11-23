@@ -589,6 +589,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: MetricButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &21871321
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2398,7 +2410,7 @@ GameObject:
   - component: {fileID: 240952982}
   - component: {fileID: 240952983}
   m_Layer: 5
-  m_Name: TimeData
+  m_Name: Time Data
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2921,7 +2933,7 @@ GameObject:
   - component: {fileID: 312500272}
   - component: {fileID: 312500271}
   m_Layer: 5
-  m_Name: PauseButton
+  m_Name: Pause Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3014,6 +3026,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: PauseButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &312500272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3065,7 +3089,7 @@ GameObject:
   - component: {fileID: 317706864}
   - component: {fileID: 317706863}
   m_Layer: 5
-  m_Name: ForwardButton
+  m_Name: Skip Forward Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3133,7 +3157,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 317706864}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: SkipForwardButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &317706864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3687,8 +3723,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328071167}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.70090926, y: 0, z: 0, w: 0.71325046}
-  m_LocalPosition: {x: 0, y: 0.0000038146973, z: -0.0000007748604}
+  m_LocalRotation: {x: 0.70090926, y: -0.00000043924834, z: 0.00000043164815, w: 0.71325046}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0000007748604}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3849,7 +3885,7 @@ GameObject:
   - component: {fileID: 337138356}
   - component: {fileID: 337138355}
   m_Layer: 5
-  m_Name: StatusText
+  m_Name: Status Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5621,7 +5657,7 @@ Transform:
   m_GameObject: {fileID: 523667355}
   serializedVersion: 2
   m_LocalRotation: {x: 0.6772845, y: 0, z: 0, w: 0.73572123}
-  m_LocalPosition: {x: 0, y: 0.0000038146973, z: -0.0000007748604}
+  m_LocalPosition: {x: 0, y: 0.0000076293945, z: -0.0000007748604}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6956,7 +6992,7 @@ GameObject:
   - component: {fileID: 608296516}
   - component: {fileID: 608296515}
   m_Layer: 5
-  m_Name: DayLabel
+  m_Name: Day Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9886,8 +9922,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922644109}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6905201, y: 0, z: 0, w: 0.7233132}
-  m_LocalPosition: {x: 0, y: 0.0000038146973, z: -0.0000007748604}
+  m_LocalRotation: {x: 0.69052005, y: -0.000002905272, z: 0.0000027735541, w: 0.7233133}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0000007748604}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10678,7 +10714,7 @@ GameObject:
   - component: {fileID: 967639950}
   - component: {fileID: 967639949}
   m_Layer: 5
-  m_Name: HourTag
+  m_Name: Hour Tag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12809,7 +12845,7 @@ GameObject:
   - component: {fileID: 1099053385}
   - component: {fileID: 1099053384}
   m_Layer: 5
-  m_Name: SecondLabel
+  m_Name: Second Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13729,7 +13765,7 @@ GameObject:
   - component: {fileID: 1208541372}
   - component: {fileID: 1208541371}
   m_Layer: 5
-  m_Name: PlayButton
+  m_Name: Play Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13814,6 +13850,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: PlayButtonPressed
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -15994,7 +16042,7 @@ GameObject:
   - component: {fileID: 1464797533}
   - component: {fileID: 1464797532}
   m_Layer: 5
-  m_Name: BackwardButton
+  m_Name: Skip Backward Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16062,7 +16110,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1464797533}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: SkipBackwardButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1464797533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16782,7 +16842,7 @@ GameObject:
   - component: {fileID: 1574941644}
   - component: {fileID: 1574941643}
   m_Layer: 5
-  m_Name: SecondTag
+  m_Name: Second Tag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16917,7 +16977,7 @@ GameObject:
   - component: {fileID: 1599322099}
   - component: {fileID: 1599322098}
   m_Layer: 5
-  m_Name: MinuteLabel
+  m_Name: Minute Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17430,7 +17490,7 @@ GameObject:
   - component: {fileID: 1633918811}
   - component: {fileID: 1633918810}
   m_Layer: 5
-  m_Name: DayTag
+  m_Name: Day Tag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21625,7 +21685,7 @@ GameObject:
   - component: {fileID: 1915694871}
   - component: {fileID: 1915694870}
   m_Layer: 5
-  m_Name: HourLabel
+  m_Name: Hour Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22675,6 +22735,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: ImperialButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2003289754
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23284,7 +23356,7 @@ GameObject:
   - component: {fileID: 2066127622}
   - component: {fileID: 2066127621}
   m_Layer: 5
-  m_Name: MinuteTag
+  m_Name: Minute Tag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
