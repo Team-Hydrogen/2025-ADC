@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -89,17 +90,17 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 0f;
     }
-
-    public void SkipForwardButtonPressed()
-    {
-        Debug.Log("Skipping forward not implemented!");
-    }
-
-    public void SkipBackwardButtonPressed()
-    {
-        Debug.Log("Skipping backward not implemented!");
-    }
     #endregion
+
+    public void RestartButtonPressed()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void QuitButtonPressed()
+    {
+        SceneManager.LoadScene(0);
+    }
 
     public void ImperialButtonPressed()
     {

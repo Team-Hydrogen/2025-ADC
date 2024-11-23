@@ -1138,7 +1138,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 47808881}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: RestartButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &47808881
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1696,7 +1708,7 @@ GameObject:
   - component: {fileID: 150258437}
   - component: {fileID: 150258436}
   m_Layer: 5
-  m_Name: Quit Button
+  m_Name: Main Menu Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1744,9 +1756,9 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.93725497, g: 0.25882354, b: 0.25882354, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0.9811321, g: 0.38412246, b: 0.38412246, a: 1}
+    m_PressedColor: {r: 0.735849, g: 0.18396226, b: 0.18396226, a: 1}
+    m_SelectedColor: {r: 0.9372549, g: 0.25882354, b: 0.25882354, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -1765,7 +1777,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 150258437}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: QuitButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &150258437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3158,15 +3182,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 512236118}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: SkipForwardButtonPressed
-        m_Mode: 1
+      - m_Target: {fileID: 573645244}
+        m_TargetAssemblyTypeName: DataManager, Assembly-CSharp
+        m_MethodName: SkipForward
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 1000
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -16018,15 +16042,15 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 512236118}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: SkipBackwardButtonPressed
-        m_Mode: 1
+      - m_Target: {fileID: 573645244}
+        m_TargetAssemblyTypeName: DataManager, Assembly-CSharp
+        m_MethodName: SkipBackward
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 1000
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -18482,7 +18506,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Quit
+  m_text: Main Menu
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9f783cb0c24684c2fbd572020d32f428, type: 2}
   m_sharedMaterial: {fileID: -4683113129509832059, guid: 9f783cb0c24684c2fbd572020d32f428,
