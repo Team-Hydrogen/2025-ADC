@@ -12,35 +12,58 @@ public class CameraPan : MonoBehaviour
     
     private void Start()
     {
-        if (freeLookCamera == null)
-        {
-            freeLookCamera = GetComponent<CinemachineFreeLook>();
-        }
-    }
-    
-    private void Update()
-    {
-        HorizontalPan();
-        VerticalPan();
-    }
-    
-    private void HorizontalPan()
-    {
-        if (!Input.GetMouseButton(0))
-        {
-            return;
-        }
-        var netScrollSpeed = horizontalPanSpeed * Input.GetAxis("Mouse X");
-        freeLookCamera.m_XAxis.Value += netScrollSpeed;
-    }
+        //if (freeLookCamera == null)
+        //{
+        //    freeLookCamera = GetComponent<CinemachineFreeLook>();
+        //}
 
-    private void VerticalPan()
+        CinemachineCore.GetInputAxis = GetAxisCustom;
+    }
+    
+    //private void Update()
+    //{
+    //    HorizontalPan();
+    //    VerticalPan();
+    //}
+    
+    //private void HorizontalPan()
+    //{
+    //    if (!Input.GetMouseButton(0))
+    //    {
+    //        return;
+    //    }
+    //    var netScrollSpeed = horizontalPanSpeed * Input.GetAxis("Mouse X");
+    //    freeLookCamera.m_XAxis.Value += netScrollSpeed;
+    //}
+
+    //private void VerticalPan()
+    //{
+    //    if (!Input.GetMouseButton(0))
+    //    {
+    //        return;
+    //    }
+    //    var netScrollSpeed = verticalPanSpeed * Input.GetAxis("Mouse Y");
+    //    freeLookCamera.m_YAxis.Value += netScrollSpeed;
+    //}
+
+    private float GetAxisCustom(string axisName)
     {
-        if (!Input.GetMouseButton(0))
+        if (axisName == "Mouse X")
         {
-            return;
+            if (Input.GetMouseButton(0))
+            {
+                return Input.GetAxis("Mouse X");
+            }
         }
-        var netScrollSpeed = verticalPanSpeed * Input.GetAxis("Mouse Y");
-        freeLookCamera.m_YAxis.Value += netScrollSpeed;
+
+        if (axisName == "Mouse Y")
+        {
+            if (Input.GetMouseButton(0))
+            {
+                return Input.GetAxis("Mouse Y");
+            }
+        }
+
+        return Input.GetAxis(axisName);
     }
 }

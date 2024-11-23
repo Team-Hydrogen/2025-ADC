@@ -1125,8 +1125,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328071167}
   serializedVersion: 2
+<<<<<<< Updated upstream
   m_LocalRotation: {x: 0.70090926, y: -0.0000005260882, z: 0.0000005169854, w: 0.71325046}
   m_LocalPosition: {x: 0, y: 0, z: 0.00000008195639}
+=======
+  m_LocalRotation: {x: 0.70090926, y: 0, z: 0, w: 0.71325046}
+  m_LocalPosition: {x: 0, y: 0.0000038146973, z: -0.0000006556511}
+>>>>>>> Stashed changes
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1639,6 +1644,7 @@ GameObject:
   - component: {fileID: 411558180}
   - component: {fileID: 411558179}
   - component: {fileID: 411558182}
+  - component: {fileID: 411558184}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1798,6 +1804,21 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &411558184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 411558178}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a96faec37ec437aad97f409d003fbd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  horizontalPanSpeed: 20
+  verticalPanSpeed: 0.1
+  freeLookCamera: {fileID: 508490930}
 --- !u!1 &435682490
 GameObject:
   m_ObjectHideFlags: 0
@@ -2233,7 +2254,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 508490928}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4a96faec37ec437aad97f409d003fbd7, type: 3}
   m_Name: 
@@ -2342,7 +2363,11 @@ Transform:
   m_GameObject: {fileID: 523667355}
   serializedVersion: 2
   m_LocalRotation: {x: 0.6772845, y: 0, z: 0, w: 0.73572123}
+<<<<<<< Updated upstream
   m_LocalPosition: {x: 0, y: 0, z: 0}
+=======
+  m_LocalPosition: {x: 0, y: 0.0000038146973, z: -0.0000006556511}
+>>>>>>> Stashed changes
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4096,8 +4121,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922644109}
   serializedVersion: 2
+<<<<<<< Updated upstream
   m_LocalRotation: {x: 0.6905201, y: -0.0000008525993, z: 0.0000008139448, w: 0.7233132}
   m_LocalPosition: {x: 0, y: 0, z: 0.00000008195639}
+=======
+  m_LocalRotation: {x: 0.6905201, y: 0, z: 0, w: 0.7233132}
+  m_LocalPosition: {x: 0, y: 0.0000038146973, z: -0.0000006556511}
+>>>>>>> Stashed changes
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
