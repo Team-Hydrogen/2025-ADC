@@ -3723,7 +3723,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328071167}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7009093, y: -0.000001727152, z: 0.0000016972676, w: 0.7132504}
+  m_LocalRotation: {x: 0.70090926, y: 0, z: 0, w: 0.71325046}
   m_LocalPosition: {x: 0, y: 0, z: -0.0000007748604}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6261,91 +6261,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aca708e62b3ba46ea85fe1629378ec2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drawGizmos: 0
+  drawGizmos: 1
   beginningGizmosLineColor: {r: 0, g: 1, b: 0.013665199, a: 1}
   endGizmosLineColor: {r: 1, g: 0, b: 0, a: 1}
   gizmosLevelOfDetail: 1
   initialUpdateSpeed: 33
   maximumUpdateSpeed: 108
   updateSpeedAcceleration: 12
-  onDataLoaded:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 534708854}
-        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
-        m_MethodName: PlotTrajectory
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onDataUpdated:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 512236118}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: UpdateCoordinates
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 512236118}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: UpdateTime
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 534708854}
-        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
-        m_MethodName: UpdateSatellitePosition
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 534708854}
-        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
-        m_MethodName: UpdateTrajectory
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 534708854}
-        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
-        m_MethodName: CalculateDistance
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &574056989
 GameObject:
   m_ObjectHideFlags: 0
@@ -9907,7 +9829,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922644109}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6905201, y: -0.0000002136286, z: 0.00000020394323, w: 0.7233132}
+  m_LocalRotation: {x: 0.6905201, y: 0, z: 0, w: 0.7233132}
   m_LocalPosition: {x: 0, y: 0, z: -0.0000007748604}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -16579,7 +16501,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1539118347
 Transform:
   m_ObjectHideFlags: 0

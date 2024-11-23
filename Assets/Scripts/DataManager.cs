@@ -105,13 +105,13 @@ public class DataManager : MonoBehaviour
         Gizmos.color = beginningGizmosLineColor;
         for (int i = 0; i < midpoint; i += gizmosLevelOfDetail)
         {
-            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + 1]);
+            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
         }
 
         Gizmos.color = endGizmosLineColor;
-        for (int i = midpoint; i < positionVectorsForGizmos.Count - 1; i += gizmosLevelOfDetail)
+        for (int i = midpoint; i < positionVectorsForGizmos.Count - gizmosLevelOfDetail; i += gizmosLevelOfDetail)
         {
-            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + 1]);
+            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
         }
     }
 
