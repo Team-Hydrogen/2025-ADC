@@ -57,6 +57,7 @@ public class UIManager : MonoBehaviour
         HandleUIVisibility();
     }
 
+    #region Manage Time
     private void SetTime(int days, int hours, int minutes, int seconds)
     {
         const int maxNumberLength = 2;
@@ -101,27 +102,25 @@ public class UIManager : MonoBehaviour
         minuteCounter.text = (int.Parse(minuteCounter.text) - changeInMinutes).ToString();
         secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
     }
+    #endregion
 
+    #region Manage Coordinates
     private void SetCoordinates(float x, float y, float z)
     {
         string units;
         
-        xCoordinate.text = "<b>X:</b> ";
-        yCoordinate.text = "<b>Y:</b> ";
-        zCoordinate.text = "<b>Z:</b> ";
-        
         if (_currentLengthUnit == LengthUnit.Kilometers)
         {
             units = " km";
-            xCoordinate.text += x.ToString("N0") + units;
-            yCoordinate.text += y.ToString("N0") + units;
-            zCoordinate.text += z.ToString("N0") + units;
+            xCoordinate.text = x.ToString("N0") + units;
+            yCoordinate.text = y.ToString("N0") + units;
+            zCoordinate.text = z.ToString("N0") + units;
         } else if (_currentLengthUnit == LengthUnit.Miles)
         {
             units = " mi";
-            xCoordinate.text += UnitAndCoordinateConverter.KilometersToMiles(x).ToString("N0") + units;
-            yCoordinate.text += UnitAndCoordinateConverter.KilometersToMiles(y).ToString("N0") + units;
-            zCoordinate.text += UnitAndCoordinateConverter.KilometersToMiles(z).ToString("N0") + units;
+            xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(x).ToString("N0") + units;
+            yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(y).ToString("N0") + units;
+            zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(z).ToString("N0") + units;
         }
     }
     
@@ -145,42 +144,41 @@ public class UIManager : MonoBehaviour
         
         SetCoordinates(x, y, z);
     }
-    
+    #endregion
+
+    #region Update Distances
     private void SetTotalDistance(float totalDistance)
     {
-        totalDistanceTravelledText.text = "<b>Dist. Travelled:</b> ";
         if (_currentLengthUnit == LengthUnit.Kilometers)
         {
-            totalDistanceTravelledText.text += totalDistance.ToString(ThreeDecimalPlaces) + " km";
+            totalDistanceTravelledText.text = totalDistance.ToString(ThreeDecimalPlaces) + " km";
         }
         else if (_currentLengthUnit == LengthUnit.Miles)
         {
-            totalDistanceTravelledText.text += UnitAndCoordinateConverter.KilometersToMiles(totalDistance).ToString(ThreeDecimalPlaces) + " mi";
+            totalDistanceTravelledText.text = UnitAndCoordinateConverter.KilometersToMiles(totalDistance).ToString(ThreeDecimalPlaces) + " mi";
         }
     }
 
     private void SetDistanceFromEarth(float fromEarth)
     {
-        distanceFromEarthText.text = "<b>Dist. from Earth:</b> ";
         if (_currentLengthUnit == LengthUnit.Kilometers)
         {
-            distanceFromEarthText.text += fromEarth.ToString(ThreeDecimalPlaces) + " km";
+            distanceFromEarthText.text = fromEarth.ToString(ThreeDecimalPlaces) + " km";
         } else if (_currentLengthUnit == LengthUnit.Miles)
         {
-            distanceFromEarthText.text += UnitAndCoordinateConverter.KilometersToMiles(fromEarth).ToString(ThreeDecimalPlaces) + " mi";
+            distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(fromEarth).ToString(ThreeDecimalPlaces) + " mi";
         }
     }
 
     private void SetDistanceFromMoon(float fromMoon)
     {
-        distanceFromMoonText.text = "<b>Dist. from Moon:</b> ";
         if (_currentLengthUnit == LengthUnit.Kilometers)
         {
-            distanceFromMoonText.text += fromMoon.ToString(ThreeDecimalPlaces) + " km";
+            distanceFromMoonText.text = fromMoon.ToString(ThreeDecimalPlaces) + " km";
         }
         else if (_currentLengthUnit == LengthUnit.Miles)
         {
-            distanceFromMoonText.text += UnitAndCoordinateConverter.KilometersToMiles(fromMoon).ToString(ThreeDecimalPlaces) + " mi";
+            distanceFromMoonText.text = UnitAndCoordinateConverter.KilometersToMiles(fromMoon).ToString(ThreeDecimalPlaces) + " mi";
         }
     }
     
@@ -195,7 +193,9 @@ public class UIManager : MonoBehaviour
     {
         SetDistances(distanceData[0], distanceData[1], distanceData[2]);
     }
-    
+    #endregion
+
+    #region Manage Antennas
     public void UpdateAntenna(string antennaName, int connectionSpeed)
     {
         const string connectionSpeedUnit = "kbps";
@@ -264,7 +264,9 @@ public class UIManager : MonoBehaviour
             label.SetSiblingIndex(sortedLabels.IndexOf(label));
         }
     }
+    #endregion
 
+    #region UI Visibility
     private void HandleUIVisibility()
     {
         if (Input.anyKey || Input.mousePosition != _lastMousePosition)
@@ -306,6 +308,7 @@ public class UIManager : MonoBehaviour
 
         canvasGroup.alpha = 1;
     }
+    #endregion
 
     private enum LengthUnit {
         Kilometers,
