@@ -6130,7 +6130,7 @@ GameObject:
   - component: {fileID: 967639950}
   - component: {fileID: 967639949}
   m_Layer: 5
-  m_Name: Hour Time Tag
+  m_Name: HourTag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10500,7 +10500,7 @@ GameObject:
   - component: {fileID: 1574941644}
   - component: {fileID: 1574941643}
   m_Layer: 5
-  m_Name: Second Time Tag
+  m_Name: SecondTag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10905,7 +10905,7 @@ GameObject:
   - component: {fileID: 1633918811}
   - component: {fileID: 1633918810}
   m_Layer: 5
-  m_Name: Day Time Tag
+  m_Name: DayTag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14171,7 +14171,7 @@ GameObject:
   - component: {fileID: 2066127622}
   - component: {fileID: 2066127621}
   m_Layer: 5
-  m_Name: Minute Time Tag
+  m_Name: MinuteTag
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
