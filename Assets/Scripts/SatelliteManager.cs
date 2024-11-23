@@ -21,7 +21,20 @@ public class SatelliteManager : MonoBehaviour
 
     private float _totalDistance = 0.0f;
     public UnityEvent<float[]> onDistanceCalculated;
-    
+
+    [HideInInspector] public static SatelliteManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
+
     /// <param name="pointsData">List containing data points in cartesian coordinates</param>
     /// <summary>
     /// Plots the provided data points into a visual trajectory. PlotTrajectory() is meant to be run only once.

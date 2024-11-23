@@ -39,6 +39,8 @@ public class UIManager : MonoBehaviour
     [Range(0, 1f)]
     [SerializeField] private float minimumUIVisiblity;
 
+    [HideInInspector] public static UIManager Instance { get; private set; }
+
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0f;
     private bool _isFadingOut = false;
@@ -46,6 +48,17 @@ public class UIManager : MonoBehaviour
     private LengthUnit _currentLengthUnit = LengthUnit.Kilometers;
     private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     private void Update()
     {

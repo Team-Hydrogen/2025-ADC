@@ -24,6 +24,8 @@ public class DataManager : MonoBehaviour
     
     public UnityEvent<List<string[]>> onDataLoaded;
     public UnityEvent<string[]> onDataUpdated;
+
+    [HideInInspector] public static DataManager Instance { get; private set; }
     
     private const string TrajectoryPointsFilepath = "Assets/Data/hsdata.csv";
     private static List<string[]> dataValues { get; set; }
@@ -36,8 +38,17 @@ public class DataManager : MonoBehaviour
     private float _timePerDataPoint;
 
     List<Vector3> positionVectorsForGizmos;
-    
-    // Start is called before the first frame update
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
+
     private void Start()
     {
         _currentDataIndex = 0;
@@ -49,7 +60,6 @@ public class DataManager : MonoBehaviour
         onDataLoaded.Invoke(dataValues);
     }
 
-    // Update is called once per frame
     private void Update()
     {
         // The tick variable updates.
