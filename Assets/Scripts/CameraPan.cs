@@ -12,58 +12,35 @@ public class CameraPan : MonoBehaviour
     
     private void Start()
     {
-        //if (freeLookCamera == null)
-        //{
-        //    freeLookCamera = GetComponent<CinemachineFreeLook>();
-        //}
-
-        CinemachineCore.GetInputAxis = GetAxisCustom;
+        if (freeLookCamera == null)
+        {
+            freeLookCamera = GetComponent<CinemachineFreeLook>();
+        }
     }
     
-    //private void Update()
-    //{
-    //    HorizontalPan();
-    //    VerticalPan();
-    //}
-    
-    //private void HorizontalPan()
-    //{
-    //    if (!Input.GetMouseButton(0))
-    //    {
-    //        return;
-    //    }
-    //    var netScrollSpeed = horizontalPanSpeed * Input.GetAxis("Mouse X");
-    //    freeLookCamera.m_XAxis.Value += netScrollSpeed;
-    //}
-
-    //private void VerticalPan()
-    //{
-    //    if (!Input.GetMouseButton(0))
-    //    {
-    //        return;
-    //    }
-    //    var netScrollSpeed = verticalPanSpeed * Input.GetAxis("Mouse Y");
-    //    freeLookCamera.m_YAxis.Value += netScrollSpeed;
-    //}
-
-    private float GetAxisCustom(string axisName)
+    private void Update()
     {
-        if (axisName == "Mouse X")
+        HorizontalPan();
+        VerticalPan();
+    }
+    
+    private void HorizontalPan()
+    {
+        if (!Input.GetMouseButton(0))
         {
-            if (Input.GetMouseButton(0))
-            {
-                return Input.GetAxis("Mouse X");
-            }
+            return;
         }
+        var netScrollSpeed = horizontalPanSpeed * Input.GetAxis("Mouse X");
+        freeLookCamera.m_XAxis.Value += netScrollSpeed;
+    }
 
-        if (axisName == "Mouse Y")
+    private void VerticalPan()
+    {
+        if (!Input.GetMouseButton(0))
         {
-            if (Input.GetMouseButton(0))
-            {
-                return Input.GetAxis("Mouse Y");
-            }
+            return;
         }
-
-        return Input.GetAxis(axisName);
+        var netScrollSpeed = verticalPanSpeed * Input.GetAxis("Mouse Y");
+        freeLookCamera.m_YAxis.Value += netScrollSpeed;
     }
 }
