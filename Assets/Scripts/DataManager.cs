@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,9 +22,9 @@ public class DataManager : MonoBehaviour
     [SerializeField] private int maximumUpdateSpeed;
     [Tooltip("The acceleration of the speed."), Range(10, 50)]
     [SerializeField] private int updateSpeedAcceleration;
-    
-    public UnityEvent<List<string[]>> onDataLoaded;
-    public UnityEvent<string[]> onDataUpdated;
+
+    public static event Action<List<string[]>> OnDataLoaded;
+    public static event Action<string[]> OnDataUpdated;
 
     [HideInInspector] public static DataManager Instance { get; private set; }
     
@@ -57,7 +58,7 @@ public class DataManager : MonoBehaviour
 
         dataValues = ReadData();
 
-        onDataLoaded.Invoke(dataValues);
+        OnDataLoaded?.Invoke(dataValues);
     }
 
     private void Update()
@@ -67,7 +68,7 @@ public class DataManager : MonoBehaviour
         
         if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < dataValues.Count)
         {
-            onDataUpdated.Invoke(dataValues[_currentDataIndex]);
+            OnDataUpdated?.Invoke(dataValues[_currentDataIndex]);
             _currentDataIndex++;
             _timeSinceLastDataPoint -= _timePerDataPoint;
         }

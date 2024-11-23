@@ -3723,7 +3723,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328071167}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.70090926, y: -0.00000043924834, z: 0.00000043164815, w: 0.71325046}
+  m_LocalRotation: {x: 0.7009093, y: -0.000001727152, z: 0.0000016972676, w: 0.7132504}
   m_LocalPosition: {x: 0, y: 0, z: -0.0000007748604}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5932,21 +5932,6 @@ MonoBehaviour:
   moon: {fileID: 1207261695}
   pastTrajectory: {fileID: 1187994444}
   futureTrajectory: {fileID: 943471396}
-  onDistanceCalculated:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 512236118}
-        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: UpdateDistances
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &552426114
 GameObject:
   m_ObjectHideFlags: 0
@@ -9922,7 +9907,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922644109}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.69052005, y: -0.000002905272, z: 0.0000027735541, w: 0.7233133}
+  m_LocalRotation: {x: 0.6905201, y: -0.0000002136286, z: 0.00000020394323, w: 0.7233132}
   m_LocalPosition: {x: 0, y: 0, z: -0.0000007748604}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

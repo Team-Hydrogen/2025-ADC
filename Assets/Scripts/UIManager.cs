@@ -60,6 +60,18 @@ public class UIManager : MonoBehaviour
         Instance = this;
     }
 
+    private void OnEnable()
+    {
+        DataManager.OnDataUpdated += UpdateUIFromData;
+        SatelliteManager.OnDistanceCalculated += UpdateUIDistances;
+    }
+
+    private void OnDisable()
+    {
+        DataManager.OnDataUpdated -= UpdateUIFromData;
+        SatelliteManager.OnDistanceCalculated -= UpdateUIDistances;
+    }
+
     private void Update()
     {
         HandleUIVisibility();
@@ -100,6 +112,17 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
+    private void UpdateUIFromData(string[] data)
+    {
+        UpdateCoordinatesFromData(data);
+        UpdateTimeFromData(data);
+    }
+
+    private void UpdateUIDistances(float[] distances)
+    {
+        SetDistances(distances[0], distances[1], distances[2]);
+    }
+
     #region Manage Time
     private void SetTime(int days, int hours, int minutes, int seconds)
     {
@@ -110,7 +133,7 @@ public class UIManager : MonoBehaviour
         secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
     }
     
-    public void UpdateTime(string[] currentData)
+    private void UpdateTimeFromData(string[] currentData)
     {
         const int minutesPerDay = 1440;
         const int minutesPerHour = 60;
@@ -167,7 +190,7 @@ public class UIManager : MonoBehaviour
         }
     }
     
-    public void UpdateCoordinates(string[] currentData)
+    private void UpdateCoordinatesFromData(string[] currentData)
     {
         float x;
         float y;
@@ -230,11 +253,6 @@ public class UIManager : MonoBehaviour
         SetTotalDistance(totalDistance);
         SetDistanceFromEarth(fromEarth);
         SetDistanceFromMoon(fromMoon);
-    }
-
-    public void UpdateDistances(float[] distanceData)
-    {
-        SetDistances(distanceData[0], distanceData[1], distanceData[2]);
     }
     #endregion
 

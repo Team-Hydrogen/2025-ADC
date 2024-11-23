@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -20,8 +21,8 @@ public class SatelliteManager : MonoBehaviour
     [SerializeField] private LineRenderer futureTrajectory;
 
     private float _totalDistance = 0.0f;
-    public UnityEvent<float[]> onDistanceCalculated;
 
+    public static Action<float[]> OnDistanceCalculated;
     [HideInInspector] public static SatelliteManager Instance { get; private set; }
 
     private void Awake()
@@ -33,6 +34,25 @@ public class SatelliteManager : MonoBehaviour
         }
 
         Instance = this;
+    }
+
+    private void OnEnable()
+    {
+        DataManager.OnDataLoaded += PlotTrajectory;
+        DataManager.OnDataUpdated += UpdateSatelliteFromData;
+    }
+
+    private void OnDisable()
+    {
+        DataManager.OnDataLoaded -= PlotTrajectory;
+        DataManager.OnDataUpdated -= UpdateSatelliteFromData;
+    }
+
+    private void UpdateSatelliteFromData(string[] data)
+    {
+        UpdateSatellitePosition();
+        UpdateTrajectory();
+        CalculateDistance();
     }
 
     /// <param name="pointsData">List containing data points in cartesian coordinates</param>
@@ -107,6 +127,7 @@ public class SatelliteManager : MonoBehaviour
         float distanceToEarth = Vector3.Distance(satellite.transform.position, earth.transform.position);
         float distanceToMoon = Vector3.Distance(satellite.transform.position, moon.transform.position);
         float[] distances = { _totalDistance, distanceToEarth, distanceToMoon };
-        onDistanceCalculated.Invoke(distances);
+        //onDistanceCalculated.Invoke(distances);
+        OnDistanceCalculated?.Invoke(distances);
     }
 }
