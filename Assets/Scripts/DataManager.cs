@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,11 +22,15 @@ public class DataManager : MonoBehaviour
     [SerializeField] private int maximumUpdateSpeed;
     [Tooltip("The acceleration of the speed."), Range(10, 50)]
     [SerializeField] private int updateSpeedAcceleration;
+
+    [Header("Trajectory Data")]
+    [SerializeField] private TextAsset dataFile;
+
+    public static event Action<List<string[]>> OnDataLoaded;
+    public static event Action<string[]> OnDataUpdated;
+
+    [HideInInspector] public static DataManager Instance { get; private set; }
     
-    public UnityEvent<List<string[]>> onDataLoaded;
-    public UnityEvent<string[]> onDataUpdated;
-    
-    private const string TrajectoryPointsFilepath = "Assets/Data/hsdata.csv";
     private static List<string[]> dataValues { get; set; }
     
     private int _currentDataIndex;
@@ -36,8 +41,17 @@ public class DataManager : MonoBehaviour
     private float _timePerDataPoint;
 
     List<Vector3> positionVectorsForGizmos;
-    
-    // Start is called before the first frame update
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
+
     private void Start()
     {
         _currentDataIndex = 0;
@@ -46,10 +60,9 @@ public class DataManager : MonoBehaviour
 
         dataValues = ReadData();
 
-        onDataLoaded.Invoke(dataValues);
+        OnDataLoaded?.Invoke(dataValues);
     }
 
-    // Update is called once per frame
     private void Update()
     {
         // The tick variable updates.
@@ -57,7 +70,7 @@ public class DataManager : MonoBehaviour
         
         if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < dataValues.Count)
         {
-            onDataUpdated.Invoke(dataValues[_currentDataIndex]);
+            OnDataUpdated?.Invoke(dataValues[_currentDataIndex]);
             _currentDataIndex++;
             _timeSinceLastDataPoint -= _timePerDataPoint;
         }
@@ -69,6 +82,16 @@ public class DataManager : MonoBehaviour
             _currentUpdateSpeed = maximumUpdateSpeed;
         }
         _timePerDataPoint =  1.0f / _currentUpdateSpeed;
+    }
+
+    public void SkipBackward(float timeInSeconds)
+    {
+
+    }
+
+    public void SkipForward(float timeInSeconds)
+    {
+
     }
 
     // DRAW TRAJECTORY IN EDITOR
@@ -84,19 +107,19 @@ public class DataManager : MonoBehaviour
         Gizmos.color = beginningGizmosLineColor;
         for (int i = 0; i < midpoint; i += gizmosLevelOfDetail)
         {
-            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + 1]);
+            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
         }
 
         Gizmos.color = endGizmosLineColor;
-        for (int i = midpoint; i < positionVectorsForGizmos.Count - 1; i += gizmosLevelOfDetail)
+        for (int i = midpoint; i < positionVectorsForGizmos.Count - gizmosLevelOfDetail; i += gizmosLevelOfDetail)
         {
-            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + 1]);
+            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
         }
     }
 
     private List<string[]> ReadData()
     {
-        dataValues = CsvReader.ReadCsvFile(TrajectoryPointsFilepath);
+        dataValues = CsvReader.ReadCsvFile(dataFile);
         dataValues.RemoveAt(0);
 
         return dataValues;

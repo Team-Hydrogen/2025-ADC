@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -39,13 +40,38 @@ public class UIManager : MonoBehaviour
     [Range(0, 1f)]
     [SerializeField] private float minimumUIVisiblity;
 
+    [HideInInspector] public static UIManager Instance { get; private set; }
+
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0f;
     private bool _isFadingOut = false;
 
-    private LengthUnit _currentLengthUnit = LengthUnit.Kilometers;
+    private UnitSystem _currentLengthUnit = UnitSystem.Metric;
     private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
+
+    private void OnEnable()
+    {
+        DataManager.OnDataUpdated += UpdateUIFromData;
+        SatelliteManager.OnDistanceCalculated += UpdateUIDistances;
+    }
+
+    private void OnDisable()
+    {
+        DataManager.OnDataUpdated -= UpdateUIFromData;
+        SatelliteManager.OnDistanceCalculated -= UpdateUIDistances;
+    }
 
     private void Update()
     {
@@ -53,26 +79,50 @@ public class UIManager : MonoBehaviour
     }
 
     #region Manage Buttons
+
+    #region Manage Timeline Buttons
     public void PlayButtonPressed()
     {
-        
+        Time.timeScale = 1f;
     }
 
     public void PauseButtonPressed()
     {
+        Time.timeScale = 0f;
+    }
+    #endregion
 
+    public void RestartButtonPressed()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void QuitButtonPressed()
+    {
+        SceneManager.LoadScene(0);
     }
 
     public void ImperialButtonPressed()
     {
-        _currentLengthUnit = LengthUnit.Miles;
+        _currentLengthUnit = UnitSystem.Imperial;
     }
 
     public void MetricButtonPressed()
     {
-        _currentLengthUnit = LengthUnit.Kilometers;
+        _currentLengthUnit = UnitSystem.Metric;
     }
     #endregion
+
+    private void UpdateUIFromData(string[] data)
+    {
+        UpdateCoordinatesFromData(data);
+        UpdateTimeFromData(data);
+    }
+    
+    private void UpdateUIDistances(float[] distances)
+    {
+        SetDistances(distances[0], distances[1], distances[2]);
+    }
 
     #region Manage Time
     private void SetTime(int days, int hours, int minutes, int seconds)
@@ -84,7 +134,7 @@ public class UIManager : MonoBehaviour
         secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
     }
     
-    public void UpdateTime(string[] currentData)
+    private void UpdateTimeFromData(string[] currentData)
     {
         const int minutesPerDay = 1440;
         const int minutesPerHour = 60;
@@ -126,13 +176,13 @@ public class UIManager : MonoBehaviour
     {
         string units;
         
-        if (_currentLengthUnit == LengthUnit.Kilometers)
+        if (_currentLengthUnit == UnitSystem.Metric)
         {
             units = " km";
             xCoordinate.text = x.ToString("N0") + units;
             yCoordinate.text = y.ToString("N0") + units;
             zCoordinate.text = z.ToString("N0") + units;
-        } else if (_currentLengthUnit == LengthUnit.Miles)
+        } else if (_currentLengthUnit == UnitSystem.Imperial)
         {
             units = " mi";
             xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(x).ToString("N0") + units;
@@ -141,7 +191,7 @@ public class UIManager : MonoBehaviour
         }
     }
     
-    public void UpdateCoordinates(string[] currentData)
+    private void UpdateCoordinatesFromData(string[] currentData)
     {
         float x;
         float y;
@@ -166,11 +216,11 @@ public class UIManager : MonoBehaviour
     #region Update Distances
     private void SetTotalDistance(float totalDistance)
     {
-        if (_currentLengthUnit == LengthUnit.Kilometers)
+        if (_currentLengthUnit == UnitSystem.Metric)
         {
             totalDistanceTravelledText.text = totalDistance.ToString(ThreeDecimalPlaces) + " km";
         }
-        else if (_currentLengthUnit == LengthUnit.Miles)
+        else if (_currentLengthUnit == UnitSystem.Imperial)
         {
             totalDistanceTravelledText.text = UnitAndCoordinateConverter.KilometersToMiles(totalDistance).ToString(ThreeDecimalPlaces) + " mi";
         }
@@ -178,10 +228,10 @@ public class UIManager : MonoBehaviour
 
     private void SetDistanceFromEarth(float fromEarth)
     {
-        if (_currentLengthUnit == LengthUnit.Kilometers)
+        if (_currentLengthUnit == UnitSystem.Metric)
         {
             distanceFromEarthText.text = fromEarth.ToString(ThreeDecimalPlaces) + " km";
-        } else if (_currentLengthUnit == LengthUnit.Miles)
+        } else if (_currentLengthUnit == UnitSystem.Imperial)
         {
             distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(fromEarth).ToString(ThreeDecimalPlaces) + " mi";
         }
@@ -189,11 +239,11 @@ public class UIManager : MonoBehaviour
 
     private void SetDistanceFromMoon(float fromMoon)
     {
-        if (_currentLengthUnit == LengthUnit.Kilometers)
+        if (_currentLengthUnit == UnitSystem.Metric)
         {
             distanceFromMoonText.text = fromMoon.ToString(ThreeDecimalPlaces) + " km";
         }
-        else if (_currentLengthUnit == LengthUnit.Miles)
+        else if (_currentLengthUnit == UnitSystem.Imperial)
         {
             distanceFromMoonText.text = UnitAndCoordinateConverter.KilometersToMiles(fromMoon).ToString(ThreeDecimalPlaces) + " mi";
         }
@@ -204,11 +254,6 @@ public class UIManager : MonoBehaviour
         SetTotalDistance(totalDistance);
         SetDistanceFromEarth(fromEarth);
         SetDistanceFromMoon(fromMoon);
-    }
-
-    public void UpdateDistances(float[] distanceData)
-    {
-        SetDistances(distanceData[0], distanceData[1], distanceData[2]);
     }
     #endregion
 
@@ -327,8 +372,8 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    private enum LengthUnit {
-        Kilometers,
-        Miles
+    private enum UnitSystem {
+        Metric,
+        Imperial
     }
 }
