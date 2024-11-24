@@ -23,7 +23,7 @@ public class DataManager : MonoBehaviour
     [Tooltip("The acceleration of the speed."), Range(10, 50)]
     [SerializeField] private int updateSpeedAcceleration;
 
-    [Header("Data")]
+    [Header("Trajectory Data")]
     [SerializeField] private TextAsset dataFile;
 
     public static event Action<List<string[]>> OnDataLoaded;
@@ -31,8 +31,6 @@ public class DataManager : MonoBehaviour
 
     [HideInInspector] public static DataManager Instance { get; private set; }
     
-    // WE CAN'T USE FILE PATHS IN BUILD
-    //private const string TrajectoryPointsFilepath = "Assets/Data/hsdata.csv";
     private static List<string[]> dataValues { get; set; }
     
     private int _currentDataIndex;

@@ -118,7 +118,7 @@ public class UIManager : MonoBehaviour
         UpdateCoordinatesFromData(data);
         UpdateTimeFromData(data);
     }
-
+    
     private void UpdateUIDistances(float[] distances)
     {
         SetDistances(distances[0], distances[1], distances[2]);

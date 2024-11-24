@@ -90,6 +90,24 @@ public class SatelliteManager : MonoBehaviour
     }
     
     /// <summary>
+    /// Updates the position of the Orion capsule
+    /// </summary>
+    public void UpdateSatellitePosition()
+    {
+        if (futureTrajectory.positionCount <= 0)
+        {
+            return;
+        }
+        // The second point of the future trajectory is chosen because the first point is the satellite's position.
+        Vector3 currentSatellitePosition = futureTrajectory.GetPosition(0);
+        Vector3 newSatellitePosition = futureTrajectory.GetPosition(1);
+        // The distance is calculated by taking the current point.
+        _totalDistance += Vector3.Distance(currentSatellitePosition, newSatellitePosition);
+        // The satellite transforms to its new position.
+        satellite.transform.position = newSatellitePosition;
+    }
+    
+    /// <summary>
     /// Updates the trajectory of the Orion capsule
     /// </summary>
     public void UpdateTrajectory()
@@ -106,28 +124,12 @@ public class SatelliteManager : MonoBehaviour
         futureTrajectory.positionCount--;
         futureTrajectory.SetPositions(futureTrajectoryPoints);
     }
-
-    /// <summary>
-    /// Updates the position of the Orion capsule
-    /// </summary>
-    public void UpdateSatellitePosition()
-    {
-        if (futureTrajectory.positionCount <= 0)
-        {
-            return;
-        }
-        // The second point of the future trajectory is chosen because the first point is the satellite's position.
-        Vector3 newSatellitePosition = futureTrajectory.GetPosition(1);
-        _totalDistance += Vector3.Distance(satellite.transform.position, newSatellitePosition);
-        satellite.transform.position = newSatellitePosition;
-    }
     
     public void CalculateDistance()
     {
         float distanceToEarth = Vector3.Distance(satellite.transform.position, earth.transform.position);
         float distanceToMoon = Vector3.Distance(satellite.transform.position, moon.transform.position);
         float[] distances = { _totalDistance, distanceToEarth, distanceToMoon };
-        //onDistanceCalculated.Invoke(distances);
         OnDistanceCalculated?.Invoke(distances);
     }
 }
