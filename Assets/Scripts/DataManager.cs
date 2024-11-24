@@ -23,12 +23,16 @@ public class DataManager : MonoBehaviour
     [Tooltip("The acceleration of the speed."), Range(10, 50)]
     [SerializeField] private int updateSpeedAcceleration;
 
+    [Header("Data")]
+    [SerializeField] private TextAsset dataFile;
+
     public static event Action<List<string[]>> OnDataLoaded;
     public static event Action<string[]> OnDataUpdated;
 
     [HideInInspector] public static DataManager Instance { get; private set; }
     
-    private const string TrajectoryPointsFilepath = "Assets/Data/hsdata.csv";
+    // WE CAN'T USE FILE PATHS IN BUILD
+    //private const string TrajectoryPointsFilepath = "Assets/Data/hsdata.csv";
     private static List<string[]> dataValues { get; set; }
     
     private int _currentDataIndex;
@@ -117,7 +121,7 @@ public class DataManager : MonoBehaviour
 
     private List<string[]> ReadData()
     {
-        dataValues = CsvReader.ReadCsvFile(TrajectoryPointsFilepath);
+        dataValues = CsvReader.ReadCsvFile(dataFile);
         dataValues.RemoveAt(0);
 
         return dataValues;
