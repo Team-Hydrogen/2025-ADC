@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +11,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;
 
     [Header("Antennas")]
-    [SerializeField] Transform antennasGrid;
-    [SerializeField] private List<string> antennaNames = new List<string>();
-    [SerializeField] private List<Transform> antennaLabelObjects = new List<Transform>();
-    [SerializeField] private List<Color> antennaTextColor = new List<Color>();
-    [SerializeField] private Color disabledAntennaTextColor = new Color(0.8f, 0.8f, 0.8f);
+    [SerializeField] private Transform antennasGrid;
+    [SerializeField] private List<string> antennaNames = new();
+    [SerializeField] private List<Transform> antennaLabelObjects = new();
+    [SerializeField] private List<Color> antennaBackgroundColor = new();
+    [SerializeField] private Color disabledAntennaBackgroundColor = new(0.8f, 0.8f, 0.8f);
 
     [Header("Time Counter")]
     [SerializeField] private TextMeshProUGUI dayCounter;
@@ -37,17 +36,15 @@ public class UIManager : MonoBehaviour
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
     [SerializeField] private float inputInactivityTime;
-    [Range(0, 1f)]
-    [SerializeField] private float minimumUIVisiblity;
-
-    [HideInInspector] public static UIManager Instance { get; private set; }
+    [SerializeField, Range(0, 1f)] private float minimumUIVisibility;
+    
+    public static UIManager Instance { get; private set; }
 
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0f;
     private bool _isFadingOut = false;
 
     private UnitSystem _currentLengthUnit = UnitSystem.Metric;
-    private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
 
     private void Awake()
@@ -113,10 +110,11 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    private void UpdateUIFromData(string[] data)
+    private void UpdateUIFromData(int currentIndex)
     {
-        UpdateCoordinatesFromData(data);
-        UpdateTimeFromData(data);
+        UpdateCoordinatesFromData(currentIndex);
+        UpdateTimeFromData(currentIndex);
+        UpdateAntennaFromData(currentIndex);
     }
     
     private void UpdateUIDistances(float[] distances)
@@ -134,7 +132,7 @@ public class UIManager : MonoBehaviour
         secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
     }
     
-    private void UpdateTimeFromData(string[] currentData)
+    private void UpdateTimeFromData(int currentIndex)
     {
         const int minutesPerDay = 1440;
         const int minutesPerHour = 60;
@@ -143,7 +141,7 @@ public class UIManager : MonoBehaviour
         float totalTimeInMinutes;
         try
         {
-            totalTimeInMinutes = float.Parse(currentData[0]);
+            totalTimeInMinutes = float.Parse(DataManager.trajectoryDataValues[currentIndex][0]);
         }
         catch
         {
@@ -191,7 +189,7 @@ public class UIManager : MonoBehaviour
         }
     }
     
-    private void UpdateCoordinatesFromData(string[] currentData)
+    private void UpdateCoordinatesFromData(int currentIndex)
     {
         float x;
         float y;
@@ -199,9 +197,9 @@ public class UIManager : MonoBehaviour
 
         try
         {
-            x = float.Parse(currentData[1]);
-            y = float.Parse(currentData[2]);
-            z = float.Parse(currentData[3]);
+            x = float.Parse(DataManager.trajectoryDataValues[currentIndex][1]);
+            y = float.Parse(DataManager.trajectoryDataValues[currentIndex][2]);
+            z = float.Parse(DataManager.trajectoryDataValues[currentIndex][3]);
         }
         catch
         {
@@ -258,7 +256,16 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Manage Antennas
-    public void UpdateAntenna(string antennaName, int connectionSpeed)
+
+    private void UpdateAntennaFromData(int currentIndex)
+    {
+        UpdateAntenna(
+            DataManager.linkBudgetDataValues[currentIndex][1],
+            float.Parse(DataManager.linkBudgetDataValues[currentIndex][2])
+        );
+    }
+    
+    private void UpdateAntenna(string antennaName, float connectionSpeed)
     {
         const string connectionSpeedUnit = "kbps";
 
@@ -275,32 +282,34 @@ public class UIManager : MonoBehaviour
 
         if (connectionSpeed == 0)
         {
-            titleText.color = disabledAntennaTextColor;
-            antennaLabel.GetComponentInChildren<Image>().color = disabledAntennaTextColor;
+            titleText.color = disabledAntennaBackgroundColor;
+            antennaLabel.GetComponentInChildren<Image>().color = disabledAntennaBackgroundColor;
 
             for (int i = 1; i < antennaTexts.Length; i++)
             {
-                antennaTexts[i].color = disabledAntennaTextColor;
+                antennaTexts[i].color = disabledAntennaBackgroundColor;
                 antennaTexts[i].text = "";
             }
 
             return;
         }
 
-        for (int i = 0; i < antennaTexts.Length; i++)
+        foreach (var text in antennaTexts)
         {
-            antennaTexts[i].color = antennaTextColor[antennaIndex];
+            text.color = antennaBackgroundColor[antennaIndex];
         }
 
         colonText.text = ":";
         connectionSpeedText.text = connectionSpeed.ToString("N0");
         unitsText.text = " " + connectionSpeedUnit;
-        antennaLabel.GetComponentInChildren<Image>().color = antennaTextColor[antennaIndex];
+        antennaLabel.GetComponentInChildren<Image>().color = antennaBackgroundColor[antennaIndex];
 
         PrioritizeAntennas();
     }
 
-    // Reorders antenna labels by distance, by changing hierarchy.
+    /// <summary>
+    /// Reorders antenna labels by distance, by changing hierarchy.
+    /// </summary>
     private void PrioritizeAntennas()
     {
         int childCount = antennasGrid.childCount;
@@ -357,7 +366,7 @@ public class UIManager : MonoBehaviour
 
     private void FadeUIOut()
     {
-        canvasGroup.alpha = Mathf.Max(minimumUIVisiblity, canvasGroup.alpha - uiFadeSpeed * Time.deltaTime);
+        canvasGroup.alpha = Mathf.Max(minimumUIVisibility, canvasGroup.alpha - uiFadeSpeed * Time.deltaTime);
     }
 
     private IEnumerator FadeUIIn()
