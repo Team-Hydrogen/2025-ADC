@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class SatelliteManager : MonoBehaviour
 {
@@ -22,8 +20,8 @@ public class SatelliteManager : MonoBehaviour
 
     private float _totalDistance = 0.0f;
 
-    public static Action<float[]> OnDistanceCalculated;
-    [HideInInspector] public static SatelliteManager Instance { get; private set; }
+    public static Action<float[]> OnDistanceCalculated; 
+    public static SatelliteManager Instance { get; private set; }
 
     private void Awake()
     {
@@ -48,7 +46,7 @@ public class SatelliteManager : MonoBehaviour
         DataManager.OnDataUpdated -= UpdateSatelliteFromData;
     }
 
-    private void UpdateSatelliteFromData(string[] data)
+    private void UpdateSatelliteFromData(int currentIndex)
     {
         UpdateSatellitePosition();
         UpdateTrajectory();
@@ -59,7 +57,7 @@ public class SatelliteManager : MonoBehaviour
     /// <summary>
     /// Plots the provided data points into a visual trajectory. PlotTrajectory() is meant to be run only once.
     /// </summary>
-    public void PlotTrajectory(List<string[]> pointsData)
+    private void PlotTrajectory(List<string[]> pointsData)
     {
         // An array of trajectory points is constructed by reading the processed CSV file.
         int numberOfPoints = pointsData.Count;
@@ -92,7 +90,7 @@ public class SatelliteManager : MonoBehaviour
     /// <summary>
     /// Updates the position of the Orion capsule
     /// </summary>
-    public void UpdateSatellitePosition()
+    private void UpdateSatellitePosition()
     {
         if (futureTrajectory.positionCount <= 0)
         {
@@ -110,7 +108,7 @@ public class SatelliteManager : MonoBehaviour
     /// <summary>
     /// Updates the trajectory of the Orion capsule
     /// </summary>
-    public void UpdateTrajectory()
+    private void UpdateTrajectory()
     {
         // The current future trajectory is loaded.
         Vector3[] futureTrajectoryPoints = new Vector3[futureTrajectory.positionCount];
@@ -125,7 +123,7 @@ public class SatelliteManager : MonoBehaviour
         futureTrajectory.SetPositions(futureTrajectoryPoints);
     }
     
-    public void CalculateDistance()
+    private void CalculateDistance()
     {
         float distanceToEarth = Vector3.Distance(satellite.transform.position, earth.transform.position);
         float distanceToMoon = Vector3.Distance(satellite.transform.position, moon.transform.position);

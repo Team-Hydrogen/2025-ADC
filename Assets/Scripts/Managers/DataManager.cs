@@ -28,12 +28,12 @@ public class DataManager : MonoBehaviour
     [SerializeField] private int updateSpeedAcceleration;
 
     public static event Action<List<string[]>> OnDataLoaded;
-    public static event Action<string[]> OnDataUpdated;
+    public static event Action<int> OnDataUpdated;
 
     [HideInInspector] public static DataManager Instance { get; private set; }
     
-    private static List<string[]> trajectoryDataValues { get; set; }
-    private static List<string[]> linkBudgetDataValues { get; set; }
+    public static List<string[]> trajectoryDataValues { get; private set; }
+    public static List<string[]> linkBudgetDataValues { get; private set; }
     
     private int _currentDataIndex;
     private string[] _currentData;
@@ -74,7 +74,7 @@ public class DataManager : MonoBehaviour
         
         if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < trajectoryDataValues.Count)
         {
-            OnDataUpdated?.Invoke(trajectoryDataValues[_currentDataIndex]);
+            OnDataUpdated?.Invoke(_currentDataIndex);
             _currentDataIndex++;
             _timeSinceLastDataPoint -= _timePerDataPoint;
         }
