@@ -43,6 +43,7 @@ public class DataManager : MonoBehaviour
     private float _timePerDataPoint;
 
     List<Vector3> positionVectorsForGizmos;
+    
     private void Awake()
     {
         if (Instance != null && Instance != this)
