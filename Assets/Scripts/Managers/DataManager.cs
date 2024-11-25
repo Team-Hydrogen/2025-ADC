@@ -9,6 +9,10 @@ using UnityEngine.Serialization;
 
 public class DataManager : MonoBehaviour
 {
+    [Header("Data Files")]
+    [SerializeField] private TextAsset trajectoryDataFile;
+    [SerializeField] private TextAsset linkBudgetDataFile;
+    
     [Header("Scene View Settings")]
     [SerializeField] private bool drawGizmos;
     [SerializeField] private Color beginningGizmosLineColor;
@@ -23,15 +27,13 @@ public class DataManager : MonoBehaviour
     [Tooltip("The acceleration of the speed."), Range(10, 50)]
     [SerializeField] private int updateSpeedAcceleration;
 
-    [Header("Trajectory Data")]
-    [SerializeField] private TextAsset dataFile;
-
     public static event Action<List<string[]>> OnDataLoaded;
     public static event Action<string[]> OnDataUpdated;
 
     [HideInInspector] public static DataManager Instance { get; private set; }
     
-    private static List<string[]> dataValues { get; set; }
+    private static List<string[]> trajectoryDataValues { get; set; }
+    private static List<string[]> linkBudgetDataValues { get; set; }
     
     private int _currentDataIndex;
     private string[] _currentData;
@@ -58,9 +60,10 @@ public class DataManager : MonoBehaviour
         _currentUpdateSpeed = initialUpdateSpeed;
         _timePerDataPoint =  1.0f / _currentUpdateSpeed;
 
-        dataValues = ReadData();
+        trajectoryDataValues = ReadTrajectoryData();
+        linkBudgetDataValues = ReadLinkBudgetData();
 
-        OnDataLoaded?.Invoke(dataValues);
+        OnDataLoaded?.Invoke(trajectoryDataValues);
     }
 
     private void Update()
@@ -68,9 +71,9 @@ public class DataManager : MonoBehaviour
         // The tick variable updates.
         _timeSinceLastDataPoint += Time.deltaTime;
         
-        if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < dataValues.Count)
+        if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < trajectoryDataValues.Count)
         {
-            OnDataUpdated?.Invoke(dataValues[_currentDataIndex]);
+            OnDataUpdated?.Invoke(trajectoryDataValues[_currentDataIndex]);
             _currentDataIndex++;
             _timeSinceLastDataPoint -= _timePerDataPoint;
         }
@@ -94,7 +97,9 @@ public class DataManager : MonoBehaviour
 
     }
 
-    // DRAW TRAJECTORY IN EDITOR
+    /// <summary>
+    /// Draws trajectory in the editor.
+    /// </summary>
     private void OnDrawGizmos()
     {
         if (!drawGizmos)
@@ -117,12 +122,22 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    private List<string[]> ReadData()
+    /// <summary>
+    /// Reads the trajectory data.
+    /// </summary>
+    /// <returns>A list of String arrays representing the CSV file</returns>
+    private List<string[]> ReadTrajectoryData()
     {
-        dataValues = CsvReader.ReadCsvFile(dataFile);
-        dataValues.RemoveAt(0);
-
-        return dataValues;
+        trajectoryDataValues = CsvReader.ReadCsvFile(trajectoryDataFile);
+        trajectoryDataValues.RemoveAt(0);
+        return trajectoryDataValues;
+    }
+    
+    private List<string[]> ReadLinkBudgetData()
+    {
+        linkBudgetDataValues = CsvReader.ReadCsvFile(linkBudgetDataFile);
+        linkBudgetDataValues.RemoveAt(0);
+        return linkBudgetDataValues;
     }
 
     private void OnValidate()
@@ -136,16 +151,16 @@ public class DataManager : MonoBehaviour
     [ContextMenu("Reload Gizmos Path Data")]
     private void LoadGizmosPathData()
     {
-        dataValues = ReadData();
+        trajectoryDataValues = ReadTrajectoryData();
 
         float trajectoryScale = 0.01f;
 
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = dataValues.Count;
+        int numberOfPoints = trajectoryDataValues.Count;
         Vector3[] trajectoryPoints = new Vector3[numberOfPoints];
-        for (int i = 0; i < dataValues.Count; i++)
+        for (int i = 0; i < trajectoryDataValues.Count; i++)
         {
-            string[] point = dataValues[i];
+            string[] point = trajectoryDataValues[i];
 
             try
             {
