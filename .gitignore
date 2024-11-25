@@ -79,3 +79,4 @@ crashlytics-build.properties
 # Models can get excessive in size.
 *.blend
 *.fbx
+/[Aa]ssets/[Mm]odels/
