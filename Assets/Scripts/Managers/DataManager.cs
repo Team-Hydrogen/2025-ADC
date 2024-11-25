@@ -1,11 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 public class DataManager : MonoBehaviour
 {
@@ -90,12 +86,12 @@ public class DataManager : MonoBehaviour
 
     public void SkipBackward(float timeInSeconds)
     {
-
+        _currentDataIndex = Mathf.Max(0, _currentDataIndex - 50);
     }
 
     public void SkipForward(float timeInSeconds)
     {
-
+        _currentDataIndex = Mathf.Min(_currentDataIndex + 50, trajectoryDataValues.Count - 1);
     }
 
     /// <summary>
