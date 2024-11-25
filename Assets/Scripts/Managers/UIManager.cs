@@ -264,17 +264,16 @@ public class UIManager : MonoBehaviour
             float.Parse(DataManager.linkBudgetDataValues[currentIndex][2])
         );
     }
-    
+
     private void UpdateAntenna(string antennaName, float connectionSpeed)
     {
         const string connectionSpeedUnit = "kbps";
-
+        
         // Gets the index of the antenna name and maps it to its text object.
         int antennaIndex = antennaNames.IndexOf(antennaName);
         Transform antennaLabel = antennaLabelObjects[antennaIndex];
 
         TextMeshProUGUI[] antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
-
         TextMeshProUGUI titleText = antennaTexts[0];
         TextMeshProUGUI colonText = antennaTexts[1];
         TextMeshProUGUI connectionSpeedText = antennaTexts[2];
@@ -287,17 +286,17 @@ public class UIManager : MonoBehaviour
 
             for (int i = 1; i < antennaTexts.Length; i++)
             {
-                antennaTexts[i].color = disabledAntennaBackgroundColor;
+                // antennaTexts[i].color = disabledAntennaBackgroundColor;
                 antennaTexts[i].text = "";
             }
 
             return;
         }
 
-        foreach (var text in antennaTexts)
-        {
-            text.color = antennaBackgroundColor[antennaIndex];
-        }
+        // foreach (var text in antennaTexts)
+        // {
+        //     text.color = antennaBackgroundColor[antennaIndex];
+        // }
 
         colonText.text = ":";
         connectionSpeedText.text = connectionSpeed.ToString("N0");
@@ -342,7 +341,7 @@ public class UIManager : MonoBehaviour
     {
         if (Input.anyKey || Input.mousePosition != _lastMousePosition)
         {
-            _inactivityTimer = 0f;
+            _inactivityTimer = 0.0f;
             _isFadingOut = false;
             StartCoroutine(FadeUIIn());
         }
