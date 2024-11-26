@@ -14,12 +14,16 @@ public class SatelliteManager : MonoBehaviour
     [SerializeField] private GameObject earth;
     [SerializeField] private GameObject moon;
     
-    [Header("Trajectory")]
-    [SerializeField] private LineRenderer pastTrajectory;
-    [SerializeField] private LineRenderer futureTrajectory;
-
+    [Header("Nominal Trajectory")]
+    [SerializeField] private LineRenderer pastNominalTrajectory;
+    [SerializeField] private LineRenderer futureNominalTrajectory;
+    
+    [Header("Offnominal Trajectory")]
+    [SerializeField] private LineRenderer pastOffnominalTrajectory;
+    [SerializeField] private LineRenderer futureOffnominalTrajectory;
+    
     private float _totalDistance = 0.0f;
-
+    
     public static Action<float[]> OnDistanceCalculated; 
     public static SatelliteManager Instance { get; private set; }
 
@@ -36,20 +40,23 @@ public class SatelliteManager : MonoBehaviour
 
     private void OnEnable()
     {
-        DataManager.OnDataLoaded += PlotTrajectory;
+        DataManager.OnDataLoaded += PlotNominalTrajectory;
+        DataManager.OnDataLoaded += PlotOffnominalTrajectory;
         DataManager.OnDataUpdated += UpdateSatelliteFromData;
     }
 
     private void OnDisable()
     {
-        DataManager.OnDataLoaded -= PlotTrajectory;
+        DataManager.OnDataLoaded -= PlotNominalTrajectory;
+        DataManager.OnDataLoaded -= PlotOffnominalTrajectory;
         DataManager.OnDataUpdated -= UpdateSatelliteFromData;
     }
 
     private void UpdateSatelliteFromData(int currentIndex)
     {
         UpdateSatellitePosition();
-        UpdateTrajectory();
+        UpdateNominalTrajectory();
+        UpdateOffnominalTrajectory();
         CalculateDistance();
     }
 
@@ -57,14 +64,14 @@ public class SatelliteManager : MonoBehaviour
     /// <summary>
     /// Plots the provided data points into a visual trajectory. PlotTrajectory() is meant to be run only once.
     /// </summary>
-    private void PlotTrajectory(List<string[]> pointsData)
+    private void PlotNominalTrajectory()
     {
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = pointsData.Count;
+        int numberOfPoints = DataManager.nominalTrajectoryDataValues.Count;
         Vector3[] futureTrajectoryPoints = new Vector3[numberOfPoints];
-        for (int index = 0; index < pointsData.Count; index++)
+        for (int index = 0; index < numberOfPoints; index++)
         {
-            string[] point = pointsData[index];
+            string[] point = DataManager.nominalTrajectoryDataValues[index];
 
             try
             {
@@ -80,11 +87,45 @@ public class SatelliteManager : MonoBehaviour
             }
         }
         // The first point of the pastTrajectory is added.
-        pastTrajectory.positionCount = 1;
-        pastTrajectory.SetPosition(0, futureTrajectoryPoints[0]);
+        pastNominalTrajectory.positionCount = 1;
+        pastNominalTrajectory.SetPosition(0, futureTrajectoryPoints[0]);
         // The processed points are pushed to the future trajectory line.
-        futureTrajectory.positionCount = numberOfPoints;
-        futureTrajectory.SetPositions(futureTrajectoryPoints);
+        futureNominalTrajectory.positionCount = numberOfPoints;
+        futureNominalTrajectory.SetPositions(futureTrajectoryPoints);
+    }
+    
+    /// <param name="pointsData">List containing data points in cartesian coordinates</param>
+    /// <summary>
+    /// Plots the provided data points into a visual trajectory. PlotTrajectory() is meant to be run only once.
+    /// </summary>
+    private void PlotOffnominalTrajectory()
+    {
+        // An array of trajectory points is constructed by reading the processed CSV file.
+        int numberOfPoints = DataManager.offnominalTrajectoryDataValues.Count;
+        Vector3[] futureTrajectoryPoints = new Vector3[numberOfPoints];
+        for (int index = 0; index < numberOfPoints; index++)
+        {
+            string[] point = DataManager.offnominalTrajectoryDataValues[index];
+
+            try
+            {
+                Vector3 pointAsVector = new Vector3(
+                    float.Parse(point[1]) * trajectoryScale,
+                    float.Parse(point[2]) * trajectoryScale,
+                    float.Parse(point[3]) * trajectoryScale);
+                futureTrajectoryPoints[index] = pointAsVector;
+            }
+            catch
+            {
+                Debug.LogWarning("No positional data on line " + index + "!");
+            }
+        }
+        // The first point of the pastTrajectory is added.
+        pastOffnominalTrajectory.positionCount = 1;
+        pastOffnominalTrajectory.SetPosition(0, futureTrajectoryPoints[0]);
+        // The processed points are pushed to the future trajectory line.
+        futureOffnominalTrajectory.positionCount = numberOfPoints;
+        futureOffnominalTrajectory.SetPositions(futureTrajectoryPoints);
     }
     
     /// <summary>
@@ -92,13 +133,13 @@ public class SatelliteManager : MonoBehaviour
     /// </summary>
     private void UpdateSatellitePosition()
     {
-        if (futureTrajectory.positionCount <= 0)
+        if (futureNominalTrajectory.positionCount <= 0)
         {
             return;
         }
         // The second point of the future trajectory is chosen because the first point is the satellite's position.
-        Vector3 currentSatellitePosition = futureTrajectory.GetPosition(0);
-        Vector3 newSatellitePosition = futureTrajectory.GetPosition(1);
+        Vector3 currentSatellitePosition = futureNominalTrajectory.GetPosition(0);
+        Vector3 newSatellitePosition = futureNominalTrajectory.GetPosition(1);
         // The distance is calculated by taking the current point.
         _totalDistance += Vector3.Distance(currentSatellitePosition, newSatellitePosition);
         // The satellite transforms to its new position.
@@ -108,19 +149,37 @@ public class SatelliteManager : MonoBehaviour
     /// <summary>
     /// Updates the trajectory of the Orion capsule
     /// </summary>
-    private void UpdateTrajectory()
+    private void UpdateNominalTrajectory()
     {
         // The current future trajectory is loaded.
-        Vector3[] futureTrajectoryPoints = new Vector3[futureTrajectory.positionCount];
-        futureTrajectory.GetPositions(futureTrajectoryPoints);
+        Vector3[] futureTrajectoryPoints = new Vector3[futureNominalTrajectory.positionCount];
+        futureNominalTrajectory.GetPositions(futureTrajectoryPoints);
         // The past trajectory's list of positions expands, so the next future data point is added.
         Vector3 nextTrajectoryPoint = futureTrajectoryPoints[1];
-        pastTrajectory.positionCount++;
-        pastTrajectory.SetPosition(pastTrajectory.positionCount - 1, nextTrajectoryPoint);
+        pastNominalTrajectory.positionCount++;
+        pastNominalTrajectory.SetPosition(pastNominalTrajectory.positionCount - 1, nextTrajectoryPoint);
         // The next point in the future trajectory gets removed.
         futureTrajectoryPoints = futureTrajectoryPoints[1..^1];
-        futureTrajectory.positionCount--;
-        futureTrajectory.SetPositions(futureTrajectoryPoints);
+        futureNominalTrajectory.positionCount--;
+        futureNominalTrajectory.SetPositions(futureTrajectoryPoints);
+    }
+    
+    /// <summary>
+    /// Updates the trajectory of the Orion capsule
+    /// </summary>
+    private void UpdateOffnominalTrajectory()
+    {
+        // The current future trajectory is loaded.
+        Vector3[] futureTrajectoryPoints = new Vector3[futureOffnominalTrajectory.positionCount];
+        futureOffnominalTrajectory.GetPositions(futureTrajectoryPoints);
+        // The past trajectory's list of positions expands, so the next future data point is added.
+        Vector3 nextTrajectoryPoint = futureTrajectoryPoints[1];
+        pastOffnominalTrajectory.positionCount++;
+        pastOffnominalTrajectory.SetPosition(pastOffnominalTrajectory.positionCount - 1, nextTrajectoryPoint);
+        // The next point in the future trajectory gets removed.
+        futureTrajectoryPoints = futureTrajectoryPoints[1..^1];
+        futureOffnominalTrajectory.positionCount--;
+        futureOffnominalTrajectory.SetPositions(futureTrajectoryPoints);
     }
     
     private void CalculateDistance()
