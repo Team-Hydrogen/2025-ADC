@@ -15,12 +15,12 @@ public struct MissionStage
 
     private static readonly Dictionary<StageTypes, Color> stageColors = new Dictionary<StageTypes, Color>
     {
-        { StageTypes.Launch, Color.red },
-        { StageTypes.OrbitingEarth, Color.yellow },
-        { StageTypes.TravellingToMoon, Color.green },
-        { StageTypes.FlyingByMoon, Color.blue },
-        { StageTypes.ReturningToEarth, Color.cyan },
-        { StageTypes.ReEntryAndSplashdown, Color.magenta }
+        { StageTypes.Launch, new Color(1f, 0, 0) },
+        { StageTypes.OrbitingEarth, new Color(1f, 0.76f, 0f) },
+        { StageTypes.TravellingToMoon, new Color(0.55f, 0.93f, 0.18f) },
+        { StageTypes.FlyingByMoon, new Color(0.26f, 0.68f, 0.95f) },
+        { StageTypes.ReturningToEarth, new Color(0.93f, 0.26f, 0.95f) },
+        { StageTypes.ReEntryAndSplashdown, new Color(1, 0.59f, 0.59f) }
     };
 
     private static readonly Dictionary<StageTypes, string> stageNames = new Dictionary<StageTypes, string>
