@@ -8,13 +8,13 @@ public class DataManager : MonoBehaviour
     [Header("Data Files")]
     [SerializeField] private TextAsset trajectoryDataFile;
     [SerializeField] private TextAsset linkBudgetDataFile;
-    
+
     [Header("Scene View Settings")]
     [SerializeField] private bool drawGizmos;
     [SerializeField] private Color beginningGizmosLineColor;
     [SerializeField] private Color endGizmosLineColor;
     [SerializeField, Range(1f, 100f)] private int gizmosLevelOfDetail;
-    
+
     [Header("Settings")]
     [Tooltip("How fast the data manager updates in data points per second initially"), Range(0, 400)]
     [SerializeField] private int initialUpdateSpeed;
@@ -23,16 +23,21 @@ public class DataManager : MonoBehaviour
     [Tooltip("The acceleration of the speed."), Range(10, 50)]
     [SerializeField] private int updateSpeedAcceleration;
 
+    [Header("Stages")]
+    [SerializeField] private List<MissionStage> stages;
+
     public static event Action<List<string[]>> OnDataLoaded;
     public static event Action<int> OnDataUpdated;
+    public static event Action<MissionStage> OnMissionStageUpdated;
 
-    [HideInInspector] public static DataManager Instance { get; private set; }
+    public static DataManager Instance { get; private set; }
     
     public static List<string[]> trajectoryDataValues { get; private set; }
     public static List<string[]> linkBudgetDataValues { get; private set; }
     
     private int _currentDataIndex;
     private string[] _currentData;
+    private MissionStage _currentMissionStage;
     
     private float _currentUpdateSpeed;
     private float _timeSinceLastDataPoint = 0.0f;
@@ -82,6 +87,13 @@ public class DataManager : MonoBehaviour
             _currentUpdateSpeed = maximumUpdateSpeed;
         }
         _timePerDataPoint =  1.0f / _currentUpdateSpeed;
+
+        print(_currentDataIndex);
+        if (!_currentMissionStage.Equals(GetCurrentMissionStage()))
+        {
+            _currentMissionStage = GetCurrentMissionStage();
+            OnMissionStageUpdated?.Invoke(_currentMissionStage);
+        }
     }
 
     public void SkipBackward(float timeInSeconds)
@@ -92,6 +104,26 @@ public class DataManager : MonoBehaviour
     public void SkipForward(float timeInSeconds)
     {
         _currentDataIndex = Mathf.Min(_currentDataIndex + 50, trajectoryDataValues.Count - 1);
+    }
+
+    private MissionStage GetCurrentMissionStage()
+    {
+        MissionStage latestStage = new MissionStage(_currentDataIndex, MissionStage.StageTypes.None);
+
+        for (int i = 0; i < stages.Count; i++)
+        {
+            if (_currentDataIndex >= stages[i].startDataIndex)
+            {
+                latestStage = stages[i];
+            }
+
+            else if (_currentDataIndex < stages[i].startDataIndex)
+            {
+                return latestStage;
+            }
+        }
+
+        return latestStage;
     }
 
     /// <summary>
