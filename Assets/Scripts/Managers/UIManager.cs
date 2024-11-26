@@ -33,6 +33,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI distanceFromEarthText;
     [SerializeField] private TextMeshProUGUI distanceFromMoonText;
 
+    [Header("Mission Stage")]
+    [SerializeField] private TextMeshProUGUI missionStageText;
+
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
     [SerializeField] private float inputInactivityTime;
@@ -61,12 +64,14 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         DataManager.OnDataUpdated += UpdateUIFromData;
+        DataManager.OnMissionStageUpdated += UpdateMissionStage;
         SatelliteManager.OnDistanceCalculated += UpdateUIDistances;
     }
 
     private void OnDisable()
     {
         DataManager.OnDataUpdated -= UpdateUIFromData;
+        DataManager.OnMissionStageUpdated -= UpdateMissionStage;
         SatelliteManager.OnDistanceCalculated -= UpdateUIDistances;
     }
 
@@ -335,6 +340,12 @@ public class UIManager : MonoBehaviour
         }
     }
     #endregion
+
+    private void UpdateMissionStage(MissionStage stage)
+    {
+        missionStageText.text = stage.name;
+        missionStageText.color = stage.color;
+    }
 
     #region UI Visibility
     private void HandleUIVisibility()

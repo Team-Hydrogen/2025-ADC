@@ -2990,8 +2990,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328071167}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.70090926, y: 0, z: 0, w: 0.71325046}
-  m_LocalPosition: {x: 0, y: 0.0000076293945, z: -0.0000036358833}
+  m_LocalRotation: {x: 0.70090926, y: -0.0000009902034, z: 0.0000009730701, w: 0.71325046}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0000036358833}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3152,7 +3152,7 @@ GameObject:
   - component: {fileID: 337138356}
   - component: {fileID: 337138355}
   m_Layer: 5
-  m_Name: Status Text
+  m_Name: Mission Stage Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4010,6 +4010,7 @@ MonoBehaviour:
   totalDistanceTravelledText: {fileID: 1247634684}
   distanceFromEarthText: {fileID: 970451919}
   distanceFromMoonText: {fileID: 708056997}
+  missionStageText: {fileID: 337138355}
   uiFadeSpeed: 0.5
   inputInactivityTime: 10
   minimumUIVisibility: 0.2
@@ -4309,7 +4310,7 @@ Transform:
   m_GameObject: {fileID: 523667355}
   serializedVersion: 2
   m_LocalRotation: {x: 0.6772845, y: 0, z: 0, w: 0.73572123}
-  m_LocalPosition: {x: 0, y: 0.0000076293945, z: -0.0000036358833}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0000036358833}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5057,6 +5058,17 @@ MonoBehaviour:
   initialUpdateSpeed: 12
   maximumUpdateSpeed: 108
   updateSpeedAcceleration: 10
+  stages:
+  - startDataIndex: 0
+    stageType: 1
+  - startDataIndex: 50
+    stageType: 2
+  - startDataIndex: 1500
+    stageType: 3
+  - startDataIndex: 6000
+    stageType: 4
+  - startDataIndex: 7000
+    stageType: 5
 --- !u!1 &574056989
 GameObject:
   m_ObjectHideFlags: 0
@@ -7633,8 +7645,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922644109}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6905201, y: 0, z: 0, w: 0.7233132}
-  m_LocalPosition: {x: 0, y: 0.0000076293945, z: -0.0000036358833}
+  m_LocalRotation: {x: 0.6905201, y: -0.0000032490784, z: 0.0000031017737, w: 0.7233132}
+  m_LocalPosition: {x: 0, y: 0, z: -0.0000036358833}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
