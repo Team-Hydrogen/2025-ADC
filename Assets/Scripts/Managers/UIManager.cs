@@ -146,7 +146,7 @@ public class UIManager : MonoBehaviour
         float totalTimeInMinutes;
         try
         {
-            totalTimeInMinutes = float.Parse(DataManager.trajectoryDataValues[currentIndex][0]);
+            totalTimeInMinutes = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][0]);
         }
         catch
         {
@@ -202,9 +202,9 @@ public class UIManager : MonoBehaviour
 
         try
         {
-            x = float.Parse(DataManager.trajectoryDataValues[currentIndex][1]);
-            y = float.Parse(DataManager.trajectoryDataValues[currentIndex][2]);
-            z = float.Parse(DataManager.trajectoryDataValues[currentIndex][3]);
+            x = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][1]);
+            y = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][2]);
+            z = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][3]);
         }
         catch
         {

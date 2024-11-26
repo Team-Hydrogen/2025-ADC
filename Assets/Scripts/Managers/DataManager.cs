@@ -6,7 +6,8 @@ using UnityEngine;
 public class DataManager : MonoBehaviour
 {
     [Header("Data Files")]
-    [SerializeField] private TextAsset trajectoryDataFile;
+    [SerializeField] private TextAsset nominalTrajectoryDataFile;
+    [SerializeField] private TextAsset offnominalTrajectoryDataFile;
     [SerializeField] private TextAsset linkBudgetDataFile;
 
     [Header("Scene View Settings")]
@@ -26,13 +27,14 @@ public class DataManager : MonoBehaviour
     [Header("Stages")]
     [SerializeField] private List<MissionStage> stages;
 
-    public static event Action<List<string[]>> OnDataLoaded;
+    public static event Action OnDataLoaded;
     public static event Action<int> OnDataUpdated;
     public static event Action<MissionStage> OnMissionStageUpdated;
 
     public static DataManager Instance { get; private set; }
     
-    public static List<string[]> trajectoryDataValues { get; private set; }
+    public static List<string[]> nominalTrajectoryDataValues { get; private set; }
+    public static List<string[]> offnominalTrajectoryDataValues { get; private set; }
     public static List<string[]> linkBudgetDataValues { get; private set; }
     
     private int _currentDataIndex;
@@ -62,10 +64,11 @@ public class DataManager : MonoBehaviour
         _currentUpdateSpeed = initialUpdateSpeed;
         _timePerDataPoint =  1.0f / _currentUpdateSpeed;
 
-        trajectoryDataValues = ReadTrajectoryData();
+        nominalTrajectoryDataValues = ReadNominalTrajectoryData();
+        offnominalTrajectoryDataValues = ReadOffnominalTrajectoryData();
         linkBudgetDataValues = ReadLinkBudgetData();
 
-        OnDataLoaded?.Invoke(trajectoryDataValues);
+        OnDataLoaded?.Invoke();
     }
 
     private void Update()
@@ -73,7 +76,7 @@ public class DataManager : MonoBehaviour
         // The tick variable updates.
         _timeSinceLastDataPoint += Time.deltaTime;
         
-        if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < trajectoryDataValues.Count)
+        if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < nominalTrajectoryDataValues.Count)
         {
             OnDataUpdated?.Invoke(_currentDataIndex);
             _currentDataIndex++;
@@ -103,7 +106,7 @@ public class DataManager : MonoBehaviour
 
     public void SkipForward(float timeInSeconds)
     {
-        _currentDataIndex = Mathf.Min(_currentDataIndex + 50, trajectoryDataValues.Count - 1);
+        _currentDataIndex = Mathf.Min(_currentDataIndex + 50, nominalTrajectoryDataValues.Count - 1);
     }
 
     private MissionStage GetCurrentMissionStage()
@@ -152,14 +155,25 @@ public class DataManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Reads the trajectory data.
+    /// Reads the nominal trajectory data.
     /// </summary>
     /// <returns>A list of String arrays representing the CSV file</returns>
-    private List<string[]> ReadTrajectoryData()
+    private List<string[]> ReadNominalTrajectoryData()
     {
-        trajectoryDataValues = CsvReader.ReadCsvFile(trajectoryDataFile);
-        trajectoryDataValues.RemoveAt(0);
-        return trajectoryDataValues;
+        nominalTrajectoryDataValues = CsvReader.ReadCsvFile(nominalTrajectoryDataFile);
+        nominalTrajectoryDataValues.RemoveAt(0);
+        return nominalTrajectoryDataValues;
+    }
+    
+    /// <summary>
+    /// Reads the offnominal trajectory data.
+    /// </summary>
+    /// <returns>A list of String arrays representing the CSV file</returns>
+    private List<string[]> ReadOffnominalTrajectoryData()
+    {
+        offnominalTrajectoryDataValues = CsvReader.ReadCsvFile(offnominalTrajectoryDataFile);
+        offnominalTrajectoryDataValues.RemoveAt(0);
+        return offnominalTrajectoryDataValues;
     }
     
     private List<string[]> ReadLinkBudgetData()
@@ -180,16 +194,16 @@ public class DataManager : MonoBehaviour
     [ContextMenu("Reload Gizmos Path Data")]
     private void LoadGizmosPathData()
     {
-        trajectoryDataValues = ReadTrajectoryData();
+        nominalTrajectoryDataValues = ReadOffnominalTrajectoryData();
 
         float trajectoryScale = 0.01f;
 
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = trajectoryDataValues.Count;
+        int numberOfPoints = nominalTrajectoryDataValues.Count;
         Vector3[] trajectoryPoints = new Vector3[numberOfPoints];
-        for (int i = 0; i < trajectoryDataValues.Count; i++)
+        for (int i = 0; i < nominalTrajectoryDataValues.Count; i++)
         {
-            string[] point = trajectoryDataValues[i];
+            string[] point = nominalTrajectoryDataValues[i];
 
             try
             {
