@@ -13,24 +13,24 @@ public struct MissionStage
         this.stageType = stageType;
     }
 
-    private static readonly Dictionary<StageTypes, Color> stageColors = new Dictionary<StageTypes, Color>
+    private static readonly Dictionary<StageTypes, Color> StageColors = new()
     {
-        { StageTypes.Launch, new Color(1f, 0, 0) },
-        { StageTypes.OrbitingEarth, new Color(1f, 0.76f, 0f) },
-        { StageTypes.TravellingToMoon, new Color(0.55f, 0.93f, 0.18f) },
-        { StageTypes.FlyingByMoon, new Color(0.26f, 0.68f, 0.95f) },
-        { StageTypes.ReturningToEarth, new Color(0.93f, 0.26f, 0.95f) },
-        { StageTypes.ReEntryAndSplashdown, new Color(1, 0.59f, 0.59f) }
+        { StageTypes.Launch, new Color(0.9373f, 0.2588f, 0.2588f) },
+        { StageTypes.OrbitingEarth, new Color(1.0000f, 0.7569f, 0.0000f) },
+        { StageTypes.TravellingToMoon, new Color(0.5451f, 0.9294f, 0.1804f) },
+        { StageTypes.FlyingByMoon, new Color(0.2588f, 0.6824f, 0.9451f) },
+        { StageTypes.ReturningToEarth, new Color(0.5373f, 0.2588f, 0.9451f) },
+        { StageTypes.ReEntryAndSplashdown, new Color(0.9451f, 0.2588f, 0.5176f) }
     };
 
-    private static readonly Dictionary<StageTypes, string> stageNames = new Dictionary<StageTypes, string>
+    private static readonly Dictionary<StageTypes, string> StageNames = new()
     {
         { StageTypes.Launch, "Launch" },
         { StageTypes.OrbitingEarth, "Orbiting Earth" },
         { StageTypes.TravellingToMoon, "Travelling to Moon" },
         { StageTypes.FlyingByMoon, "Flying by Moon" },
         { StageTypes.ReturningToEarth, "Returning to Earth" },
-        { StageTypes.ReEntryAndSplashdown, "Re-Entry + Splashdown" }
+        { StageTypes.ReEntryAndSplashdown, "Re-entry + Splashdown" }
     };
 
     public enum StageTypes
@@ -67,7 +67,7 @@ public struct MissionStage
 
     public static Color GetStageColor(StageTypes stageType)
     {
-        if (stageColors.TryGetValue(stageType, out var color))
+        if (StageColors.TryGetValue(stageType, out var color))
         {
             return color;
         }
@@ -83,7 +83,7 @@ public struct MissionStage
 
     public static string GetStageName(StageTypes stageType)
     {
-        if (stageNames.TryGetValue(stageType, out var name))
+        if (StageNames.TryGetValue(stageType, out var name))
         {
             return name;
         }

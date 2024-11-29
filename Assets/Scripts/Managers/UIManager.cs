@@ -4,18 +4,27 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance { get; private set; }
+    
     [SerializeField] private CanvasGroup canvasGroup;
 
     [Header("Antennas")]
     [SerializeField] private Transform antennasGrid;
     [SerializeField] private List<string> antennaNames = new();
     [SerializeField] private List<Transform> antennaLabelObjects = new();
-    [SerializeField] private List<Color> antennaBackgroundColor = new();
-    [SerializeField] private Color disabledAntennaBackgroundColor = new(0.8f, 0.8f, 0.8f);
+    [SerializeField] private List<Color> enabledAntennaBackgroundColors = new()
+    {
+        new Color(0.2588f, 0.6824f, 0.9451f),
+        new Color(0.5451f, 0.9294f, 0.1804f),
+        new Color(1.0000f, 0.7569f, 0.0000f),
+        new Color(0.9373f, 0.2588f, 0.2588f),
+    };
+    [SerializeField] private Color disabledAntennaBackgroundColor = new(0.8431f, 0.8510f, 0.9098f);
 
     [Header("Time Counter")]
     [SerializeField] private TextMeshProUGUI dayCounter;
@@ -40,15 +49,16 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float uiFadeSpeed;
     [SerializeField] private float inputInactivityTime;
     [SerializeField, Range(0, 1f)] private float minimumUIVisibility;
-    
-    public static UIManager Instance { get; private set; }
 
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0f;
     private bool _isFadingOut = false;
 
     private UnitSystem _currentLengthUnit = UnitSystem.Metric;
+    private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
+    
+    private List<string> _disabledAntennas = new();
 
     private void Awake()
     {
@@ -73,6 +83,11 @@ public class UIManager : MonoBehaviour
         DataManager.OnDataUpdated -= UpdateUIFromData;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
         SatelliteManager.OnDistanceCalculated -= UpdateUIDistances;
+    }
+
+    private void Start()
+    {
+        // _disabledAntennas = antennaNames.ToList();
     }
 
     private void Update()
@@ -277,37 +292,35 @@ public class UIManager : MonoBehaviour
         // Gets the index of the antenna name and maps it to its text object.
         int antennaIndex = antennaNames.IndexOf(antennaName);
         Transform antennaLabel = antennaLabelObjects[antennaIndex];
-
+        Image antennaBackground = antennaLabel.GetComponentInChildren<Image>();
+        // Each Text object is extracted.
         TextMeshProUGUI[] antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
         TextMeshProUGUI titleText = antennaTexts[0];
-        TextMeshProUGUI colonText = antennaTexts[1];
-        TextMeshProUGUI connectionSpeedText = antennaTexts[2];
-        TextMeshProUGUI unitsText = antennaTexts[3];
+        TextMeshProUGUI connectionSpeedText = antennaTexts[1];
+        TextMeshProUGUI unitsText = antennaTexts[2];
+        // The text was updated.
+        connectionSpeedText.text = connectionSpeed.ToString(NoDecimalPlaces);
+        unitsText.text = $" {connectionSpeedUnit}";
 
-        if (connectionSpeed == 0)
+        switch (connectionSpeed)
         {
-            titleText.color = disabledAntennaBackgroundColor;
-            antennaLabel.GetComponentInChildren<Image>().color = disabledAntennaBackgroundColor;
-
-            for (int i = 1; i < antennaTexts.Length; i++)
-            {
-                // antennaTexts[i].color = disabledAntennaBackgroundColor;
-                antennaTexts[i].text = "";
-            }
-
-            return;
+            case 0 when !_disabledAntennas.Contains(antennaName):
+                _disabledAntennas.Add(antennaName);
+                antennaBackground.color = disabledAntennaBackgroundColor;
+                break;
+            case > 0 when _disabledAntennas.Contains(antennaName):
+                _disabledAntennas.Remove(antennaName);
+                break;
         }
 
-        // foreach (var text in antennaTexts)
-        // {
-        //     text.color = antennaBackgroundColor[antennaIndex];
-        // }
-
-        colonText.text = ":";
-        connectionSpeedText.text = connectionSpeed.ToString("N0");
-        unitsText.text = " " + connectionSpeedUnit;
-        antennaLabel.GetComponentInChildren<Image>().color = antennaBackgroundColor[antennaIndex];
-
+        foreach (Image image in antennasGrid.GetComponentsInChildren<Image>())
+        {
+            if (image != antennaBackground)
+            {
+                image.color = enabledAntennaBackgroundColors[_disabledAntennas.Count];   
+            }
+        }
+        
         PrioritizeAntennas();
     }
 
@@ -328,11 +341,13 @@ public class UIManager : MonoBehaviour
             .Select(antennaLabel => new
             {
                 Label = antennaLabel,
-                ConnectionSpeed = float.TryParse(antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[2].text, out float speed) ? speed : float.MinValue
+                ConnectionSpeed = float.TryParse(
+                    antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out float speed)
+                        ? speed : float.MinValue
             })
-        .OrderByDescending(item => item.ConnectionSpeed)
-        .Select(item => item.Label)
-        .ToList();
+            .OrderByDescending(item => item.ConnectionSpeed)
+            .Select(item => item.Label)
+            .ToList();
 
         foreach (var label in sortedLabels)
         {
