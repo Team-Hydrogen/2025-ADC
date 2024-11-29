@@ -197,6 +197,8 @@ public class SatelliteManager : MonoBehaviour
         
         velocityVector.transform.localScale = Vector3.one * vector.magnitude;
         velocityVector.transform.rotation = Quaternion.LookRotation(vector);
+        // Rotation correction
+        velocityVector.transform.Rotate(new Vector3(90, 0, 0));
     }
         
     private void CalculateDistance()
