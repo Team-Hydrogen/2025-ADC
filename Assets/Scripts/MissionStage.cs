@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public struct MissionStage
+public struct MissionStage : IEquatable<MissionStage>
 {
     public int startDataIndex;
     public StageTypes stageType;
@@ -100,5 +101,15 @@ public struct MissionStage
         }
 
         return false;
+    }
+
+    public bool Equals(MissionStage other)
+    {
+        return startDataIndex == other.startDataIndex && stageType == other.stageType;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(startDataIndex, (int)stageType);
     }
 }

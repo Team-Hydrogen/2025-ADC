@@ -4,7 +4,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -289,14 +288,14 @@ public class UIManager : MonoBehaviour
     private void UpdateAntenna(string antennaName, float connectionSpeed)
     {
         // Gets the index of the antenna name and maps it to its text object.
-        int antennaIndex = antennaNames.IndexOf(antennaName);
-        Transform antennaLabel = antennaLabelObjects[antennaIndex];
-        Image antennaBackground = antennaLabel.GetComponentInChildren<Image>();
+        var antennaIndex = antennaNames.IndexOf(antennaName);
+        var antennaLabel = antennaLabelObjects[antennaIndex];
+        var antennaBackground = antennaLabel.GetComponentInChildren<Image>();
         
         // The connection speed and units text is fetched and updated.
-        TextMeshProUGUI[] antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
-        TextMeshProUGUI connectionSpeedText = antennaTexts[1];
-        TextMeshProUGUI unitsText = antennaTexts[2];
+        var antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
+        var connectionSpeedText = antennaTexts[1];
+        var unitsText = antennaTexts[2];
         
         connectionSpeedText.text = connectionSpeed.ToString(NoDecimalPlaces);
         unitsText.text = $" {ConnectionSpeedUnit}";
@@ -318,10 +317,10 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void PrioritizeAntennas()
     {
-        int childCount = antennasGrid.childCount;
-        Transform[] antennaLabels = new Transform[childCount];
+        var childCount = antennasGrid.childCount;
+        var antennaLabels = new Transform[childCount];
 
-        for (int i = 0; i < childCount; i++)
+        for (var i = 0; i < childCount; i++)
         {
             antennaLabels[i] = antennasGrid.GetChild(i);
         }
@@ -346,11 +345,12 @@ public class UIManager : MonoBehaviour
 
     private void ColorAntennas()
     {
-        int index = 0;
+        var index = 0;
         foreach (Transform antennaBackground in antennasGrid)
         {
             antennaBackground.GetComponent<Image>().color = index < 4 - _disabledAntennas.Count
-                ? enabledAntennaBackgroundColors[_disabledAntennas.Count] : disabledAntennaBackgroundColor;
+                ? enabledAntennaBackgroundColors[_disabledAntennas.Count]
+                : disabledAntennaBackgroundColor;
             index++;
         }
     }

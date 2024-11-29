@@ -40,6 +40,8 @@ public class DataManager : MonoBehaviour
     private int _currentDataIndex;
     private string[] _currentData;
     private MissionStage _currentMissionStage;
+    private const int DataPointsForward = 500;
+    private const int DataPointsBackward = 500;
     
     private float _currentUpdateSpeed;
     private float _timeSinceLastDataPoint = 0.0f;
@@ -100,12 +102,12 @@ public class DataManager : MonoBehaviour
 
     public void SkipBackward(float timeInSeconds)
     {
-        _currentDataIndex = Mathf.Max(0, _currentDataIndex - 50);
+        _currentDataIndex = Mathf.Max(0, _currentDataIndex - DataPointsBackward);
     }
 
     public void SkipForward(float timeInSeconds)
     {
-        _currentDataIndex = Mathf.Min(_currentDataIndex + 50, nominalTrajectoryDataValues.Count - 1);
+        _currentDataIndex = Mathf.Min(_currentDataIndex + DataPointsForward, nominalTrajectoryDataValues.Count - 1);
     }
 
     private MissionStage GetCurrentMissionStage()
