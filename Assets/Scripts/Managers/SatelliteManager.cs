@@ -114,7 +114,7 @@ public class SatelliteManager : MonoBehaviour
                 Vector3 pointAsVector = new Vector3(
                     float.Parse(point[1]) * trajectoryScale,
                     float.Parse(point[2]) * trajectoryScale,
-                    0.0f);  // float.Parse(point[3]) * trajectoryScale
+                    float.Parse(point[3]) * trajectoryScale);
                 futureTrajectoryPoints[index] = pointAsVector;
             }
             catch
