@@ -95,7 +95,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 67c7cb5958146401eac2cbc8165dc339, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1075,13 +1075,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2828892110113406582}
+  - component: {fileID: 1065681268463837978}
   m_Layer: 0
   m_Name: Velocity Vector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2828892110113406582
 Transform:
   m_ObjectHideFlags: 0
@@ -1098,6 +1099,18 @@ Transform:
   - {fileID: 6974862067135529203}
   m_Father: {fileID: 3486432567636085673}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1065681268463837978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3982777650291334601}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7521d8f75c40c40fab8940297ea0f607, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5326774994191655125
 GameObject:
   m_ObjectHideFlags: 0
@@ -1197,7 +1210,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 67c7cb5958146401eac2cbc8165dc339, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

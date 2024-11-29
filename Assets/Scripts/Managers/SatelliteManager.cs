@@ -9,8 +9,9 @@ public class SatelliteManager : MonoBehaviour
     
     [Header("Satellite")]
     [SerializeField] private GameObject satellite;
+    [SerializeField] private GameObject velocityVector;
     
-    [Header("Target Bodies")]
+    [Header("Celestial Bodies")]
     [SerializeField] private GameObject earth;
     [SerializeField] private GameObject moon;
     
@@ -34,7 +35,7 @@ public class SatelliteManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
+        
         Instance = this;
     }
 
@@ -58,6 +59,7 @@ public class SatelliteManager : MonoBehaviour
         UpdateNominalTrajectory();
         UpdateOffnominalTrajectory();
         CalculateDistance();
+        UpdateVelocityVector(currentIndex);
     }
 
     /// <param name="pointsData">List containing data points in cartesian coordinates</param>
@@ -144,6 +146,9 @@ public class SatelliteManager : MonoBehaviour
         _totalDistance += Vector3.Distance(currentSatellitePosition, newSatellitePosition);
         // The satellite transforms to its new position.
         satellite.transform.position = newSatellitePosition;
+        satellite.transform.rotation = Quaternion.LookRotation(newSatellitePosition - currentSatellitePosition);
+        // Rotation correction
+        satellite.transform.Rotate(new Vector3(90, 0, 0));
     }
     
     /// <summary>
@@ -182,6 +187,18 @@ public class SatelliteManager : MonoBehaviour
         futureOffnominalTrajectory.SetPositions(futureTrajectoryPoints);
     }
     
+    private void UpdateVelocityVector(int currentIndex)
+    {
+        // A Vector3 variable is created to store and compute information about the current velocity vector.
+        Vector3 vector = new Vector3(
+            float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][4]),
+            float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][5]),
+            float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][6]));
+        
+        velocityVector.transform.localScale = Vector3.one * vector.magnitude;
+        velocityVector.transform.rotation = Quaternion.LookRotation(vector);
+    }
+        
     private void CalculateDistance()
     {
         float distanceToEarth = Vector3.Distance(satellite.transform.position, earth.transform.position);

@@ -90,8 +90,7 @@ public class DataManager : MonoBehaviour
             _currentUpdateSpeed = maximumUpdateSpeed;
         }
         _timePerDataPoint =  1.0f / _currentUpdateSpeed;
-
-        print(_currentDataIndex);
+        
         if (!_currentMissionStage.Equals(GetCurrentMissionStage()))
         {
             _currentMissionStage = GetCurrentMissionStage();
