@@ -55,6 +55,7 @@ public class UIManager : MonoBehaviour
     private bool _isFadingOut = false;
 
     private UnitSystem _currentLengthUnit = UnitSystem.Metric;
+    private const string ConnectionSpeedUnit = "kbps";
     private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
     
@@ -279,28 +280,26 @@ public class UIManager : MonoBehaviour
 
     private void UpdateAntennaFromData(int currentIndex)
     {
-        UpdateAntenna(
-            DataManager.linkBudgetDataValues[currentIndex][1],
-            float.Parse(DataManager.linkBudgetDataValues[currentIndex][2])
-        );
+        var currentLinkBudgetData = DataManager.linkBudgetDataValues[currentIndex];
+        UpdateAntenna(currentLinkBudgetData[1], float.Parse(currentLinkBudgetData[2]));
+        PrioritizeAntennas();
+        ColorAntennas();
     }
 
     private void UpdateAntenna(string antennaName, float connectionSpeed)
     {
-        const string connectionSpeedUnit = "kbps";
-        
         // Gets the index of the antenna name and maps it to its text object.
         int antennaIndex = antennaNames.IndexOf(antennaName);
         Transform antennaLabel = antennaLabelObjects[antennaIndex];
         Image antennaBackground = antennaLabel.GetComponentInChildren<Image>();
-        // Each Text object is extracted.
+        
+        // The connection speed and units text is fetched and updated.
         TextMeshProUGUI[] antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
-        TextMeshProUGUI titleText = antennaTexts[0];
         TextMeshProUGUI connectionSpeedText = antennaTexts[1];
         TextMeshProUGUI unitsText = antennaTexts[2];
-        // The text was updated.
+        
         connectionSpeedText.text = connectionSpeed.ToString(NoDecimalPlaces);
-        unitsText.text = $" {connectionSpeedUnit}";
+        unitsText.text = $" {ConnectionSpeedUnit}";
 
         switch (connectionSpeed)
         {
@@ -312,16 +311,6 @@ public class UIManager : MonoBehaviour
                 _disabledAntennas.Remove(antennaName);
                 break;
         }
-
-        foreach (Image image in antennasGrid.GetComponentsInChildren<Image>())
-        {
-            if (image != antennaBackground)
-            {
-                image.color = enabledAntennaBackgroundColors[_disabledAntennas.Count];   
-            }
-        }
-        
-        PrioritizeAntennas();
     }
 
     /// <summary>
@@ -354,6 +343,18 @@ public class UIManager : MonoBehaviour
             label.SetSiblingIndex(sortedLabels.IndexOf(label));
         }
     }
+
+    private void ColorAntennas()
+    {
+        int index = 0;
+        foreach (Transform antennaBackground in antennasGrid)
+        {
+            antennaBackground.GetComponent<Image>().color = index < 4 - _disabledAntennas.Count
+                ? enabledAntennaBackgroundColors[_disabledAntennas.Count] : disabledAntennaBackgroundColor;
+            index++;
+        }
+    }
+    
     #endregion
 
     private void UpdateMissionStage(MissionStage stage)
