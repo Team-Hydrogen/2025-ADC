@@ -43,6 +43,10 @@ public class UIManager : MonoBehaviour
 
     [Header("Mission Stage")]
     [SerializeField] private TextMeshProUGUI missionStageText;
+    
+    [Header("Notification")]
+    [SerializeField] private GameObject notification;
+    [SerializeField] private TextMeshProUGUI notificationText;
 
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
@@ -58,7 +62,7 @@ public class UIManager : MonoBehaviour
     private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
     
-    private List<string> _disabledAntennas = new();
+    private readonly List<string> _disabledAntennas = new();
 
     private void Awake()
     {
@@ -83,11 +87,6 @@ public class UIManager : MonoBehaviour
         DataManager.OnDataUpdated -= UpdateUIFromData;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
         SatelliteManager.OnDistanceCalculated -= UpdateUIDistances;
-    }
-
-    private void Start()
-    {
-        // _disabledAntennas = antennaNames.ToList();
     }
 
     private void Update()
@@ -135,6 +134,19 @@ public class UIManager : MonoBehaviour
         UpdateCoordinatesFromData(currentIndex);
         UpdateTimeFromData(currentIndex);
         UpdateAntennaFromData(currentIndex);
+        
+        // Notifications
+        var currentTime = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][0]); 
+        const float secondStageFireTime = 5_000.0f;
+        const float serviceModuleFireTime = 10_000.0f;
+        if (Mathf.Approximately(currentTime, secondStageFireTime))
+        {
+            ShowNotification("Second Stage Fired");
+        }
+        if (Mathf.Approximately(currentTime, serviceModuleFireTime))
+        {
+            ShowNotification("Service Module Fired");
+        }
     }
     
     private void UpdateUIDistances(float[] distances)
@@ -361,6 +373,12 @@ public class UIManager : MonoBehaviour
     {
         missionStageText.text = stage.name;
         missionStageText.color = stage.color;
+    }
+
+    private void ShowNotification(string text)
+    {
+        notification.SetActive(true);
+        notificationText.text = text;
     }
 
     #region UI Visibility
