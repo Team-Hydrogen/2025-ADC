@@ -4,7 +4,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -44,6 +43,10 @@ public class UIManager : MonoBehaviour
 
     [Header("Mission Stage")]
     [SerializeField] private TextMeshProUGUI missionStageText;
+    
+    [Header("Notification")]
+    [SerializeField] private GameObject notification;
+    [SerializeField] private TextMeshProUGUI notificationText;
 
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
@@ -55,10 +58,11 @@ public class UIManager : MonoBehaviour
     private bool _isFadingOut = false;
 
     private UnitSystem _currentLengthUnit = UnitSystem.Metric;
+    private const string ConnectionSpeedUnit = "kbps";
     private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
     
-    private List<string> _disabledAntennas = new();
+    private readonly List<string> _disabledAntennas = new();
 
     private void Awake()
     {
@@ -83,11 +87,6 @@ public class UIManager : MonoBehaviour
         DataManager.OnDataUpdated -= UpdateUIFromData;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
         SatelliteManager.OnDistanceCalculated -= UpdateUIDistances;
-    }
-
-    private void Start()
-    {
-        // _disabledAntennas = antennaNames.ToList();
     }
 
     private void Update()
@@ -135,6 +134,19 @@ public class UIManager : MonoBehaviour
         UpdateCoordinatesFromData(currentIndex);
         UpdateTimeFromData(currentIndex);
         UpdateAntennaFromData(currentIndex);
+        
+        // Notifications
+        var currentTime = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][0]); 
+        const float secondStageFireTime = 5_000.0f;
+        const float serviceModuleFireTime = 10_000.0f;
+        if (Mathf.Approximately(currentTime, secondStageFireTime))
+        {
+            ShowNotification("Second Stage Fired");
+        }
+        if (Mathf.Approximately(currentTime, serviceModuleFireTime))
+        {
+            ShowNotification("Service Module Fired");
+        }
     }
     
     private void UpdateUIDistances(float[] distances)
@@ -279,28 +291,26 @@ public class UIManager : MonoBehaviour
 
     private void UpdateAntennaFromData(int currentIndex)
     {
-        UpdateAntenna(
-            DataManager.linkBudgetDataValues[currentIndex][1],
-            float.Parse(DataManager.linkBudgetDataValues[currentIndex][2])
-        );
+        var currentLinkBudgetData = DataManager.linkBudgetDataValues[currentIndex];
+        UpdateAntenna(currentLinkBudgetData[1], float.Parse(currentLinkBudgetData[2]));
+        PrioritizeAntennas();
+        ColorAntennas();
     }
 
     private void UpdateAntenna(string antennaName, float connectionSpeed)
     {
-        const string connectionSpeedUnit = "kbps";
-        
         // Gets the index of the antenna name and maps it to its text object.
-        int antennaIndex = antennaNames.IndexOf(antennaName);
-        Transform antennaLabel = antennaLabelObjects[antennaIndex];
-        Image antennaBackground = antennaLabel.GetComponentInChildren<Image>();
-        // Each Text object is extracted.
-        TextMeshProUGUI[] antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
-        TextMeshProUGUI titleText = antennaTexts[0];
-        TextMeshProUGUI connectionSpeedText = antennaTexts[1];
-        TextMeshProUGUI unitsText = antennaTexts[2];
-        // The text was updated.
+        var antennaIndex = antennaNames.IndexOf(antennaName);
+        var antennaLabel = antennaLabelObjects[antennaIndex];
+        var antennaBackground = antennaLabel.GetComponentInChildren<Image>();
+        
+        // The connection speed and units text is fetched and updated.
+        var antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
+        var connectionSpeedText = antennaTexts[1];
+        var unitsText = antennaTexts[2];
+        
         connectionSpeedText.text = connectionSpeed.ToString(NoDecimalPlaces);
-        unitsText.text = $" {connectionSpeedUnit}";
+        unitsText.text = $" {ConnectionSpeedUnit}";
 
         switch (connectionSpeed)
         {
@@ -312,16 +322,6 @@ public class UIManager : MonoBehaviour
                 _disabledAntennas.Remove(antennaName);
                 break;
         }
-
-        foreach (Image image in antennasGrid.GetComponentsInChildren<Image>())
-        {
-            if (image != antennaBackground)
-            {
-                image.color = enabledAntennaBackgroundColors[_disabledAntennas.Count];   
-            }
-        }
-        
-        PrioritizeAntennas();
     }
 
     /// <summary>
@@ -329,10 +329,10 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void PrioritizeAntennas()
     {
-        int childCount = antennasGrid.childCount;
-        Transform[] antennaLabels = new Transform[childCount];
+        var childCount = antennasGrid.childCount;
+        var antennaLabels = new Transform[childCount];
 
-        for (int i = 0; i < childCount; i++)
+        for (var i = 0; i < childCount; i++)
         {
             antennaLabels[i] = antennasGrid.GetChild(i);
         }
@@ -354,12 +354,31 @@ public class UIManager : MonoBehaviour
             label.SetSiblingIndex(sortedLabels.IndexOf(label));
         }
     }
+
+    private void ColorAntennas()
+    {
+        var index = 0;
+        foreach (Transform antennaBackground in antennasGrid)
+        {
+            antennaBackground.GetComponent<Image>().color = index < 4 - _disabledAntennas.Count
+                ? enabledAntennaBackgroundColors[_disabledAntennas.Count]
+                : disabledAntennaBackgroundColor;
+            index++;
+        }
+    }
+    
     #endregion
 
     private void UpdateMissionStage(MissionStage stage)
     {
         missionStageText.text = stage.name;
         missionStageText.color = stage.color;
+    }
+
+    private void ShowNotification(string text)
+    {
+        notification.SetActive(true);
+        notificationText.text = text;
     }
 
     #region UI Visibility
