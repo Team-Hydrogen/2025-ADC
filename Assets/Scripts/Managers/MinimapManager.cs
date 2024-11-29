@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class MinimapManager : MonoBehaviour
 {
-    [Header("Settings")]
-    [SerializeField] private float trajectoryScale;
-    
-    [Header("Nominal Trajectory")]
+    [Header("Nominal Minimap Trajectory")]
     [SerializeField] private LineRenderer pastMinimapTrajectory;
     [SerializeField] private LineRenderer futureMinimapTrajectory;
+    
+    [Header("Minimap Marker")]
+    [SerializeField] private GameObject minimapMarker;
+    
+    [Header("Settings")]
+    [SerializeField] private float trajectoryScale;
     
     public static MinimapManager Instance { get; private set; }
 
@@ -28,12 +31,14 @@ public class MinimapManager : MonoBehaviour
     {
         DataManager.OnDataLoaded += PlotMinimapTrajectory;
         DataManager.OnDataUpdated += UpdateMinimapTrajectory;
+        DataManager.OnDataUpdated += UpdateMarkerPosition;
     }
 
     private void OnDisable()
     {
         DataManager.OnDataLoaded -= PlotMinimapTrajectory;
         DataManager.OnDataUpdated -= UpdateMinimapTrajectory;
+        DataManager.OnDataUpdated -= UpdateMarkerPosition;
     }
 
     private void Start()
@@ -55,7 +60,7 @@ public class MinimapManager : MonoBehaviour
                 Vector3 pointAsVector = new Vector3(
                     float.Parse(point[1]) * trajectoryScale,
                     float.Parse(point[2]) * trajectoryScale,
-                    float.Parse(point[3]) * trajectoryScale);
+                    0.0f); // float.Parse(point[3]) * trajectoryScale
                 futureTrajectoryPoints[index] = pointAsVector;
             }
             catch
@@ -86,4 +91,20 @@ public class MinimapManager : MonoBehaviour
         futureMinimapTrajectory.SetPositions(futureTrajectoryPoints);
     }
     
+    /// <summary>
+    /// Updates the position of the Orion capsule marker
+    /// </summary>
+    private void UpdateMarkerPosition(int index)
+    {
+        if (futureMinimapTrajectory.positionCount <= 0)
+        {
+            return;
+        }
+        // The second point of the future trajectory is chosen because the first point is the satellite's position.
+        Vector3 newSatellitePosition = futureMinimapTrajectory.GetPosition(1);
+        // The satellite transforms to its new position.
+        minimapMarker.transform.position = newSatellitePosition;
+        // Rotation correction
+        minimapMarker.transform.Rotate(new Vector3(90, 0, 0));
+    }
 }
