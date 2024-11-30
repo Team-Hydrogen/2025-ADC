@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SatelliteManager : MonoBehaviour
 {
+    public static SatelliteManager instance { get; private set; }
+    
     [Header("Settings")]
     [SerializeField] private float trajectoryScale;
     
@@ -24,19 +27,38 @@ public class SatelliteManager : MonoBehaviour
     [SerializeField] private LineRenderer futureOffnominalTrajectory;
     
     private float _totalDistance = 0.0f;
+
+    #region Material Variables
     
-    public static Action<float[]> OnDistanceCalculated; 
-    public static SatelliteManager Instance { get; private set; }
+    private const float LowThreshold = 0.4000f;
+    private const float MediumThreshold = 3.0000f;
+    private const float HighThreshold = 8.0000f;
+    
+    private Renderer[] _vectorRenderers;
+    private readonly Color[] _colors = {
+        new(0.9373f, 0.2588f, 0.2588f, 1.0000f),
+        new(1.0000f, 0.7569f, 0.0000f, 1.0000f),
+        new(0.5451f, 0.9294f, 0.1804f, 1.0000f)
+    };
+    
+    #endregion
+    
+    public static Action<float[]> OnDistanceCalculated;
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
         
-        Instance = this;
+        instance = this;
+    }
+
+    private void Start()
+    { 
+        _vectorRenderers = velocityVector.GetComponentsInChildren<Renderer>();
     }
 
     private void OnEnable()
@@ -61,8 +83,7 @@ public class SatelliteManager : MonoBehaviour
         CalculateDistance();
         UpdateVelocityVector(currentIndex);
     }
-
-    /// <param name="pointsData">List containing data points in cartesian coordinates</param>
+    
     /// <summary>
     /// Plots the provided data points into a visual trajectory. PlotTrajectory() is meant to be run only once.
     /// </summary>
@@ -96,7 +117,6 @@ public class SatelliteManager : MonoBehaviour
         futureNominalTrajectory.SetPositions(futureTrajectoryPoints);
     }
     
-    /// <param name="pointsData">List containing data points in cartesian coordinates</param>
     /// <summary>
     /// Plots the provided data points into a visual trajectory. PlotTrajectory() is meant to be run only once.
     /// </summary>
@@ -195,10 +215,23 @@ public class SatelliteManager : MonoBehaviour
             float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][5]),
             float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][6]));
         
+        velocityVector.transform.position = satellite.transform.position - satellite.transform.forward;
         velocityVector.transform.localScale = Vector3.one * vector.magnitude;
         velocityVector.transform.rotation = Quaternion.LookRotation(vector);
-        // Rotation correction
+        // Correction rotation
         velocityVector.transform.Rotate(new Vector3(90, 0, 0));
+        
+        var bracketIndex = vector.magnitude switch
+        {
+            >= HighThreshold => 0,
+            >= MediumThreshold => 1,
+            >= LowThreshold => 2,
+            _ => 2
+        };
+        foreach (var meshRenderer in _vectorRenderers)
+        {
+            meshRenderer.material.SetColor("_BaseColor", _colors[bracketIndex]);
+        }
     }
         
     private void CalculateDistance()
