@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class SatelliteManager : MonoBehaviour
@@ -215,11 +213,11 @@ public class SatelliteManager : MonoBehaviour
             float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][5]),
             float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][6]));
         
-        velocityVector.transform.position = satellite.transform.position - satellite.transform.forward;
-        velocityVector.transform.localScale = Vector3.one * vector.magnitude;
-        velocityVector.transform.rotation = Quaternion.LookRotation(vector);
-        // Correction rotation
-        velocityVector.transform.Rotate(new Vector3(90, 0, 0));
+        velocityVector.transform.SetPositionAndRotation(
+            satellite.transform.position - satellite.transform.forward,
+            Quaternion.LookRotation(vector));
+        velocityVector.transform.GetChild(0).localScale = new Vector3(1.0f, 1.0f, vector.magnitude);
+        velocityVector.transform.GetChild(1).localPosition = new Vector3(0.0f, 0.0f, vector.magnitude + 1);
         
         var bracketIndex = vector.magnitude switch
         {
