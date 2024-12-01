@@ -42,7 +42,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Light_Map:
-        m_Texture: {fileID: 8900000, guid: 356d5f19f2eadda42aeb96d1a923cdd3, type: 3}
+        m_Texture: {fileID: 8900000, guid: ad681e3e871bda541b07270713bddb0f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal_Map:
@@ -67,7 +67,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Light_Intensity: 2.11
+    - _Light_Intensity: 10.17
     - _Normal_Map_Strength: 2
     - _QueueControl: 0
     - _QueueOffset: 0
