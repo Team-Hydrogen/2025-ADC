@@ -1464,7 +1464,7 @@
     "m_Group": {
         "m_Id": ""
     },
-    "m_Name": "SphericalTextureSubGraph",
+    "m_Name": "SphericalTexture",
     "m_DrawState": {
         "m_Expanded": true,
         "m_Position": {

@@ -43,7 +43,7 @@ Material:
     - _QueueOffset: 0
     - _RimIntensity: 17.1
     m_Colors:
-    - _AtmosphereColor: {r: 1.380392, g: 2.054902, b: 4, a: 0}
+    - _AtmosphereColor: {r: 1.380392, g: 2.054902, b: 4, a: 0.89411765}
     - _InputDirection: {r: 0.41, g: 0.1, b: -2.29, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2926033914659139084
