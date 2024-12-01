@@ -16,28 +16,14 @@ public class SimulationManager : MonoBehaviour
     [SerializeField] private Color endGizmosLineColor;
     [SerializeField, Range(1f, 100f)] private int gizmosLevelOfDetail;
 
-    [Header("Stages")]
-    [SerializeField] private List<MissionStage> stages;
-
     public static event Action<DataLoadedEventArgs> OnDataLoaded;
     public static event Action<int> OnDataUpdated;
-    public static event Action<MissionStage> OnMissionStageUpdated;
 
     public static SimulationManager Instance { get; private set; }
-    
-    public List<string[]> nominalTrajectoryDataValues { get; private set; }
-    public List<string[]> offnominalTrajectoryDataValues { get; private set; }
-    public List<string[]> linkBudgetDataValues { get; private set; }
-    
-    private int _currentDataIndex;
-    private string[] _currentData;
-    private MissionStage _currentMissionStage;
-    private const int DataPointsForward = 500;
-    private const int DataPointsBackward = 500;
-    
-    private float _currentUpdateSpeed;
-    private float _timeSinceLastDataPoint = 0.0f;
-    private float _timePerDataPoint;
+
+    private List<string[]> nominalTrajectoryDataValues;
+    private List<string[]> offnominalTrajectoryDataValues;
+    private List<string[]> linkBudgetDataValues;
 
     List<Vector3> positionVectorsForGizmos;
     
@@ -65,62 +51,15 @@ public class SimulationManager : MonoBehaviour
         OnDataLoaded?.Invoke(new DataLoadedEventArgs(nominalTrajectoryDataValues, offnominalTrajectoryDataValues, linkBudgetDataValues));
     }
 
-    private void Update()
-    {
-        //// The tick variable updates.
-        //_timeSinceLastDataPoint += Time.deltaTime;
-        
-        //if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < nominalTrajectoryDataValues.Count)
-        //{
-        //    OnDataUpdated?.Invoke(_currentDataIndex);
-        //    _currentDataIndex++;
-        //    _timeSinceLastDataPoint -= _timePerDataPoint;
-        //}
-        
-        //// The current update speed increases with acceleration.
-        //_currentUpdateSpeed += updateSpeedAcceleration * Time.deltaTime;
-        //if (_currentUpdateSpeed > maximumUpdateSpeed)
-        //{
-        //    _currentUpdateSpeed = maximumUpdateSpeed;
-        //}
-        //_timePerDataPoint =  1.0f / _currentUpdateSpeed;
-        
-        //if (!_currentMissionStage.Equals(GetCurrentMissionStage()))
-        //{
-        //    _currentMissionStage = GetCurrentMissionStage();
-        //    OnMissionStageUpdated?.Invoke(_currentMissionStage);
-        //}
-    }
+    //public void SkipBackward(float timeInSeconds)
+    //{
+    //    _currentDataIndex = Mathf.Max(0, _currentDataIndex - DataPointsBackward);
+    //}
 
-    public void SkipBackward(float timeInSeconds)
-    {
-        _currentDataIndex = Mathf.Max(0, _currentDataIndex - DataPointsBackward);
-    }
-
-    public void SkipForward(float timeInSeconds)
-    {
-        _currentDataIndex = Mathf.Min(_currentDataIndex + DataPointsForward, nominalTrajectoryDataValues.Count - 1);
-    }
-
-    private MissionStage GetCurrentMissionStage()
-    {
-        MissionStage latestStage = new MissionStage(_currentDataIndex, MissionStage.StageTypes.None);
-
-        for (int i = 0; i < stages.Count; i++)
-        {
-            if (_currentDataIndex >= stages[i].startDataIndex)
-            {
-                latestStage = stages[i];
-            }
-
-            else if (_currentDataIndex < stages[i].startDataIndex)
-            {
-                return latestStage;
-            }
-        }
-
-        return latestStage;
-    }
+    //public void SkipForward(float timeInSeconds)
+    //{
+    //    _currentDataIndex = Mathf.Min(_currentDataIndex + DataPointsForward, nominalTrajectoryDataValues.Count - 1);
+    //}
 
     /// <summary>
     /// Draws trajectory in the editor.

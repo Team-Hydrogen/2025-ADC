@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
@@ -85,6 +86,7 @@ public class UIManager : MonoBehaviour
         //SimulationManager.OnMissionStageUpdated += UpdateMissionStage;
         SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
         SatelliteManager.OnDistanceCalculated += UpdateUIDistances;
+        SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
     }
 
     private void OnDisable()
@@ -93,6 +95,7 @@ public class UIManager : MonoBehaviour
         //SimulationManager.OnMissionStageUpdated -= UpdateMissionStage;
         SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
         SatelliteManager.OnDistanceCalculated -= UpdateUIDistances;
+        SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
     }
 
     private void Update()
@@ -141,25 +144,25 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    private void UpdateUIFromData(int currentIndex)
-    {
-        UpdateCoordinatesFromData(currentIndex);
-        UpdateTimeFromData(currentIndex);
-        UpdateAntennaFromData(currentIndex);
+    //private void UpdateUIFromData(int currentIndex)
+    //{
+    //    UpdateCoordinatesFromData(currentIndex);
+    //    UpdateTimeFromData(currentIndex);
+    //    UpdateAntennaFromData(currentIndex);
         
-        // Notifications
-        var currentTime = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]); 
-        const float secondStageFireTime = 5_000.0f;
-        const float serviceModuleFireTime = 10_000.0f;
-        if (Mathf.Approximately(currentTime, secondStageFireTime))
-        {
-            ShowNotification("Second Stage Fired");
-        }
-        if (Mathf.Approximately(currentTime, serviceModuleFireTime))
-        {
-            ShowNotification("Service Module Fired");
-        }
-    }
+    //    // Notifications
+    //    var currentTime = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]); 
+    //    const float secondStageFireTime = 5_000.0f;
+    //    const float serviceModuleFireTime = 10_000.0f;
+    //    if (Mathf.Approximately(currentTime, secondStageFireTime))
+    //    {
+    //        ShowNotification("Second Stage Fired");
+    //    }
+    //    if (Mathf.Approximately(currentTime, serviceModuleFireTime))
+    //    {
+    //        ShowNotification("Service Module Fired");
+    //    }
+    //}
     
     private void UpdateUIDistances(float[] distances)
     {
@@ -195,35 +198,6 @@ public class UIManager : MonoBehaviour
         SetTime(days, hours, minutes, seconds);
         UpdateTimeElapsedBar();
     }
-    
-    private void UpdateTimeFromData(int currentIndex)
-    {
-        const int minutesPerDay = 1440;
-        const int minutesPerHour = 60;
-        const int secondsPerMinute = 60;
-        
-        float totalTimeInMinutes;
-        try
-        {
-            totalTimeInMinutes = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]);
-        }
-        catch
-        {
-            Debug.LogWarning("No time data available!");
-            return;
-        }
-        
-        int days = Mathf.FloorToInt(totalTimeInMinutes / minutesPerDay);
-        totalTimeInMinutes %= minutesPerDay;
-        int hours = Mathf.FloorToInt(totalTimeInMinutes / minutesPerHour);
-        totalTimeInMinutes %= minutesPerHour;
-        int minutes = Mathf.FloorToInt(totalTimeInMinutes);
-        totalTimeInMinutes -= minutes;
-        int seconds = Mathf.FloorToInt(totalTimeInMinutes * secondsPerMinute);
-        
-        SetTime(days, hours, minutes, seconds);
-        UpdateTimeElapsedBar();
-    }
 
     private void UpdateTimeElapsedBar()
     {
@@ -245,45 +219,45 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Manage Coordinates
-    private void SetCoordinates(float x, float y, float z)
+    private void UpdateCoordinatesText(Vector3 position)
     {
         string units;
         
         if (_currentLengthUnit == UnitSystem.Metric)
         {
             units = " km";
-            xCoordinate.text = x.ToString("N0") + units;
-            yCoordinate.text = y.ToString("N0") + units;
-            zCoordinate.text = z.ToString("N0") + units;
+            xCoordinate.text = position.x.ToString("N0") + units;
+            yCoordinate.text = position.y.ToString("N0") + units;
+            zCoordinate.text = position.z.ToString("N0") + units;
         } else if (_currentLengthUnit == UnitSystem.Imperial)
         {
             units = " mi";
-            xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(x).ToString("N0") + units;
-            yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(y).ToString("N0") + units;
-            zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(z).ToString("N0") + units;
+            xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.x).ToString("N0") + units;
+            yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.y).ToString("N0") + units;
+            zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.z).ToString("N0") + units;
         }
     }
     
-    private void UpdateCoordinatesFromData(int currentIndex)
-    {
-        float x;
-        float y;
-        float z;
+    //private void UpdateCoordinatesFromData(int currentIndex)
+    //{
+    //    float x;
+    //    float y;
+    //    float z;
 
-        try
-        {
-            x = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][1]);
-            y = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][2]);
-            z = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][3]);
-        }
-        catch
-        {
-            Debug.LogWarning("No positional data available!");
-            return;
-        }
+    //    try
+    //    {
+    //        x = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][1]);
+    //        y = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][2]);
+    //        z = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][3]);
+    //    }
+    //    catch
+    //    {
+    //        Debug.LogWarning("No positional data available!");
+    //        return;
+    //    }
         
-        SetCoordinates(x, y, z);
-    }
+    //    SetCoordinates(x, y, z);
+    //}
     #endregion
 
     #region Update Distances
@@ -332,20 +306,20 @@ public class UIManager : MonoBehaviour
 
     #region Manage Antennas
 
-    private void UpdateAntennaFromData(int currentIndex)
-    {
-        var currentLinkBudgetData = SimulationManager.Instance.linkBudgetDataValues[currentIndex];
-        UpdateAntenna(currentLinkBudgetData[1], float.Parse(currentLinkBudgetData[2]));
-        PrioritizeAntennas();
-        ColorAntennas();
-    }
+    //private void UpdateAntennaFromData(int currentIndex)
+    //{
+    //    var currentLinkBudgetData = SimulationManager.Instance.linkBudgetDataValues[currentIndex];
+    //    UpdateAntenna(currentLinkBudgetData[1], float.Parse(currentLinkBudgetData[2]));
+    //    PrioritizeAntennas();
+    //    ColorAntennas();
+    //}
 
     private void UpdateAntenna(string antennaName, float connectionSpeed)
     {
         // Gets the index of the antenna name and maps it to its text object.
         var antennaIndex = antennaNames.IndexOf(antennaName);
         var antennaLabel = antennaLabelObjects[antennaIndex];
-        var antennaBackground = antennaLabel.GetComponentInChildren<Image>();
+        var antennaBackground = antennaLabel.GetComponentInChildren<UnityEngine.UI.Image>();
         
         // The connection speed and units text is fetched and updated.
         var antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
@@ -403,7 +377,7 @@ public class UIManager : MonoBehaviour
         var index = 0;
         foreach (Transform antennaBackground in antennasGrid)
         {
-            antennaBackground.GetComponent<Image>().color = index < 4 - _disabledAntennas.Count
+            antennaBackground.GetComponent<UnityEngine.UI.Image>().color = index < 4 - _disabledAntennas.Count
                 ? enabledAntennaBackgroundColors[_disabledAntennas.Count]
                 : disabledAntennaBackgroundColor;
             index++;

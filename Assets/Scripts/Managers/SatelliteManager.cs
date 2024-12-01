@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
+using Unity.Burst;
 using UnityEngine;
 
 public class SatelliteManager : MonoBehaviour
 {
     public static SatelliteManager Instance { get; private set; }
-    
+
+    [Header("Stages")]
+    [SerializeField] private List<MissionStage> stages;
+
     [Header("Settings")]
     [SerializeField] private float trajectoryScale;
     
@@ -33,12 +37,15 @@ public class SatelliteManager : MonoBehaviour
 
     private int currentPointIndex = 0;
     private float progress = 0f;
+    private float estimatedElapsedTime;
 
     private List<string[]> nominalTrajectoryPoints;
     private List<string[]> offNominalTrajectoryPoints;
 
+    public static event Action<MissionStage> OnMissionStageUpdated;
     public static event Action<float> OnUpdateTime;
-    public static Action<float[]> OnDistanceCalculated;
+    public static event Action<Vector3> OnUpdateCoordinates;
+    public static event Action<float[]> OnDistanceCalculated;
 
     #region Material Variables
     
@@ -93,6 +100,16 @@ public class SatelliteManager : MonoBehaviour
         if (_isPlaying)
         {
             UpdateSatellitePosition();
+
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                currentPointIndex = GetClosestDataPointFromTime(estimatedElapsedTime - 10f / timeScale);
+            }
+            
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                currentPointIndex = GetClosestDataPointFromTime(estimatedElapsedTime + 10f / timeScale);
+            }
         }
     }
 
@@ -122,11 +139,11 @@ public class SatelliteManager : MonoBehaviour
     private void PlotNominalTrajectory()
     {
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = SimulationManager.Instance.nominalTrajectoryDataValues.Count;
+        int numberOfPoints = nominalTrajectoryPoints.Count;
         Vector3[] futureTrajectoryPoints = new Vector3[numberOfPoints];
         for (int index = 0; index < numberOfPoints; index++)
         {
-            string[] point = SimulationManager.Instance.nominalTrajectoryDataValues[index];
+            string[] point = nominalTrajectoryPoints[index];
 
             try
             {
@@ -155,11 +172,11 @@ public class SatelliteManager : MonoBehaviour
     private void PlotOffnominalTrajectory()
     {
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = SimulationManager.Instance.offnominalTrajectoryDataValues.Count;
+        int numberOfPoints = offNominalTrajectoryPoints.Count;
         Vector3[] futureTrajectoryPoints = new Vector3[numberOfPoints];
         for (int index = 0; index < numberOfPoints; index++)
         {
-            string[] point = SimulationManager.Instance.offnominalTrajectoryDataValues[index];
+            string[] point = offNominalTrajectoryPoints[index];
 
             try
             {
@@ -188,7 +205,9 @@ public class SatelliteManager : MonoBehaviour
     private void UpdateSatellitePosition()
     {
         string[] currentPoint = nominalTrajectoryPoints[currentPointIndex];
-        string[] nextPoint = nominalTrajectoryPoints[(currentPointIndex + 1) % nominalTrajectoryPoints.Count];
+
+        string[] nextPoint;
+        nextPoint = nominalTrajectoryPoints[(currentPointIndex + 1) % nominalTrajectoryPoints.Count];
 
         float currentTime = float.Parse(currentPoint[0]);
         float nextTime = float.Parse(nextPoint[0]);
@@ -213,15 +232,16 @@ public class SatelliteManager : MonoBehaviour
         // Interpolate position
         satellite.transform.position = Vector3.Lerp(currentPosition, nextPosition, progress);
 
-        float estimatedCurrentTime = currentTime + (nextTime - currentTime) * progress;
+        estimatedElapsedTime = currentTime + (nextTime - currentTime) * progress;
 
-        OnUpdateTime?.Invoke(estimatedCurrentTime);
+        OnUpdateTime?.Invoke(estimatedElapsedTime);
+        OnUpdateCoordinates?.Invoke(satellite.transform.position / trajectoryScale);
 
         // Move to the next point when progress is complete
         if (progress >= 1f)
         {
-            progress = 0f; // Reset progress
-            currentPointIndex = (currentPointIndex + 1) % nominalTrajectoryPoints.Count;
+            currentPointIndex = (currentPointIndex + Mathf.FloorToInt(progress)) % nominalTrajectoryPoints.Count; // this resets the simulation
+            progress = progress % 1; // Reset progress
         }
     }
     
@@ -265,9 +285,9 @@ public class SatelliteManager : MonoBehaviour
     {
         // A Vector3 variable is created to store and compute information about the current velocity vector.
         Vector3 vector = new Vector3(
-            float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][4]),
-            float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][5]),
-            float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][6]));
+            float.Parse(nominalTrajectoryPoints[currentIndex][4]),
+            float.Parse(nominalTrajectoryPoints[currentIndex][5]),
+            float.Parse(nominalTrajectoryPoints[currentIndex][6]));
         
         velocityVector.transform.SetPositionAndRotation(
             satellite.transform.position - satellite.transform.forward,
@@ -294,5 +314,31 @@ public class SatelliteManager : MonoBehaviour
         float distanceToMoon = Vector3.Distance(satellite.transform.position, moon.transform.position);
         float[] distances = { _totalDistance, distanceToEarth, distanceToMoon };
         OnDistanceCalculated?.Invoke(distances);
+    }
+
+    private int GetClosestDataPointFromTime(float time)
+    {
+        int closestIndex = 0;
+        float closestTime = float.MaxValue;
+
+        for (int i = 0; i < nominalTrajectoryPoints.Count; i++)
+        {
+            try
+            {
+                float timeDistance = Mathf.Abs(float.Parse(nominalTrajectoryPoints[i][0]) - time);
+
+                if (timeDistance < closestTime)
+                {
+                    closestTime = timeDistance;
+                    closestIndex = i;
+                }
+            } catch
+            {
+                
+            }
+        }
+
+        Debug.Log(nominalTrajectoryPoints[closestIndex][0]);
+        return closestIndex;
     }
 }
