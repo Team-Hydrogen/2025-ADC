@@ -22857,6 +22857,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Earth
       objectReference: {fileID: 0}
+    - target: {fileID: 2600510633202756823, guid: 6ff407b5008f9d540bc3442c927026d1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7350465193763574833, guid: 6ff407b5008f9d540bc3442c927026d1,
         type: 3}
       propertyPath: m_LocalPosition.x
