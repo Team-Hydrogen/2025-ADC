@@ -26,10 +26,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Color disabledAntennaBackgroundColor = new(0.8431f, 0.8510f, 0.9098f);
 
     [Header("Time Counter")]
+    [SerializeField] private GameObject timeCounter;
     [SerializeField] private TextMeshProUGUI dayCounter;
     [SerializeField] private TextMeshProUGUI hourCounter;
     [SerializeField] private TextMeshProUGUI minuteCounter;
     [SerializeField] private TextMeshProUGUI secondCounter;
+    
+    [Header("Time Elapsed Bar")]
+    [SerializeField] private GameObject timeElapsedBar;
 
     [Header("Coordinate")]
     [SerializeField] private TextMeshProUGUI xCoordinate;
@@ -116,6 +120,12 @@ public class UIManager : MonoBehaviour
     public void QuitButtonPressed()
     {
         SceneManager.LoadScene(0);
+    }
+
+    public void ToggleTimeElapsedBar(bool isBarEnabled)
+    {
+        timeElapsedBar.SetActive(isBarEnabled);
+        timeCounter.SetActive(!isBarEnabled);
     }
 
     public void ImperialButtonPressed()
