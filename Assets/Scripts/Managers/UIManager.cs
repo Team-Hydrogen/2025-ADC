@@ -81,15 +81,17 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        DataManager.OnDataUpdated += UpdateUIFromData;
-        DataManager.OnMissionStageUpdated += UpdateMissionStage;
+        //SimulationManager.OnDataUpdated += UpdateUIFromData;
+        //SimulationManager.OnMissionStageUpdated += UpdateMissionStage;
+        SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
         SatelliteManager.OnDistanceCalculated += UpdateUIDistances;
     }
 
     private void OnDisable()
     {
-        DataManager.OnDataUpdated -= UpdateUIFromData;
-        DataManager.OnMissionStageUpdated -= UpdateMissionStage;
+        //SimulationManager.OnDataUpdated -= UpdateUIFromData;
+        //SimulationManager.OnMissionStageUpdated -= UpdateMissionStage;
+        SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
         SatelliteManager.OnDistanceCalculated -= UpdateUIDistances;
     }
 
@@ -146,7 +148,7 @@ public class UIManager : MonoBehaviour
         UpdateAntennaFromData(currentIndex);
         
         // Notifications
-        var currentTime = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][0]); 
+        var currentTime = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]); 
         const float secondStageFireTime = 5_000.0f;
         const float serviceModuleFireTime = 10_000.0f;
         if (Mathf.Approximately(currentTime, secondStageFireTime))
@@ -173,6 +175,26 @@ public class UIManager : MonoBehaviour
         minuteCounter.text = minutes.ToString().PadLeft(maxNumberLength, '0');
         secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
     }
+
+    private void UpdateTimeFromMinutes(float timeInMinutes)
+    {
+        const int minutesPerDay = 1440;
+        const int minutesPerHour = 60;
+        const int secondsPerMinute = 60;
+
+        float minutesLeft = timeInMinutes;
+
+        int days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
+        minutesLeft %= minutesPerDay;
+        int hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
+        minutesLeft %= minutesPerHour;
+        int minutes = Mathf.FloorToInt(minutesLeft);
+        minutesLeft -= minutes;
+        int seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
+
+        SetTime(days, hours, minutes, seconds);
+        UpdateTimeElapsedBar();
+    }
     
     private void UpdateTimeFromData(int currentIndex)
     {
@@ -183,7 +205,7 @@ public class UIManager : MonoBehaviour
         float totalTimeInMinutes;
         try
         {
-            totalTimeInMinutes = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][0]);
+            totalTimeInMinutes = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]);
         }
         catch
         {
@@ -250,9 +272,9 @@ public class UIManager : MonoBehaviour
 
         try
         {
-            x = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][1]);
-            y = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][2]);
-            z = float.Parse(DataManager.nominalTrajectoryDataValues[currentIndex][3]);
+            x = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][1]);
+            y = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][2]);
+            z = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][3]);
         }
         catch
         {
@@ -312,7 +334,7 @@ public class UIManager : MonoBehaviour
 
     private void UpdateAntennaFromData(int currentIndex)
     {
-        var currentLinkBudgetData = DataManager.linkBudgetDataValues[currentIndex];
+        var currentLinkBudgetData = SimulationManager.Instance.linkBudgetDataValues[currentIndex];
         UpdateAntenna(currentLinkBudgetData[1], float.Parse(currentLinkBudgetData[2]));
         PrioritizeAntennas();
         ColorAntennas();

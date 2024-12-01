@@ -29,16 +29,16 @@ public class MinimapManager : MonoBehaviour
     
     private void OnEnable()
     {
-        DataManager.OnDataLoaded += PlotMinimapTrajectory;
-        DataManager.OnDataUpdated += UpdateMinimapTrajectory;
-        DataManager.OnDataUpdated += UpdateMarkerPosition;
+        SimulationManager.OnDataLoaded += PlotMinimapTrajectory;
+        SimulationManager.OnDataUpdated += UpdateMinimapTrajectory;
+        SimulationManager.OnDataUpdated += UpdateMarkerPosition;
     }
 
     private void OnDisable()
     {
-        DataManager.OnDataLoaded -= PlotMinimapTrajectory;
-        DataManager.OnDataUpdated -= UpdateMinimapTrajectory;
-        DataManager.OnDataUpdated -= UpdateMarkerPosition;
+        SimulationManager.OnDataLoaded -= PlotMinimapTrajectory;
+        SimulationManager.OnDataUpdated -= UpdateMinimapTrajectory;
+        SimulationManager.OnDataUpdated -= UpdateMarkerPosition;
     }
 
     private void Start()
@@ -46,14 +46,16 @@ public class MinimapManager : MonoBehaviour
         
     }
     
-    private void PlotMinimapTrajectory()
+    private void PlotMinimapTrajectory(DataLoadedEventArgs data)
     {
+        List<string[]> nominalTrajectoryData = data.NominalTrajectoryData;
+
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = DataManager.nominalTrajectoryDataValues.Count;
+        int numberOfPoints = nominalTrajectoryData.Count;
         Vector3[] futureTrajectoryPoints = new Vector3[numberOfPoints];
         for (int index = 0; index < numberOfPoints; index++)
         {
-            string[] point = DataManager.nominalTrajectoryDataValues[index];
+            string[] point = nominalTrajectoryData[index];
 
             try
             {
