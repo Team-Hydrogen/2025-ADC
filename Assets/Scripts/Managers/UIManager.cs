@@ -200,6 +200,17 @@ public class UIManager : MonoBehaviour
         int seconds = Mathf.FloorToInt(totalTimeInMinutes * secondsPerMinute);
         
         SetTime(days, hours, minutes, seconds);
+        UpdateTimeElapsedBar();
+    }
+
+    private void UpdateTimeElapsedBar()
+    {
+        var bar = timeElapsedBar.transform.GetChild(0);
+        foreach (Transform stageSection in bar)
+        {
+            var stageSectionTransform = (RectTransform)stageSection;
+            stageSectionTransform.sizeDelta = new Vector2(100, stageSectionTransform.sizeDelta.y);
+        }
     }
 
     public void IncrementTime(int changeInDays, int changeInHours, int changeInMinutes, int changeInSeconds)
