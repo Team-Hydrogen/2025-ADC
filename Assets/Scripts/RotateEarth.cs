@@ -5,17 +5,23 @@ using UnityEngine;
 public class RotateEarth : MonoBehaviour
 {
     [SerializeField] private Transform surface;
-    [SerializeField] private float rotationSpeed;
+    [SerializeField] private float surfaceRotationSpeed;
+    [SerializeField] private Transform clouds;
+    [SerializeField] private float cloudsRotationSpeed;
 
-    private Quaternion earthTilt;
+    //private Quaternion earthTilt;
 
     private void Start()
     {
-        earthTilt = surface.transform.rotation;
+        //earthTilt = surface.transform.rotation;
     }
 
     void Update()
     {
-        transform.rotation = Quaternion.Euler(23.5f, 0, 0) * Quaternion.Euler(0, Time.time * rotationSpeed, 0);
+        //surface.transform.rotation = earthTilt;
+        surface.transform.Rotate(Vector3.up, surfaceRotationSpeed * Time.time, Space.Self);
+
+        //clouds.transform.rotation = earthTilt;
+        clouds.transform.Rotate(Vector3.up, cloudsRotationSpeed * Time.time, Space.Self);
     }
 }
