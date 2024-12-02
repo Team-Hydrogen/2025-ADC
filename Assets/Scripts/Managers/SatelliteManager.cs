@@ -81,7 +81,7 @@ public class SatelliteManager : MonoBehaviour
 
     private void OnEnable()
     {
-        SimulationManager.OnDataLoaded += OnDataLoaded;
+        DataManager.OnDataLoaded += OnDataLoaded;
         //DataManager.OnDataLoaded += PlotNominalTrajectory;
         //DataManager.OnDataLoaded += PlotOffnominalTrajectory;
         //DataManager.OnDataUpdated += UpdateSatelliteFromData;
@@ -89,7 +89,7 @@ public class SatelliteManager : MonoBehaviour
 
     private void OnDisable()
     {
-        SimulationManager.OnDataLoaded -= OnDataLoaded;
+        DataManager.OnDataLoaded -= OnDataLoaded;
         //DataManager.OnDataLoaded -= PlotNominalTrajectory;
         //DataManager.OnDataLoaded -= PlotOffnominalTrajectory;
         //DataManager.OnDataUpdated -= UpdateSatelliteFromData;

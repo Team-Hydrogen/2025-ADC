@@ -29,16 +29,16 @@ public class MinimapManager : MonoBehaviour
     
     private void OnEnable()
     {
-        SimulationManager.OnDataLoaded += PlotMinimapTrajectory;
-        SimulationManager.OnDataUpdated += UpdateMinimapTrajectory;
-        SimulationManager.OnDataUpdated += UpdateMarkerPosition;
+        DataManager.OnDataLoaded += PlotMinimapTrajectory;
+        DataManager.OnDataUpdated += UpdateMinimapTrajectory;
+        DataManager.OnDataUpdated += UpdateMarkerPosition;
     }
 
     private void OnDisable()
     {
-        SimulationManager.OnDataLoaded -= PlotMinimapTrajectory;
-        SimulationManager.OnDataUpdated -= UpdateMinimapTrajectory;
-        SimulationManager.OnDataUpdated -= UpdateMarkerPosition;
+        DataManager.OnDataLoaded -= PlotMinimapTrajectory;
+        DataManager.OnDataUpdated -= UpdateMinimapTrajectory;
+        DataManager.OnDataUpdated -= UpdateMarkerPosition;
     }
 
     private void Start()

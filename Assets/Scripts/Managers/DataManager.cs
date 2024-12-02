@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class SimulationManager : MonoBehaviour
+public class DataManager : MonoBehaviour
 {
     [Header("Data Files")]
     [SerializeField] private TextAsset nominalTrajectoryDataFile;
@@ -19,7 +19,7 @@ public class SimulationManager : MonoBehaviour
     public static event Action<DataLoadedEventArgs> OnDataLoaded;
     public static event Action<int> OnDataUpdated;
 
-    public static SimulationManager Instance { get; private set; }
+    public static DataManager Instance { get; private set; }
 
     private List<string[]> nominalTrajectoryDataValues;
     private List<string[]> offnominalTrajectoryDataValues;
