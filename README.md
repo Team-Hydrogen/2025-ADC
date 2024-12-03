@@ -27,11 +27,10 @@ In the 2025 NASA App Development Challenge, high school teams have 10 weeks to c
 
 ## Special Contributions
 Team Hydrogen would like to thank the following people for their unwavering support and encouragement throughout the development of our application.
-- Jayson Harriott, for ___
-- Leonel Cruz, for ___
-- Parasanna Gurumallapla, for ___
-- Shivendra Singh, for ___
-- [Suchin Ravi](https://github.com/wonksknowsuchin), for ___
+- Jayson Harriott, for kickstarting our project and providing us with the latest updates.
+- Leonel Cruz, for sharing his expertise in UI/UX design and providing valuable feedback to planned designs.
+- Shivendra Singh, for sharing his expertise in 3-D modeling and animation.
+- [Suchin Ravi](https://github.com/wonksknowsuchin), for organizing this team, providing mentorship in machine learning, and guiding the trajectory of our project.
 
 ## Software and Tools
 - Unity Editor (version 2022.3.52f1 LTS)
