@@ -33,6 +33,7 @@ Team Hydrogen would like to thank the following people for their unwavering supp
 - [Suchin Ravi](https://github.com/wonksknowsuchin), for organizing this team, providing mentorship in machine learning, and guiding the trajectory of our project.
 
 ## Software and Tools
-- Unity Editor (version 2022.3.52f1 LTS)
-- JetBrains Rider (version 2024.2.7)
 - Blender (version 4.2 LTS)
+- Unity Editor (version 2022.3.53f1 LTS)
+- JetBrains Rider (version 2024.3)
+- Visual Studio (version 17.7.6)
