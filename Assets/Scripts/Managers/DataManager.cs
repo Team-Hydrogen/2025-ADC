@@ -10,42 +10,23 @@ public class DataManager : MonoBehaviour
     [SerializeField] private TextAsset offnominalTrajectoryDataFile;
     [SerializeField] private TextAsset linkBudgetDataFile;
 
+    [Header("Mission Stages")]
+    [SerializeField] private List<MissionStage> stages;
+
     [Header("Scene View Settings")]
     [SerializeField] private bool drawGizmos;
     [SerializeField] private Color beginningGizmosLineColor;
     [SerializeField] private Color endGizmosLineColor;
     [SerializeField, Range(1f, 100f)] private int gizmosLevelOfDetail;
 
-    [Header("Settings")]
-    [Tooltip("How fast the data manager updates in data points per second initially"), Range(0, 400)]
-    [SerializeField] private int initialUpdateSpeed;
-    [Tooltip("The maximum speed the data manager updates in data points per second"), Range(0, 400)]
-    [SerializeField] private int maximumUpdateSpeed;
-    [Tooltip("The acceleration of the speed."), Range(10, 50)]
-    [SerializeField] private int updateSpeedAcceleration;
-
-    [Header("Stages")]
-    [SerializeField] private List<MissionStage> stages;
-
-    public static event Action OnDataLoaded;
-    public static event Action<int> OnDataUpdated;
+    public static event Action<DataLoadedEventArgs> OnDataLoaded;
     public static event Action<MissionStage> OnMissionStageUpdated;
 
     public static DataManager Instance { get; private set; }
-    
-    public static List<string[]> nominalTrajectoryDataValues { get; private set; }
-    public static List<string[]> offnominalTrajectoryDataValues { get; private set; }
-    public static List<string[]> linkBudgetDataValues { get; private set; }
-    
-    private int _currentDataIndex;
-    private string[] _currentData;
-    private MissionStage _currentMissionStage;
-    private const int DataPointsForward = 500;
-    private const int DataPointsBackward = 500;
-    
-    private float _currentUpdateSpeed;
-    private float _timeSinceLastDataPoint = 0.0f;
-    private float _timePerDataPoint;
+
+    private List<string[]> nominalTrajectoryDataValues;
+    private List<string[]> offnominalTrajectoryDataValues;
+    private List<string[]> linkBudgetDataValues;
 
     List<Vector3> positionVectorsForGizmos;
     
@@ -62,72 +43,75 @@ public class DataManager : MonoBehaviour
 
     private void Start()
     {
-        _currentDataIndex = 0;
-        _currentUpdateSpeed = initialUpdateSpeed;
-        _timePerDataPoint =  1.0f / _currentUpdateSpeed;
-
         nominalTrajectoryDataValues = ReadNominalTrajectoryData();
         offnominalTrajectoryDataValues = ReadOffnominalTrajectoryData();
         linkBudgetDataValues = ReadLinkBudgetData();
 
-        OnDataLoaded?.Invoke();
+        OnDataLoaded?.Invoke(new DataLoadedEventArgs(nominalTrajectoryDataValues, offnominalTrajectoryDataValues, linkBudgetDataValues));
+        OnMissionStageUpdated?.Invoke(stages[0]);
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        // The tick variable updates.
-        _timeSinceLastDataPoint += Time.deltaTime;
-        
-        if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < nominalTrajectoryDataValues.Count)
+        SatelliteManager.OnCurrentIndexUpdated += UpdateMissionStage;
+    }
+
+    private void OnDisable()
+    {
+        SatelliteManager.OnCurrentIndexUpdated -= UpdateMissionStage;
+    }
+
+    /// <summary>
+    /// Reads the nominal trajectory data.
+    /// </summary>
+    /// <returns>A list of String arrays representing the CSV file</returns>
+    private List<string[]> ReadNominalTrajectoryData()
+    {
+        nominalTrajectoryDataValues = CsvReader.ReadCsvFile(nominalTrajectoryDataFile);
+        nominalTrajectoryDataValues.RemoveAt(0);
+        return nominalTrajectoryDataValues;
+    }
+    
+    /// <summary>
+    /// Reads the offnominal trajectory data.
+    /// </summary>
+    /// <returns>A list of String arrays representing the CSV file</returns>
+    private List<string[]> ReadOffnominalTrajectoryData()
+    {
+        offnominalTrajectoryDataValues = CsvReader.ReadCsvFile(offnominalTrajectoryDataFile);
+        offnominalTrajectoryDataValues.RemoveAt(0);
+        return offnominalTrajectoryDataValues;
+    }
+
+    /// <summary>
+    /// Reads the link budget data.
+    /// </summary>
+    /// <returns>A list of String arrays representing the CSV file</returns>
+    private List<string[]> ReadLinkBudgetData()
+    {
+        linkBudgetDataValues = CsvReader.ReadCsvFile(linkBudgetDataFile);
+        linkBudgetDataValues.RemoveAt(0);
+        return linkBudgetDataValues;
+    }
+
+    private void UpdateMissionStage(int dataIndex)
+    {
+        int index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
+
+        if (index != -1)
         {
-            OnDataUpdated?.Invoke(_currentDataIndex);
-            _currentDataIndex++;
-            _timeSinceLastDataPoint -= _timePerDataPoint;
-        }
-        
-        // The current update speed increases with acceleration.
-        _currentUpdateSpeed += updateSpeedAcceleration * Time.deltaTime;
-        if (_currentUpdateSpeed > maximumUpdateSpeed)
-        {
-            _currentUpdateSpeed = maximumUpdateSpeed;
-        }
-        _timePerDataPoint =  1.0f / _currentUpdateSpeed;
-        
-        if (!_currentMissionStage.Equals(GetCurrentMissionStage()))
-        {
-            _currentMissionStage = GetCurrentMissionStage();
-            OnMissionStageUpdated?.Invoke(_currentMissionStage);
+            OnMissionStageUpdated?.Invoke(stages[index]);
         }
     }
 
-    public void SkipBackward(float timeInSeconds)
-    {
-        _currentDataIndex = Mathf.Max(0, _currentDataIndex - DataPointsBackward);
-    }
+    #region Gizmos
 
-    public void SkipForward(float timeInSeconds)
+    private void OnValidate()
     {
-        _currentDataIndex = Mathf.Min(_currentDataIndex + DataPointsForward, nominalTrajectoryDataValues.Count - 1);
-    }
-
-    private MissionStage GetCurrentMissionStage()
-    {
-        MissionStage latestStage = new MissionStage(_currentDataIndex, MissionStage.StageTypes.None);
-
-        for (int i = 0; i < stages.Count; i++)
+        if (drawGizmos)
         {
-            if (_currentDataIndex >= stages[i].startDataIndex)
-            {
-                latestStage = stages[i];
-            }
-
-            else if (_currentDataIndex < stages[i].startDataIndex)
-            {
-                return latestStage;
-            }
+            LoadGizmosPathData();
         }
-
-        return latestStage;
     }
 
     /// <summary>
@@ -152,43 +136,6 @@ public class DataManager : MonoBehaviour
         for (int i = midpoint; i < positionVectorsForGizmos.Count - gizmosLevelOfDetail; i += gizmosLevelOfDetail)
         {
             Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
-        }
-    }
-
-    /// <summary>
-    /// Reads the nominal trajectory data.
-    /// </summary>
-    /// <returns>A list of String arrays representing the CSV file</returns>
-    private List<string[]> ReadNominalTrajectoryData()
-    {
-        nominalTrajectoryDataValues = CsvReader.ReadCsvFile(nominalTrajectoryDataFile);
-        nominalTrajectoryDataValues.RemoveAt(0);
-        return nominalTrajectoryDataValues;
-    }
-    
-    /// <summary>
-    /// Reads the offnominal trajectory data.
-    /// </summary>
-    /// <returns>A list of String arrays representing the CSV file</returns>
-    private List<string[]> ReadOffnominalTrajectoryData()
-    {
-        offnominalTrajectoryDataValues = CsvReader.ReadCsvFile(offnominalTrajectoryDataFile);
-        offnominalTrajectoryDataValues.RemoveAt(0);
-        return offnominalTrajectoryDataValues;
-    }
-    
-    private List<string[]> ReadLinkBudgetData()
-    {
-        linkBudgetDataValues = CsvReader.ReadCsvFile(linkBudgetDataFile);
-        linkBudgetDataValues.RemoveAt(0);
-        return linkBudgetDataValues;
-    }
-
-    private void OnValidate()
-    {
-        if (drawGizmos)
-        {
-            LoadGizmosPathData();
         }
     }
 
@@ -222,4 +169,5 @@ public class DataManager : MonoBehaviour
 
         positionVectorsForGizmos = trajectoryPoints.ToList();
     }
+    #endregion
 }

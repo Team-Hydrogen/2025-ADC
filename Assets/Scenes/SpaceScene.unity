@@ -3466,8 +3466,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328071167}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.70090926, y: -0.0000046156597, z: 0.0000045357956, w: 0.71325046}
-  m_LocalPosition: {x: 0, y: 0, z: 0.000000029802322}
+  m_LocalRotation: {x: 0.70090926, y: 0, z: 0, w: 0.71325046}
+  m_LocalPosition: {x: 0, y: 0, z: -0.000000074505806}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4651,7 +4651,7 @@ Transform:
   m_GameObject: {fileID: 411558178}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7009093, y: -0.00000008571096, z: 0.00000008422792, w: 0.71325046}
-  m_LocalPosition: {x: 0, y: 27, z: -0.27}
+  m_LocalPosition: {x: 0, y: 17, z: -0.17}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5183,7 +5183,7 @@ Transform:
   m_GameObject: {fileID: 508490928}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 27, z: -0.27}
+  m_LocalPosition: {x: 0, y: 17, z: -0.17}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5286,12 +5286,12 @@ MonoBehaviour:
   m_BindingMode: 4
   m_SplineCurvature: 0.2
   m_Orbits:
-  - m_Height: 27
-    m_Radius: 0.27
+  - m_Height: 17
+    m_Radius: 0.17
   - m_Height: 0
-    m_Radius: 27
-  - m_Height: -27
-    m_Radius: 0.27
+    m_Radius: 17
+  - m_Height: -17
+    m_Radius: 0.17
   m_LegacyHeadingBias: 3.4028235e+38
   m_Rigs:
   - {fileID: 328071169}
@@ -5672,8 +5672,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523667355}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6772845, y: 0, z: 0, w: 0.73572123}
-  m_LocalPosition: {x: 0, y: 0, z: -0.00000044703484}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -8.642862, z: -12.44706}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6065,6 +6065,7 @@ MonoBehaviour:
   futureNominalTrajectory: {fileID: 943471396}
   pastOffnominalTrajectory: {fileID: 2090706359}
   futureOffnominalTrajectory: {fileID: 1270632034}
+  timeScale: 60
 --- !u!1 &542944903
 GameObject:
   m_ObjectHideFlags: 0
@@ -6534,13 +6535,6 @@ MonoBehaviour:
   offnominalTrajectoryDataFile: {fileID: 4900000, guid: 572487ac05e8842c1bfc1366845750e7,
     type: 3}
   linkBudgetDataFile: {fileID: 4900000, guid: 1bb61a9b8e4624950a4905b8f07e9c39, type: 3}
-  drawGizmos: 1
-  beginningGizmosLineColor: {r: 0, g: 0.9339623, b: 0.58373624, a: 1}
-  endGizmosLineColor: {r: 1, g: 0, b: 0.30254555, a: 1}
-  gizmosLevelOfDetail: 1
-  initialUpdateSpeed: 12
-  maximumUpdateSpeed: 108
-  updateSpeedAcceleration: 10
   stages:
   - startDataIndex: 0
     stageType: 2
@@ -6550,6 +6544,10 @@ MonoBehaviour:
     stageType: 4
   - startDataIndex: 7500
     stageType: 5
+  drawGizmos: 1
+  beginningGizmosLineColor: {r: 0, g: 0.9339623, b: 0.58373624, a: 1}
+  endGizmosLineColor: {r: 1, g: 0, b: 0.30254555, a: 1}
+  gizmosLevelOfDetail: 1
 --- !u!1 &574056989
 GameObject:
   m_ObjectHideFlags: 0
@@ -6991,7 +6989,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 27, z: -0.27}
+  m_FollowOffset: {x: 0, y: 7.013856, z: -13.84658}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -8901,7 +8899,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 27, z: -0.27}
+  m_FollowOffset: {x: 0, y: 7.013856, z: -13.84658}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -9759,8 +9757,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922644109}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.69052005, y: -0.0000011325366, z: 0.0000010811904, w: 0.7233133}
-  m_LocalPosition: {x: 0, y: 0, z: 0.000000029802322}
+  m_LocalRotation: {x: 0.6905201, y: 0, z: 0, w: 0.7233132}
+  m_LocalPosition: {x: 0, y: 0, z: -0.000000074505806}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10315,7 +10313,8 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Positions: []
+  m_Positions:
+  - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -10621,7 +10620,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 27, z: -0.27}
+  m_FollowOffset: {x: 0, y: 7.013856, z: -13.84658}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -13396,7 +13395,8 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Positions: []
+  m_Positions:
+  - {x: 0, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1

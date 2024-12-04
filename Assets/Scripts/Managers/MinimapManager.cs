@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,30 +29,31 @@ public class MinimapManager : MonoBehaviour
     private void OnEnable()
     {
         DataManager.OnDataLoaded += PlotMinimapTrajectory;
-        DataManager.OnDataUpdated += UpdateMinimapTrajectory;
-        DataManager.OnDataUpdated += UpdateMarkerPosition;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateMinimapTrajectory;
     }
 
     private void OnDisable()
     {
         DataManager.OnDataLoaded -= PlotMinimapTrajectory;
-        DataManager.OnDataUpdated -= UpdateMinimapTrajectory;
-        DataManager.OnDataUpdated -= UpdateMarkerPosition;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateMinimap;
     }
 
-    private void Start()
+    private void UpdateMinimap(int index)
     {
-        
+        UpdateMinimapTrajectory(index);
+        UpdateMarkerPosition(index);
     }
     
-    private void PlotMinimapTrajectory()
+    private void PlotMinimapTrajectory(DataLoadedEventArgs data)
     {
+        List<string[]> nominalTrajectoryData = data.NominalTrajectoryData;
+
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = DataManager.nominalTrajectoryDataValues.Count;
+        int numberOfPoints = nominalTrajectoryData.Count;
         Vector3[] futureTrajectoryPoints = new Vector3[numberOfPoints];
         for (int index = 0; index < numberOfPoints; index++)
         {
-            string[] point = DataManager.nominalTrajectoryDataValues[index];
+            string[] point = nominalTrajectoryData[index];
 
             try
             {
