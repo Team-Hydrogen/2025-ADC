@@ -87,6 +87,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
         SatelliteManager.OnDistanceCalculated += UpdateUIDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
+        DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
 
     private void OnDisable()
@@ -96,6 +97,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
         SatelliteManager.OnDistanceCalculated -= UpdateUIDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
+        DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
 
     private void Update()

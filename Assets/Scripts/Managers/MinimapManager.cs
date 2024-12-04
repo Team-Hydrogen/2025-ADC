@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,20 +29,19 @@ public class MinimapManager : MonoBehaviour
     private void OnEnable()
     {
         DataManager.OnDataLoaded += PlotMinimapTrajectory;
-        DataManager.OnDataUpdated += UpdateMinimapTrajectory;
-        DataManager.OnDataUpdated += UpdateMarkerPosition;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateMinimapTrajectory;
     }
 
     private void OnDisable()
     {
         DataManager.OnDataLoaded -= PlotMinimapTrajectory;
-        DataManager.OnDataUpdated -= UpdateMinimapTrajectory;
-        DataManager.OnDataUpdated -= UpdateMarkerPosition;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateMinimap;
     }
 
-    private void Start()
+    private void UpdateMinimap(int index)
     {
-        
+        UpdateMinimapTrajectory(index);
+        UpdateMarkerPosition(index);
     }
     
     private void PlotMinimapTrajectory(DataLoadedEventArgs data)

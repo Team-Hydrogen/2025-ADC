@@ -10,6 +10,9 @@ public class DataManager : MonoBehaviour
     [SerializeField] private TextAsset offnominalTrajectoryDataFile;
     [SerializeField] private TextAsset linkBudgetDataFile;
 
+    [Header("Mission Stages")]
+    [SerializeField] private List<MissionStage> stages;
+
     [Header("Scene View Settings")]
     [SerializeField] private bool drawGizmos;
     [SerializeField] private Color beginningGizmosLineColor;
@@ -17,7 +20,7 @@ public class DataManager : MonoBehaviour
     [SerializeField, Range(1f, 100f)] private int gizmosLevelOfDetail;
 
     public static event Action<DataLoadedEventArgs> OnDataLoaded;
-    public static event Action<int> OnDataUpdated;
+    public static event Action<MissionStage> OnMissionStageUpdated;
 
     public static DataManager Instance { get; private set; }
 
@@ -40,50 +43,22 @@ public class DataManager : MonoBehaviour
 
     private void Start()
     {
-        //_currentDataIndex = 0;
-        //_currentUpdateSpeed = initialUpdateSpeed;
-        //_timePerDataPoint =  1.0f / _currentUpdateSpeed;
-
         nominalTrajectoryDataValues = ReadNominalTrajectoryData();
         offnominalTrajectoryDataValues = ReadOffnominalTrajectoryData();
         linkBudgetDataValues = ReadLinkBudgetData();
 
         OnDataLoaded?.Invoke(new DataLoadedEventArgs(nominalTrajectoryDataValues, offnominalTrajectoryDataValues, linkBudgetDataValues));
+        OnMissionStageUpdated?.Invoke(stages[0]);
     }
 
-    //public void SkipBackward(float timeInSeconds)
-    //{
-    //    _currentDataIndex = Mathf.Max(0, _currentDataIndex - DataPointsBackward);
-    //}
-
-    //public void SkipForward(float timeInSeconds)
-    //{
-    //    _currentDataIndex = Mathf.Min(_currentDataIndex + DataPointsForward, nominalTrajectoryDataValues.Count - 1);
-    //}
-
-    /// <summary>
-    /// Draws trajectory in the editor.
-    /// </summary>
-    private void OnDrawGizmos()
+    private void OnEnable()
     {
-        if (!drawGizmos)
-        {
-            return;
-        }
+        SatelliteManager.OnCurrentIndexUpdated += UpdateMissionStage;
+    }
 
-        int midpoint = positionVectorsForGizmos.Count / 2;
-
-        Gizmos.color = beginningGizmosLineColor;
-        for (int i = 0; i < midpoint; i += gizmosLevelOfDetail)
-        {
-            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
-        }
-
-        Gizmos.color = endGizmosLineColor;
-        for (int i = midpoint; i < positionVectorsForGizmos.Count - gizmosLevelOfDetail; i += gizmosLevelOfDetail)
-        {
-            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
-        }
+    private void OnDisable()
+    {
+        SatelliteManager.OnCurrentIndexUpdated -= UpdateMissionStage;
     }
 
     /// <summary>
@@ -107,7 +82,11 @@ public class DataManager : MonoBehaviour
         offnominalTrajectoryDataValues.RemoveAt(0);
         return offnominalTrajectoryDataValues;
     }
-    
+
+    /// <summary>
+    /// Reads the link budget data.
+    /// </summary>
+    /// <returns>A list of String arrays representing the CSV file</returns>
     private List<string[]> ReadLinkBudgetData()
     {
         linkBudgetDataValues = CsvReader.ReadCsvFile(linkBudgetDataFile);
@@ -115,11 +94,48 @@ public class DataManager : MonoBehaviour
         return linkBudgetDataValues;
     }
 
+    private void UpdateMissionStage(int dataIndex)
+    {
+        int index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
+
+        if (index != -1)
+        {
+            OnMissionStageUpdated?.Invoke(stages[index]);
+        }
+    }
+
+    #region Gizmos
+
     private void OnValidate()
     {
         if (drawGizmos)
         {
             LoadGizmosPathData();
+        }
+    }
+
+    /// <summary>
+    /// Draws trajectory in the editor.
+    /// </summary>
+    private void OnDrawGizmos()
+    {
+        if (!drawGizmos)
+        {
+            return;
+        }
+
+        int midpoint = positionVectorsForGizmos.Count / 2;
+
+        Gizmos.color = beginningGizmosLineColor;
+        for (int i = 0; i < midpoint; i += gizmosLevelOfDetail)
+        {
+            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
+        }
+
+        Gizmos.color = endGizmosLineColor;
+        for (int i = midpoint; i < positionVectorsForGizmos.Count - gizmosLevelOfDetail; i += gizmosLevelOfDetail)
+        {
+            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
         }
     }
 
@@ -153,4 +169,5 @@ public class DataManager : MonoBehaviour
 
         positionVectorsForGizmos = trajectoryPoints.ToList();
     }
+    #endregion
 }
