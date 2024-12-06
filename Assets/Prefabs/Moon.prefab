@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6290537672091902966}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Moon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 7515406161752737657}
   - component: {fileID: 7686500338365043858}
   - component: {fileID: 3629709418422173249}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Surface
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -3466,7 +3466,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328071167}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7009093, y: -0.0000010286078, z: 0.0000010108101, w: 0.71325046}
+  m_LocalRotation: {x: 0.70090926, y: 0, z: 0, w: 0.71325046}
   m_LocalPosition: {x: 0, y: 0.0000019073486, z: 0.00000090897083}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6350,16 +6350,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Moon
-      objectReference: {fileID: 0}
-    - target: {fileID: 5314488137069964330, guid: d59bb9e6d298ed94f9b461dbbcddfcce,
-        type: 3}
-      propertyPath: m_Layer
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 5807818750323430948, guid: d59bb9e6d298ed94f9b461dbbcddfcce,
-        type: 3}
-      propertyPath: m_Layer
-      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6290537672091902966, guid: d59bb9e6d298ed94f9b461dbbcddfcce,
         type: 3}
@@ -9769,7 +9759,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922644109}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6905201, y: -0.0000014575928, z: 0.0000013915094, w: 0.7233132}
+  m_LocalRotation: {x: 0.6905201, y: 0, z: 0, w: 0.7233132}
   m_LocalPosition: {x: 0, y: 0.0000019073486, z: 0.00000090897083}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
