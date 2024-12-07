@@ -339,14 +339,31 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void PrioritizeAntennas()
     {
+        // LSTM Prioritization Algorithm:
+        // 1. Start off with the antenna_availabilty.csv at first. Could be the offnominal too.
+        // 2. Pick the antenna with the highest link budget (10k max) but everytime the prioritized antenna switches,
+        //    check the future lines until you reach a new prioritized antenna. If it is less than 60 lines (minutes),
+        //    then do not change the prioritized antenna.
+        // 3. Run this algorithm again with the new data.
+        
+        // t=0; 1, 2, 3, 4
+        // t=1; 9, 2, 2, 0,
+        // t=2; 5, 2, 3, 7
+        // t=3; 9, 2, 1, 0
+        
         var childCount = antennasGrid.childCount;
         var antennaLabels = new Transform[childCount];
-
+        var connectionSpeeds = new float[childCount];
+        
         for (var i = 0; i < childCount; i++)
         {
-            antennaLabels[i] = antennasGrid.GetChild(i);
+            var antennaLabel = antennasGrid.GetChild(i);
+            antennaLabels[i] = antennaLabel;
+            connectionSpeeds[i] = float.TryParse(
+                antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out float connectionSpeed)
+                    ? connectionSpeed : 0;
         }
-
+        
         var sortedLabels = antennaLabels
             .Select(antennaLabel => new
             {

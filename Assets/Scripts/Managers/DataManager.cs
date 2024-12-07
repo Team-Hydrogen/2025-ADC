@@ -28,6 +28,7 @@ public class DataManager : MonoBehaviour
     private List<string[]> offnominalTrajectoryDataValues;
     private List<string[]> linkBudgetDataValues;
 
+    private string _currentPrioritizedAntenna;
     List<Vector3> positionVectorsForGizmos;
     
     private void Awake()
@@ -47,18 +48,25 @@ public class DataManager : MonoBehaviour
         offnominalTrajectoryDataValues = ReadOffnominalTrajectoryData();
         linkBudgetDataValues = ReadLinkBudgetData();
 
-        OnDataLoaded?.Invoke(new DataLoadedEventArgs(nominalTrajectoryDataValues, offnominalTrajectoryDataValues, linkBudgetDataValues));
+        OnDataLoaded?.Invoke(
+            new DataLoadedEventArgs(nominalTrajectoryDataValues, offnominalTrajectoryDataValues, linkBudgetDataValues));
         OnMissionStageUpdated?.Invoke(stages[0]);
     }
 
     private void OnEnable()
     {
-        SatelliteManager.OnCurrentIndexUpdated += UpdateMissionStage;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateDataManager;
     }
 
     private void OnDisable()
     {
-        SatelliteManager.OnCurrentIndexUpdated -= UpdateMissionStage;
+        SatelliteManager.OnCurrentIndexUpdated -= UpdateDataManager;
+    }
+
+    private void UpdateDataManager(int index)
+    {
+        UpdateMissionStage(index);
+        _currentPrioritizedAntenna = PrioritizeLinkBudget(index);
     }
 
     /// <summary>
@@ -93,7 +101,40 @@ public class DataManager : MonoBehaviour
         linkBudgetDataValues.RemoveAt(0);
         return linkBudgetDataValues;
     }
+    
+    private string PrioritizeLinkBudget(int index)
+    {
+        var currentSatelliteName = linkBudgetDataValues[index][1];
+        
+        if (index <= 0)
+        {
+            return currentSatelliteName;
+        }
+        
+        var previousSatelliteName = linkBudgetDataValues[index - 1][1];
 
+        if (previousSatelliteName == currentSatelliteName)
+        {
+            return previousSatelliteName;
+        }
+
+        for (var futureIndex = 1; futureIndex <= 60; futureIndex++)
+        {
+            var futureSatelliteName = linkBudgetDataValues[index + futureIndex][1];
+            if (currentSatelliteName != futureSatelliteName)
+            {
+                return previousSatelliteName;
+            }
+            futureIndex++;
+        }
+        
+        return currentSatelliteName;
+    }
+    
+    /// <summary>
+    /// Updates the mission stage.
+    /// </summary>
+    /// <param name="dataIndex"></param>
     private void UpdateMissionStage(int dataIndex)
     {
         int index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
@@ -103,7 +144,7 @@ public class DataManager : MonoBehaviour
             OnMissionStageUpdated?.Invoke(stages[index]);
         }
     }
-
+    
     #region Gizmos
 
     private void OnValidate()

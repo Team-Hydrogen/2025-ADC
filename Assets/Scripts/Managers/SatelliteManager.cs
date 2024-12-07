@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
-using UnityEditor.U2D;
 
 public class SatelliteManager : MonoBehaviour
 {
