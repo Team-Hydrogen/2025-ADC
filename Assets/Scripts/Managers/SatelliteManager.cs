@@ -44,7 +44,10 @@ public class SatelliteManager : MonoBehaviour
     public static event Action<int> OnCurrentIndexUpdated; 
     public static event Action<float> OnUpdateTime;
     public static event Action<Vector3> OnUpdateCoordinates;
-    public static event Action<float[]> OnDistanceCalculated;
+    public static event Action<DistanceTravelledEventArgs> OnDistanceCalculated;
+    public static event Action<float> OnTimeScaleSet;
+
+    private float totalDistanceTravelled = 0;
 
     #region Material Variables
     
@@ -76,6 +79,7 @@ public class SatelliteManager : MonoBehaviour
     private void Start()
     { 
         _vectorRenderers = velocityVector.GetComponentsInChildren<Renderer>();
+        OnTimeScaleSet?.Invoke(timeScale);
     }
 
     private void OnEnable()
@@ -88,6 +92,18 @@ public class SatelliteManager : MonoBehaviour
     {
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= OnMissionStageUpdated;
+    }
+
+    public void SkippedButtonPress()
+    {
+        timeScale = timeScale * 10;
+        OnTimeScaleSet?.Invoke(timeScale);
+    }
+
+    public void RewindButtonPressed()
+    {
+        timeScale = Mathf.Min(1, timeScale / 10);
+        OnTimeScaleSet?.Invoke(timeScale);
     }
 
     private void Update()
@@ -219,7 +235,10 @@ public class SatelliteManager : MonoBehaviour
         progress += Time.deltaTime / timeInterval * timeScale;
 
         // Interpolate position
+        Vector3 previousSatellitePosition = satellite.transform.position;
         satellite.transform.position = Vector3.Lerp(currentPosition, nextPosition, progress);
+
+        totalDistanceTravelled += Vector3.Distance(previousSatellitePosition, satellite.transform.position) / trajectoryScale;
 
         // Calculate satellite direction
         Vector3 direction = (nextPosition - currentPosition).normalized;
@@ -242,6 +261,7 @@ public class SatelliteManager : MonoBehaviour
 
         OnUpdateTime?.Invoke(estimatedElapsedTime);
         OnUpdateCoordinates?.Invoke(satellite.transform.position / trajectoryScale);
+        CalculateDistances();
 
         UpdateNominalTrajectory(false, true);
 
@@ -402,12 +422,11 @@ public class SatelliteManager : MonoBehaviour
         }
     }
         
-    private void CalculateDistance()
+    private void CalculateDistances()
     {
-        float distanceToEarth = Vector3.Distance(satellite.transform.position, earth.transform.position);
-        float distanceToMoon = Vector3.Distance(satellite.transform.position, moon.transform.position);
-        float[] distances = { _totalDistance, distanceToEarth, distanceToMoon };
-        OnDistanceCalculated?.Invoke(distances);
+        float distanceToEarth = Vector3.Distance(satellite.transform.position, earth.transform.position) / trajectoryScale;
+        float distanceToMoon = Vector3.Distance(satellite.transform.position, moon.transform.position) / trajectoryScale;
+        OnDistanceCalculated?.Invoke(new DistanceTravelledEventArgs(totalDistanceTravelled, distanceToEarth, distanceToMoon));
     }
 
     private int GetClosestDataPointFromTime(float time)

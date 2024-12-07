@@ -82,20 +82,16 @@ public class UIManager : MonoBehaviour
 
     private void OnEnable()
     {
-        //SimulationManager.OnDataUpdated += UpdateUIFromData;
-        //SimulationManager.OnMissionStageUpdated += UpdateMissionStage;
         SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
-        SatelliteManager.OnDistanceCalculated += UpdateUIDistances;
+        SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
 
     private void OnDisable()
     {
-        //SimulationManager.OnDataUpdated -= UpdateUIFromData;
-        //SimulationManager.OnMissionStageUpdated -= UpdateMissionStage;
         SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
-        SatelliteManager.OnDistanceCalculated -= UpdateUIDistances;
+        SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
@@ -165,11 +161,6 @@ public class UIManager : MonoBehaviour
     //        ShowNotification("Service Module Fired");
     //    }
     //}
-    
-    private void UpdateUIDistances(float[] distances)
-    {
-        SetDistances(distances[0], distances[1], distances[2]);
-    }
 
     #region Manage Time
     private void SetTime(int days, int hours, int minutes, int seconds)
@@ -298,11 +289,11 @@ public class UIManager : MonoBehaviour
         }
     }
     
-    private void SetDistances(float totalDistance, float fromEarth, float fromMoon)
+    private void UpdateDistances(DistanceTravelledEventArgs distances)
     {
-        SetTotalDistance(totalDistance);
-        SetDistanceFromEarth(fromEarth);
-        SetDistanceFromMoon(fromMoon);
+        SetTotalDistance(distances.TotalDistance);
+        SetDistanceFromEarth(distances.DistanceFromEarth);
+        SetDistanceFromMoon(distances.DistanceFromMoon);
     }
     #endregion
 
