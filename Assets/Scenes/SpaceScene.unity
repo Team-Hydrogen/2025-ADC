@@ -3466,7 +3466,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328071167}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.70090926, y: -0.000000448442, z: 0.00000044068275, w: 0.71325046}
+  m_LocalRotation: {x: 0.70090926, y: -0.0000005816134, z: 0.00000057154983, w: 0.71325046}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4651,7 +4651,7 @@ Transform:
   m_GameObject: {fileID: 411558178}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7009093, y: -0.00000008571096, z: 0.00000008422792, w: 0.71325046}
-  m_LocalPosition: {x: 29.75, y: 19.5, z: -8.88}
+  m_LocalPosition: {x: 29.75, y: 106.5, z: -9.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5185,7 +5185,7 @@ Transform:
   m_GameObject: {fileID: 508490928}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 29.75, y: 19.5, z: -8.88}
+  m_LocalPosition: {x: 29.75, y: 106.5, z: -9.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5288,12 +5288,12 @@ MonoBehaviour:
   m_BindingMode: 4
   m_SplineCurvature: 0.2
   m_Orbits:
-  - m_Height: 13
-    m_Radius: 0.13
+  - m_Height: 100
+    m_Radius: 1
   - m_Height: 0
-    m_Radius: 13
-  - m_Height: -13
-    m_Radius: 0.13
+    m_Radius: 100
+  - m_Height: -100
+    m_Radius: 1
   m_LegacyHeadingBias: 3.4028235e+38
   m_Rigs:
   - {fileID: 328071169}
@@ -5674,7 +5674,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 523667355}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6772845, y: 0, z: 0, w: 0.73572123}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6534,9 +6534,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nominalTrajectoryDataFile: {fileID: 4900000, guid: 9ca32e313e56345aba28788e89da5b87,
     type: 3}
-  offnominalTrajectoryDataFile: {fileID: 4900000, guid: 572487ac05e8842c1bfc1366845750e7,
+  offNominalTrajectoryDataFile: {fileID: 4900000, guid: 572487ac05e8842c1bfc1366845750e7,
     type: 3}
-  linkBudgetDataFile: {fileID: 4900000, guid: 1bb61a9b8e4624950a4905b8f07e9c39, type: 3}
+  antennaAvailabilityDataFile: {fileID: 4900000, guid: 1bb61a9b8e4624950a4905b8f07e9c39,
+    type: 3}
+  linkBudgetDataFile: {fileID: 4900000, guid: 2c55724a3c75a47628e62b10a9105383, type: 3}
   stages:
   - startDataIndex: 0
     stageType: 2
@@ -6991,7 +6993,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 13, z: -0.13}
+  m_FollowOffset: {x: 0, y: 100, z: -1}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -8901,7 +8903,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 13, z: -0.13}
+  m_FollowOffset: {x: 0, y: 100, z: -1}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -9759,7 +9761,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922644109}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6905201, y: -0.0000010698624, z: 0.0000010213575, w: 0.7233133}
+  m_LocalRotation: {x: 0.6905201, y: -0.00000009555983, z: 0.00000009122739, w: 0.7233132}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -10622,7 +10624,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 13, z: -0.13}
+  m_FollowOffset: {x: 0, y: 100, z: -1}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0

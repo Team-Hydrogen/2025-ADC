@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,7 +10,7 @@ using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance { get; private set; }
+    public static UIManager instance { get; private set; }
     
     [SerializeField] private CanvasGroup canvasGroup;
 
@@ -59,11 +60,16 @@ public class UIManager : MonoBehaviour
     [SerializeField, Range(0, 1f)] private float minimumUIVisibility;
 
     private Vector3 _lastMousePosition;
-    private float _inactivityTimer = 0f;
+    private float _inactivityTimer = 0.0f;
     private bool _isFadingOut = false;
-
+    
+    // Measurement variables
     private UnitSystem _currentLengthUnit = UnitSystem.Metric;
+    
+    private const float MaximumConnectionSpeed = 10_000.0f;
     private const string ConnectionSpeedUnit = "kbps";
+    
+    // Formatter constants
     private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
     
@@ -71,13 +77,13 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        Instance = this;
+        instance = this;
     }
 
     private void OnEnable()
@@ -85,6 +91,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
         SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
 
@@ -93,7 +100,13 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
         SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
+        SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
+    }
+
+    private void Start()
+    {
+        UpdateAntennasFromData(0);
     }
 
     private void Update()
@@ -299,15 +312,33 @@ public class UIManager : MonoBehaviour
 
     #region Manage Antennas
 
-    //private void UpdateAntennaFromData(int currentIndex)
-    //{
-    //    var currentLinkBudgetData = SimulationManager.Instance.linkBudgetDataValues[currentIndex];
-    //    UpdateAntenna(currentLinkBudgetData[1], float.Parse(currentLinkBudgetData[2]));
-    //    PrioritizeAntennas();
-    //    ColorAntennas();
-    //}
+    private void UpdateAntennasFromData(int currentIndex)
+    {
+        var currentLinkBudget = new float[antennaNames.Count];
+        
+        var linkBudgetDataValues = DataManager.instance.linkBudgetDataValues;
+        if (linkBudgetDataValues != null)
+        {
+            var currentLinkBudgetValues = DataManager.instance.linkBudgetDataValues[currentIndex][18..21];
+            for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
+            {
+                var antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
+                currentLinkBudget[antennaIndex] = antennaLinkBudgetValue > MaximumConnectionSpeed
+                    ? MaximumConnectionSpeed : antennaLinkBudgetValue;
+            }
+        }
+        
+        // Updates each antenna with the latest link budget value.
+        for (var antennaIndex = 0; antennaIndex < antennaNames.Count; antennaIndex++)
+        {
+            UpdateAntenna(antennaNames[antennaIndex], currentLinkBudget[antennaIndex]);
+        }
+        
+        PrioritizeAntennas();
+        ColorAntennas();
+    }
 
-    private void UpdateAntenna(string antennaName, float connectionSpeed)
+    private void UpdateAntenna(string antennaName, float connectionSpeed = 0.0f)
     {
         // Gets the index of the antenna name and maps it to its text object.
         var antennaIndex = antennaNames.IndexOf(antennaName);
@@ -339,14 +370,22 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void PrioritizeAntennas()
     {
+        // LSTM Prioritization Algorithm:
+        // 1. Start off with the antenna_availabilty.csv at first. Could be the offnominal too.
+        // 2. Pick the antenna with the highest link budget (10k max) but everytime the prioritized antenna switches,
+        //    check the future lines until you reach a new prioritized antenna. If it is less than 60 lines (minutes),
+        //    then do not change the prioritized antenna.
+        // 3. Run this algorithm again with the new data.
+        
         var childCount = antennasGrid.childCount;
         var antennaLabels = new Transform[childCount];
-
+        
         for (var i = 0; i < childCount; i++)
         {
-            antennaLabels[i] = antennasGrid.GetChild(i);
+            var antennaLabel = antennasGrid.GetChild(i);
+            antennaLabels[i] = antennaLabel;
         }
-
+        
         var sortedLabels = antennaLabels
             .Select(antennaLabel => new
             {
