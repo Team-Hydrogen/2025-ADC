@@ -9,7 +9,7 @@ using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager Instance { get; private set; }
+    public static UIManager instance { get; private set; }
     
     [SerializeField] private CanvasGroup canvasGroup;
 
@@ -59,7 +59,7 @@ public class UIManager : MonoBehaviour
     [SerializeField, Range(0, 1f)] private float minimumUIVisibility;
 
     private Vector3 _lastMousePosition;
-    private float _inactivityTimer = 0f;
+    private float _inactivityTimer = 0.0f;
     private bool _isFadingOut = false;
 
     private UnitSystem _currentLengthUnit = UnitSystem.Metric;
@@ -71,13 +71,13 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        Instance = this;
+        instance = this;
     }
 
     private void OnEnable()
@@ -85,6 +85,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
         SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
 
@@ -93,6 +94,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
         SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
+        SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
 
@@ -299,13 +301,20 @@ public class UIManager : MonoBehaviour
 
     #region Manage Antennas
 
-    //private void UpdateAntennaFromData(int currentIndex)
-    //{
-    //    var currentLinkBudgetData = SimulationManager.Instance.linkBudgetDataValues[currentIndex];
-    //    UpdateAntenna(currentLinkBudgetData[1], float.Parse(currentLinkBudgetData[2]));
-    //    PrioritizeAntennas();
-    //    ColorAntennas();
-    //}
+    private void UpdateAntennasFromData(int currentIndex)
+    {
+        // Loads the link budget data.
+        var currentLinkBudgetData = DataManager.Instance.linkBudgetDataValues[currentIndex];
+        
+        // Updates each antenna with the latest link budget value.
+        UpdateAntenna("DS24", float.Parse(currentLinkBudgetData[18]));
+        UpdateAntenna("DS34", float.Parse(currentLinkBudgetData[19]));
+        UpdateAntenna("DS54", float.Parse(currentLinkBudgetData[20]));
+        UpdateAntenna("WPSA", float.Parse(currentLinkBudgetData[21]));
+        
+        PrioritizeAntennas();
+        ColorAntennas();
+    }
 
     private void UpdateAntenna(string antennaName, float connectionSpeed)
     {
@@ -346,22 +355,13 @@ public class UIManager : MonoBehaviour
         //    then do not change the prioritized antenna.
         // 3. Run this algorithm again with the new data.
         
-        // t=0; 1, 2, 3, 4
-        // t=1; 9, 2, 2, 0,
-        // t=2; 5, 2, 3, 7
-        // t=3; 9, 2, 1, 0
-        
         var childCount = antennasGrid.childCount;
         var antennaLabels = new Transform[childCount];
-        var connectionSpeeds = new float[childCount];
         
         for (var i = 0; i < childCount; i++)
         {
             var antennaLabel = antennasGrid.GetChild(i);
             antennaLabels[i] = antennaLabel;
-            connectionSpeeds[i] = float.TryParse(
-                antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out float connectionSpeed)
-                    ? connectionSpeed : 0;
         }
         
         var sortedLabels = antennaLabels
