@@ -241,13 +241,12 @@ public class SatelliteManager : MonoBehaviour
         // Calculate satellite direction
         Vector3 direction = (nextPosition - currentPosition).normalized;
 
-        float rotationSpeed = 2.0f;
+        const float rotationSpeed = 2.0f;
         if (direction != Vector3.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-
+            var targetRotation = Quaternion.LookRotation(direction);
             targetRotation *= Quaternion.Euler(90f, 0f, 0f);
-
+            
             satellite.transform.rotation = Quaternion.Slerp(
                 satellite.transform.rotation,
                 targetRotation,
@@ -262,17 +261,21 @@ public class SatelliteManager : MonoBehaviour
         CalculateDistances();
         
         UpdateNominalTrajectory(false, true);
-
+        
         // Move to the next point when progress is complete
-        if (_progress >= 1f)
+        if (_progress < 1.0f)
         {
-            _previousPointIndex = _currentPointIndex;
-            _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalTrajectoryPoints.Count; // this resets the simulation
-            _progress = _progress % 1; // Reset progress
-
-            OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
-            UpdateNominalTrajectory(true, false);
+            return;
         }
+        
+        _previousPointIndex = _currentPointIndex;
+        // The simulation is reset.
+        _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalTrajectoryPoints.Count;
+        // The progress is reset.
+        _progress %= 1;
+
+        OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
+        UpdateNominalTrajectory(true, false);
     }
 
     /// <summary>

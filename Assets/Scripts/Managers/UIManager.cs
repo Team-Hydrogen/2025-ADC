@@ -62,11 +62,14 @@ public class UIManager : MonoBehaviour
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0.0f;
     private bool _isFadingOut = false;
-
+    
+    // Measurement variables
     private UnitSystem _currentLengthUnit = UnitSystem.Metric;
     
     private const float MaximumConnectionSpeed = 10_000.0f;
     private const string ConnectionSpeedUnit = "kbps";
+    
+    // Formatter constants
     private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
     
@@ -313,10 +316,10 @@ public class UIManager : MonoBehaviour
     {
         var currentLinkBudget = new float[antennaNames.Count];
         
-        var linkBudgetDataValues = DataManager.Instance.linkBudgetDataValues;
+        var linkBudgetDataValues = DataManager.instance.linkBudgetDataValues;
         if (linkBudgetDataValues != null)
         {
-            var currentLinkBudgetValues = DataManager.Instance.linkBudgetDataValues[currentIndex][18..21];
+            var currentLinkBudgetValues = DataManager.instance.linkBudgetDataValues[currentIndex][18..21];
             for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
             {
                 var antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);

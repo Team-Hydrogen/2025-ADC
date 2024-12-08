@@ -6,18 +6,19 @@ using UnityEngine.Serialization;
 
 public class DataManager : MonoBehaviour
 {
-    [Header("Data Files")] [SerializeField]
-    private TextAsset nominalTrajectoryDataFile;
-
+    public static DataManager instance { get; private set; }
+    
+    [Header("Data Files")]
+    [SerializeField] private TextAsset nominalTrajectoryDataFile;
     [SerializeField] private TextAsset offNominalTrajectoryDataFile;
     [SerializeField] private TextAsset antennaAvailabilityDataFile;
     [SerializeField] private TextAsset linkBudgetDataFile;
 
-    [Header("Mission Stages")] [SerializeField]
-    private List<MissionStage> stages;
+    [Header("Mission Stages")]
+    [SerializeField] private List<MissionStage> stages;
 
-    [Header("Scene View Settings")] [SerializeField]
-    private bool drawGizmos;
+    [Header("Scene View Settings")]
+    [SerializeField] private bool drawGizmos;
 
     [SerializeField] private Color beginningGizmosLineColor;
     [SerializeField] private Color endGizmosLineColor;
@@ -25,8 +26,6 @@ public class DataManager : MonoBehaviour
 
     public static event Action<DataLoadedEventArgs> OnDataLoaded;
     public static event Action<MissionStage> OnMissionStageUpdated;
-
-    public static DataManager Instance { get; private set; }
 
     private List<string[]> _nominalTrajectoryDataValues;
     private List<string[]> _offNominalTrajectoryDataValues;
@@ -38,13 +37,13 @@ public class DataManager : MonoBehaviour
     
     private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (instance != null && instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        Instance = this;
+        instance = this;
     }
 
     private void Start()
