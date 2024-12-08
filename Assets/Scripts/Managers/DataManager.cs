@@ -32,8 +32,8 @@ public class DataManager : MonoBehaviour
     private List<string[]> _offNominalTrajectoryDataValues;
     private List<string[]> _antennaAvailabilityDataValues;
     public List<string[]> linkBudgetDataValues { get; private set; }
-
-private string _currentPrioritizedAntenna;
+    
+    private string _currentPrioritizedAntenna;
     List<Vector3> _positionVectorsForGizmos;
     
     private void Awake()

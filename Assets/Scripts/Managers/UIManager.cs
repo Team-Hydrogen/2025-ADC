@@ -64,6 +64,8 @@ public class UIManager : MonoBehaviour
     private bool _isFadingOut = false;
 
     private UnitSystem _currentLengthUnit = UnitSystem.Metric;
+    
+    private const float MaximumConnectionSpeed = 10_000.0f;
     private const string ConnectionSpeedUnit = "kbps";
     private const string NoDecimalPlaces = "N0";
     private const string ThreeDecimalPlaces = "N3";
@@ -309,26 +311,25 @@ public class UIManager : MonoBehaviour
 
     private void UpdateAntennasFromData(int currentIndex)
     {
-        var dss24LinkBudget = 0.0f;
-        var dss34LinkBudget = 0.0f;
-        var dss54LinkBudget = 0.0f;
-        var wpsaLinkBudget = 0.0f;
+        var currentLinkBudget = new float[antennaNames.Count];
         
         var linkBudgetDataValues = DataManager.Instance.linkBudgetDataValues;
         if (linkBudgetDataValues != null)
         {
-            var currentLinkBudget = linkBudgetDataValues[currentIndex];
-            dss24LinkBudget = float.Parse(currentLinkBudget[18]);
-            dss34LinkBudget = float.Parse(currentLinkBudget[19]);
-            dss54LinkBudget = float.Parse(currentLinkBudget[20]);
-            wpsaLinkBudget = float.Parse(currentLinkBudget[21]);
+            var currentLinkBudgetValues = DataManager.Instance.linkBudgetDataValues[currentIndex][18..21];
+            for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
+            {
+                var antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
+                currentLinkBudget[antennaIndex] = antennaLinkBudgetValue > MaximumConnectionSpeed
+                    ? MaximumConnectionSpeed : antennaLinkBudgetValue;
+            }
         }
         
         // Updates each antenna with the latest link budget value.
-        UpdateAntenna("DSS24", dss24LinkBudget);
-        UpdateAntenna("DSS34", dss34LinkBudget);
-        UpdateAntenna("DSS54", dss54LinkBudget);
-        UpdateAntenna("WPSA", wpsaLinkBudget);
+        for (var antennaIndex = 0; antennaIndex < antennaNames.Count; antennaIndex++)
+        {
+            UpdateAntenna(antennaNames[antennaIndex], currentLinkBudget[antennaIndex]);
+        }
         
         PrioritizeAntennas();
         ColorAntennas();
@@ -338,7 +339,6 @@ public class UIManager : MonoBehaviour
     {
         // Gets the index of the antenna name and maps it to its text object.
         var antennaIndex = antennaNames.IndexOf(antennaName);
-        print(antennaIndex);
         var antennaLabel = antennaLabelObjects[antennaIndex];
         var antennaBackground = antennaLabel.GetComponentInChildren<UnityEngine.UI.Image>();
         
