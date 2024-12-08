@@ -94,7 +94,7 @@ public class SatelliteManager : MonoBehaviour
 
     public void SkippedButtonPress()
     {
-        timeScale = timeScale * 10;
+        timeScale *= 10;
         OnTimeScaleSet?.Invoke(timeScale);
     }
 
@@ -241,7 +241,7 @@ public class SatelliteManager : MonoBehaviour
         // Calculate satellite direction
         Vector3 direction = (nextPosition - currentPosition).normalized;
 
-        float rotationSpeed = 2f;
+        float rotationSpeed = 2.0f;
         if (direction != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);

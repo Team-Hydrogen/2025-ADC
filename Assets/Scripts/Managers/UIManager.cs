@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -96,6 +97,11 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
+    }
+
+    private void Start()
+    {
+        UpdateAntennasFromData(0);
     }
 
     private void Update()
@@ -303,20 +309,32 @@ public class UIManager : MonoBehaviour
 
     private void UpdateAntennasFromData(int currentIndex)
     {
-        // Loads the link budget data.
-        var currentLinkBudgetData = DataManager.Instance.linkBudgetDataValues[currentIndex];
+        var ds24LinkBudget = 0.0f;
+        var ds34LinkBudget = 0.0f;
+        var ds54LinkBudget = 0.0f;
+        var wpsaLinkBudget = 0.0f;
+        
+        var linkBudgetDataValues = DataManager.Instance.linkBudgetDataValues;
+        if (linkBudgetDataValues != null)
+        {
+            var currentLinkBudget = linkBudgetDataValues[currentIndex];
+            ds24LinkBudget = float.Parse(currentLinkBudget[18]);
+            ds34LinkBudget = float.Parse(currentLinkBudget[19]);
+            ds54LinkBudget = float.Parse(currentLinkBudget[20]);
+            wpsaLinkBudget = float.Parse(currentLinkBudget[21]);
+        }
         
         // Updates each antenna with the latest link budget value.
-        UpdateAntenna("DS24", float.Parse(currentLinkBudgetData[18]));
-        UpdateAntenna("DS34", float.Parse(currentLinkBudgetData[19]));
-        UpdateAntenna("DS54", float.Parse(currentLinkBudgetData[20]));
-        UpdateAntenna("WPSA", float.Parse(currentLinkBudgetData[21]));
+        UpdateAntenna("DS24", ds24LinkBudget);
+        UpdateAntenna("DS34", ds34LinkBudget);
+        UpdateAntenna("DS54", ds54LinkBudget);
+        UpdateAntenna("WPSA", wpsaLinkBudget);
         
         PrioritizeAntennas();
         ColorAntennas();
     }
 
-    private void UpdateAntenna(string antennaName, float connectionSpeed)
+    private void UpdateAntenna(string antennaName, float connectionSpeed = 0.0f)
     {
         // Gets the index of the antenna name and maps it to its text object.
         var antennaIndex = antennaNames.IndexOf(antennaName);
