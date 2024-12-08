@@ -208,39 +208,35 @@ public class SatelliteManager : MonoBehaviour
     /// </summary>
     private void UpdateSatellitePosition()
     {
-        string[] currentPoint = _nominalTrajectoryPoints[_currentPointIndex];
-
-        string[] nextPoint;
-        nextPoint = _nominalTrajectoryPoints[(_currentPointIndex + 1) % _nominalTrajectoryPoints.Count];
-
-        float currentTime = float.Parse(currentPoint[0]);
-        float nextTime = float.Parse(nextPoint[0]);
-
-        float timeInterval = (nextTime - currentTime) * 60f;
-
-        Vector3 currentPosition = new Vector3(
+        var currentPoint = _nominalTrajectoryPoints[_currentPointIndex];
+        var nextPoint = _nominalTrajectoryPoints[(_currentPointIndex + 1) % _nominalTrajectoryPoints.Count];
+        
+        var currentTime = float.Parse(currentPoint[0]);
+        var nextTime = float.Parse(nextPoint[0]);
+        var timeInterval = (nextTime - currentTime) * 60f;
+        
+        var currentPosition = new Vector3(
             float.Parse(currentPoint[1]) * trajectoryScale,
             float.Parse(currentPoint[2]) * trajectoryScale,
             float.Parse(currentPoint[3]) * trajectoryScale
         );
-
-        Vector3 nextPosition = new Vector3(
+        var nextPosition = new Vector3(
             float.Parse(nextPoint[1]) * trajectoryScale,
             float.Parse(nextPoint[2]) * trajectoryScale,
             float.Parse(nextPoint[3]) * trajectoryScale
         );
-
+        
         _progress += Time.deltaTime / timeInterval * timeScale;
-
+        
         // Interpolate position
         Vector3 previousSatellitePosition = satellite.transform.position;
         satellite.transform.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
-
+        
         _totalDistanceTravelled += Vector3.Distance(previousSatellitePosition, satellite.transform.position) / trajectoryScale;
-
+        
         // Calculate satellite direction
         Vector3 direction = (nextPosition - currentPosition).normalized;
-
+        
         const float rotationSpeed = 2.0f;
         if (direction != Vector3.zero)
         {

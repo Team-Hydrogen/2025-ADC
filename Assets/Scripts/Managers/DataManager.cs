@@ -2,39 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class DataManager : MonoBehaviour
 {
     public static DataManager instance { get; private set; }
-    
+        
     [Header("Data Files")]
     [SerializeField] private TextAsset nominalTrajectoryDataFile;
     [SerializeField] private TextAsset offNominalTrajectoryDataFile;
     [SerializeField] private TextAsset antennaAvailabilityDataFile;
     [SerializeField] private TextAsset linkBudgetDataFile;
-
+    
     [Header("Mission Stages")]
     [SerializeField] private List<MissionStage> stages;
-
+    
     [Header("Scene View Settings")]
     [SerializeField] private bool drawGizmos;
-
+    
     [SerializeField] private Color beginningGizmosLineColor;
     [SerializeField] private Color endGizmosLineColor;
     [SerializeField, Range(1f, 100f)] private int gizmosLevelOfDetail;
-
+    
     public static event Action<DataLoadedEventArgs> OnDataLoaded;
     public static event Action<MissionStage> OnMissionStageUpdated;
-
+    
     private List<string[]> _nominalTrajectoryDataValues;
     private List<string[]> _offNominalTrajectoryDataValues;
     private List<string[]> _antennaAvailabilityDataValues;
     public List<string[]> linkBudgetDataValues { get; private set; }
     
-    private string _currentPrioritizedAntenna;
-    List<Vector3> _positionVectorsForGizmos;
-    
+    public string currentPrioritizedAntenna {get; private set;}
+    private List<Vector3> _positionVectorsForGizmos;
+        
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -45,7 +44,7 @@ public class DataManager : MonoBehaviour
 
         instance = this;
     }
-
+    
     private void Start()
     {
         _nominalTrajectoryDataValues = ReadDataFile(nominalTrajectoryDataFile);
@@ -58,86 +57,56 @@ public class DataManager : MonoBehaviour
                 _nominalTrajectoryDataValues, _offNominalTrajectoryDataValues, _antennaAvailabilityDataValues));
         OnMissionStageUpdated?.Invoke(stages[0]);
     }
-
+    
     private void OnEnable()
     {
         SatelliteManager.OnCurrentIndexUpdated += UpdateDataManager;
     }
-
+    
     private void OnDisable()
     {
         SatelliteManager.OnCurrentIndexUpdated -= UpdateDataManager;
     }
-
+    
     private void UpdateDataManager(int index)
     {
         UpdateMissionStage(index);
-        _currentPrioritizedAntenna = PrioritizeLinkBudget(index);
+        currentPrioritizedAntenna = PrioritizeLinkBudget(index);
     }
-
+    
+    /// <summary>
+    /// Reads a given CSV file and processes it.
+    /// </summary>
+    /// <param name="dataFile">The data file</param>
+    /// <returns></returns>
     private List<string[]> ReadDataFile(TextAsset dataFile)
     {
         var dataValues = CsvReader.ReadCsvFile(dataFile);
         dataValues.RemoveAt(0);
         return dataValues;
     }
-
-    // /// <summary>
-    // /// Reads the nominal trajectory data.
-    // /// </summary>
-    // /// <returns>A list of String arrays representing the CSV file</returns>
-    // private List<string[]> ReadNominalTrajectoryData()
-    // {
-    //     _nominalTrajectoryDataValues = CsvReader.ReadCsvFile(nominalTrajectoryDataFile);
-    //     _nominalTrajectoryDataValues.RemoveAt(0);
-    //     return _nominalTrajectoryDataValues;
-    // }
-    //
-    // /// <summary>
-    // /// Reads the offnominal trajectory data.
-    // /// </summary>
-    // /// <returns>A list of String arrays representing the CSV file</returns>
-    // private List<string[]> ReadOffNominalTrajectoryData()
-    // {
-    //     _offNominalTrajectoryDataValues = CsvReader.ReadCsvFile(offNominalTrajectoryDataFile);
-    //     _offNominalTrajectoryDataValues.RemoveAt(0);
-    //     return _offNominalTrajectoryDataValues;
-    // }
-    //
-    // /// <summary>
-    // /// Reads the link budget data.
-    // /// </summary>
-    // /// <returns>A list of String arrays representing the CSV file</returns>
-    // private List<string[]> ReadAntennaAvailabilityData()
-    // {
-    //     _antennaAvailabilityDataValues = CsvReader.ReadCsvFile(antennaAvailabilityDataFile);
-    //     _antennaAvailabilityDataValues.RemoveAt(0);
-    //     return _antennaAvailabilityDataValues;
-    // }
-    //
-    // private List<string[]> ReadLinkBudgetData()
-    // {
-    //     _linkBudgetDataValues = CsvReader.ReadCsvFile(linkBudgetDataFile);
-    //     _linkBudgetDataValues.RemoveAt(0);
-    //     return _linkBudgetDataValues;
-    // }
     
+    /// <summary>
+    /// Finds the more prioritized antenna.
+    /// </summary>
+    /// <param name="index">The index of the current row</param>
+    /// <returns>The name of the prioritized antenna</returns>
     private string PrioritizeLinkBudget(int index)
     {
         var currentSatelliteName = _antennaAvailabilityDataValues[index][1];
-        
+
         if (index <= 0)
         {
             return currentSatelliteName;
         }
         
         var previousSatelliteName = _antennaAvailabilityDataValues[index - 1][1];
-
+        
         if (previousSatelliteName == currentSatelliteName)
         {
             return previousSatelliteName;
         }
-
+        
         for (var futureIndex = 1; futureIndex <= 60; futureIndex++)
         {
             var futureSatelliteName = _antennaAvailabilityDataValues[index + futureIndex][1];
@@ -157,8 +126,8 @@ public class DataManager : MonoBehaviour
     /// <param name="dataIndex"></param>
     private void UpdateMissionStage(int dataIndex)
     {
-        int index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
-
+        var index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
+        
         if (index != -1)
         {
             OnMissionStageUpdated?.Invoke(stages[index]);
@@ -166,7 +135,7 @@ public class DataManager : MonoBehaviour
     }
     
     #region Gizmos
-
+    
     private void OnValidate()
     {
         if (drawGizmos)
