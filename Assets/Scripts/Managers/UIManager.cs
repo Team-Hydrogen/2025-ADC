@@ -319,7 +319,7 @@ public class UIManager : MonoBehaviour
         var linkBudgetDataValues = DataManager.instance.linkBudgetDataValues;
         if (linkBudgetDataValues != null)
         {
-            var currentLinkBudgetValues = DataManager.instance.linkBudgetDataValues[currentIndex][18..21];
+            var currentLinkBudgetValues = DataManager.instance.linkBudgetDataValues[currentIndex][18..22];
             for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
             {
                 var antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
@@ -370,13 +370,6 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void PrioritizeAntennas()
     {
-        // LSTM Prioritization Algorithm:
-        // 1. Start off with the antenna_availabilty.csv at first. Could be the offnominal too.
-        // 2. Pick the antenna with the highest link budget (10k max) but everytime the prioritized antenna switches,
-        //    check the future lines until you reach a new prioritized antenna. If it is less than 60 lines (minutes),
-        //    then do not change the prioritized antenna.
-        // 3. Run this algorithm again with the new data.
-        
         var childCount = antennasGrid.childCount;
         var antennaLabels = new Transform[childCount];
         
@@ -391,10 +384,13 @@ public class UIManager : MonoBehaviour
             {
                 Label = antennaLabel,
                 ConnectionSpeed = float.TryParse(
-                    antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out float speed)
-                        ? speed : float.MinValue
+                    antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out var speed)
+                        ? speed : float.MinValue,
+                PriorityWeight = (antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
+                                  == DataManager.instance.currentPrioritizedAntenna) ? 1.0f : 0.0f,
             })
-            .OrderByDescending(item => item.ConnectionSpeed)
+            .OrderByDescending(item => item.PriorityWeight)
+            .ThenByDescending(item => item.ConnectionSpeed)
             .Select(item => item.Label)
             .ToList();
 

@@ -91,8 +91,8 @@ public class SatelliteManager : MonoBehaviour
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= OnMissionStageUpdated;
     }
-
-    public void SkippedButtonPress()
+    
+    public void FastForwardButtonPressed()
     {
         timeScale *= 10;
         OnTimeScaleSet?.Invoke(timeScale);
@@ -208,39 +208,35 @@ public class SatelliteManager : MonoBehaviour
     /// </summary>
     private void UpdateSatellitePosition()
     {
-        string[] currentPoint = _nominalTrajectoryPoints[_currentPointIndex];
-
-        string[] nextPoint;
-        nextPoint = _nominalTrajectoryPoints[(_currentPointIndex + 1) % _nominalTrajectoryPoints.Count];
-
-        float currentTime = float.Parse(currentPoint[0]);
-        float nextTime = float.Parse(nextPoint[0]);
-
-        float timeInterval = (nextTime - currentTime) * 60f;
-
-        Vector3 currentPosition = new Vector3(
+        var currentPoint = _nominalTrajectoryPoints[_currentPointIndex];
+        var nextPoint = _nominalTrajectoryPoints[(_currentPointIndex + 1) % _nominalTrajectoryPoints.Count];
+        
+        var currentTime = float.Parse(currentPoint[0]);
+        var nextTime = float.Parse(nextPoint[0]);
+        var timeInterval = (nextTime - currentTime) * 60f;
+        
+        var currentPosition = new Vector3(
             float.Parse(currentPoint[1]) * trajectoryScale,
             float.Parse(currentPoint[2]) * trajectoryScale,
             float.Parse(currentPoint[3]) * trajectoryScale
         );
-
-        Vector3 nextPosition = new Vector3(
+        var nextPosition = new Vector3(
             float.Parse(nextPoint[1]) * trajectoryScale,
             float.Parse(nextPoint[2]) * trajectoryScale,
             float.Parse(nextPoint[3]) * trajectoryScale
         );
-
+        
         _progress += Time.deltaTime / timeInterval * timeScale;
-
+        
         // Interpolate position
         Vector3 previousSatellitePosition = satellite.transform.position;
         satellite.transform.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
-
+        
         _totalDistanceTravelled += Vector3.Distance(previousSatellitePosition, satellite.transform.position) / trajectoryScale;
-
+        
         // Calculate satellite direction
         Vector3 direction = (nextPosition - currentPosition).normalized;
-
+        
         const float rotationSpeed = 2.0f;
         if (direction != Vector3.zero)
         {
@@ -289,24 +285,29 @@ public class SatelliteManager : MonoBehaviour
             pastNominalTrajectory.SetPosition(pastNominalTrajectory.positionCount-1, satellite.transform.position);
         }
 
-        if (indexUpdated)
+        if (!indexUpdated)
         {
-            int indexChange = _currentPointIndex - _previousPointIndex;
+            return;
+        }
+        
+        var indexChange = _currentPointIndex - _previousPointIndex;
 
-            if (indexChange > 0)
+        switch (indexChange)
+        {
+            case > 0:
             {
-                Vector3[] futureTrajectoryPoints = new Vector3[futureNominalTrajectory.positionCount];
+                var futureTrajectoryPoints = new Vector3[futureNominalTrajectory.positionCount];
                 futureNominalTrajectory.GetPositions(futureTrajectoryPoints);
 
-                Vector3[] pointsToMove = new Vector3[indexChange];
+                var pointsToMove = new Vector3[indexChange];
                 Array.Copy(futureTrajectoryPoints, 0, pointsToMove, 0, indexChange);
 
                 // Add these points to the past trajectory
-                Vector3[] pastTrajectoryPoints = new Vector3[pastNominalTrajectory.positionCount];
+                var pastTrajectoryPoints = new Vector3[pastNominalTrajectory.positionCount];
                 pastNominalTrajectory.GetPositions(pastTrajectoryPoints);
 
                 // Combine past trajectory points and new points
-                Vector3[] newPastTrajectoryPoints = new Vector3[pastTrajectoryPoints.Length + pointsToMove.Length];
+                var newPastTrajectoryPoints = new Vector3[pastTrajectoryPoints.Length + pointsToMove.Length];
                 Array.Copy(pastTrajectoryPoints, 0, newPastTrajectoryPoints, 0, pastTrajectoryPoints.Length);
                 Array.Copy(pointsToMove, 0, newPastTrajectoryPoints, pastTrajectoryPoints.Length, pointsToMove.Length);
 
@@ -315,31 +316,31 @@ public class SatelliteManager : MonoBehaviour
                 pastNominalTrajectory.SetPositions(newPastTrajectoryPoints);
 
                 // Remove moved points from future trajectory
-                int newFuturePointCount = futureNominalTrajectory.positionCount - indexChange;
-                Vector3[] newFutureTrajectoryPoints = new Vector3[newFuturePointCount];
+                var newFuturePointCount = futureNominalTrajectory.positionCount - indexChange;
+                var newFutureTrajectoryPoints = new Vector3[newFuturePointCount];
                 Array.Copy(futureTrajectoryPoints, indexChange, newFutureTrajectoryPoints, 0, newFuturePointCount);
 
                 futureNominalTrajectory.positionCount = newFuturePointCount;
                 futureNominalTrajectory.SetPositions(newFutureTrajectoryPoints);
+                break;
             }
-
-            else if (indexChange < 0)
+            case < 0:
             {
                 indexChange = -indexChange;
 
                 // Get all points in the past trajectory
-                Vector3[] pastTrajectoryPoints = new Vector3[pastNominalTrajectory.positionCount];
+                var pastTrajectoryPoints = new Vector3[pastNominalTrajectory.positionCount];
                 pastNominalTrajectory.GetPositions(pastTrajectoryPoints);
 
                 // Extract points to move back to the future trajectory
-                Vector3[] pointsToMove = new Vector3[indexChange];
+                var pointsToMove = new Vector3[indexChange];
                 Array.Copy(pastTrajectoryPoints, pastTrajectoryPoints.Length - indexChange, pointsToMove, 0, indexChange);
 
                 // Add these points back to the future trajectory
-                Vector3[] futureTrajectoryPoints = new Vector3[futureNominalTrajectory.positionCount];
+                var futureTrajectoryPoints = new Vector3[futureNominalTrajectory.positionCount];
                 futureNominalTrajectory.GetPositions(futureTrajectoryPoints);
 
-                Vector3[] newFutureTrajectoryPoints = new Vector3[futureTrajectoryPoints.Length + pointsToMove.Length];
+                var newFutureTrajectoryPoints = new Vector3[futureTrajectoryPoints.Length + pointsToMove.Length];
                 Array.Copy(pointsToMove, 0, newFutureTrajectoryPoints, 0, pointsToMove.Length);
                 Array.Copy(futureTrajectoryPoints, 0, newFutureTrajectoryPoints, pointsToMove.Length, futureTrajectoryPoints.Length);
 
@@ -348,12 +349,13 @@ public class SatelliteManager : MonoBehaviour
                 futureNominalTrajectory.SetPositions(newFutureTrajectoryPoints);
 
                 // Remove moved points from past trajectory
-                int newPastPointCount = pastNominalTrajectory.positionCount - indexChange;
-                Vector3[] newPastTrajectoryPoints = new Vector3[newPastPointCount];
+                var newPastPointCount = pastNominalTrajectory.positionCount - indexChange;
+                var newPastTrajectoryPoints = new Vector3[newPastPointCount];
                 Array.Copy(pastTrajectoryPoints, 0, newPastTrajectoryPoints, 0, newPastPointCount);
 
                 pastNominalTrajectory.positionCount = newPastPointCount;
                 pastNominalTrajectory.SetPositions(newPastTrajectoryPoints);
+                break;
             }
         }
     }
@@ -435,22 +437,24 @@ public class SatelliteManager : MonoBehaviour
 
     private int GetClosestDataPointFromTime(float time)
     {
-        int closestIndex = 0;
-        float closestTime = float.MaxValue;
+        var closestIndex = 0;
+        var closestTime = float.MaxValue;
 
-        for (int i = 0; i < _nominalTrajectoryPoints.Count; i++)
+        for (var i = 0; i < _nominalTrajectoryPoints.Count; i++)
         {
             try
             {
-                float timeDistance = Mathf.Abs(float.Parse(_nominalTrajectoryPoints[i][0]) - time);
+                var timeDistance = Mathf.Abs(float.Parse(_nominalTrajectoryPoints[i][0]) - time);
 
-                if (timeDistance < closestTime)
+                if (timeDistance >= closestTime)
                 {
-                    closestTime = timeDistance;
-                    closestIndex = i;
+                    continue;
                 }
+                
+                closestTime = timeDistance;
+                closestIndex = i;
             }
-            catch
+            catch (FormatException)
             {
                 
             }
