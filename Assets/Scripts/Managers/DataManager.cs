@@ -34,7 +34,7 @@ public class DataManager : MonoBehaviour
     public string currentPrioritizedAntenna {get; private set;}
     private List<Vector3> _positionVectorsForGizmos;
 
-    private MissionStage currentMissionStage;
+    public MissionStage currentMissionStage { get; private set; }
         
     private void Awake()
     {
@@ -49,6 +49,8 @@ public class DataManager : MonoBehaviour
     
     private void Start()
     {
+        currentMissionStage = stages[0];
+        
         _nominalTrajectoryDataValues = ReadDataFile(nominalTrajectoryDataFile);
         _offNominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
         _antennaAvailabilityDataValues = ReadDataFile(antennaAvailabilityDataFile);
@@ -61,7 +63,6 @@ public class DataManager : MonoBehaviour
                 _antennaAvailabilityDataValues,
                 stages[0]) // First stage should start right after simulation begins
             );
-        //OnMissionStageUpdated?.Invoke(stages[0]);
     }
     
     private void OnEnable()

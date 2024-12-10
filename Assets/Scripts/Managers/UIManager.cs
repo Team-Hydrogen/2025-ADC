@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -159,10 +160,6 @@ public class UIManager : MonoBehaviour
 
     //private void UpdateUIFromData(int currentIndex)
     //{
-    //    UpdateCoordinatesFromData(currentIndex);
-    //    UpdateTimeFromData(currentIndex);
-    //    UpdateAntennaFromData(currentIndex);
-        
     //    // Notifications
     //    var currentTime = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]); 
     //    const float secondStageFireTime = 5_000.0f;
@@ -204,19 +201,29 @@ public class UIManager : MonoBehaviour
         var seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
 
         SetTime(days, hours, minutes, seconds);
-        UpdateTimeElapsedBar();
+        UpdateTimeElapsedBar(timeInMinutes);
     }
 
-    private void UpdateTimeElapsedBar()
+    private void UpdateTimeElapsedBar(float timeInMinutes)
     {
         var bar = timeElapsedBar.transform.GetChild(0);
-        foreach (Transform stageSection in bar)
-        {
-            var stageSectionTransform = (RectTransform)stageSection;
-            stageSectionTransform.sizeDelta = new Vector2(100, stageSectionTransform.sizeDelta.y);
-        }
+        var barWidth = ((RectTransform)bar.transform).sizeDelta.x;
+        
+        var stageIndex = (int) DataManager.instance.currentMissionStage.stageType - 1;
+        
+        var stageSection = bar.transform.GetChild(stageIndex);
+        var stageSectionTransform = (RectTransform)stageSection;
+        var stageSectionWidth = timeInMinutes / 12983.16998f * barWidth - stageSectionTransform.localPosition.x + 5.0f;
+        
+        print($"AT {timeInMinutes} MINUTES.....");
+        print(timeInMinutes / 12983.16998f);
+        print(timeInMinutes / 12983.16998f * barWidth);
+        print(timeInMinutes / 12983.16998f * barWidth - stageSectionTransform.localPosition.x);
+        print(timeInMinutes / 12983.16998f * barWidth - stageSectionTransform.localPosition.x + 5.0f);
+        
+        stageSectionTransform.sizeDelta = new Vector2(stageSectionWidth, stageSectionTransform.sizeDelta.y);
     }
-
+    
     public void IncrementTime(int changeInDays, int changeInHours, int changeInMinutes, int changeInSeconds)
     {
         dayCounter.text = (int.Parse(dayCounter.text) - changeInDays).ToString();
@@ -225,47 +232,31 @@ public class UIManager : MonoBehaviour
         secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
     }
     #endregion
-
+    
     #region Manage Coordinates
     private void UpdateCoordinatesText(Vector3 position)
     {
         string units;
-        
-        if (_currentLengthUnit == UnitSystem.Metric)
+
+        switch (_currentLengthUnit)
         {
-            units = " km";
-            xCoordinate.text = position.x.ToString("N0") + units;
-            yCoordinate.text = position.y.ToString("N0") + units;
-            zCoordinate.text = position.z.ToString("N0") + units;
-        } else if (_currentLengthUnit == UnitSystem.Imperial)
-        {
-            units = " mi";
-            xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.x).ToString("N0") + units;
-            yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.y).ToString("N0") + units;
-            zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.z).ToString("N0") + units;
+            case UnitSystem.Metric:
+                units = " km";
+                xCoordinate.text = position.x.ToString("N0") + units;
+                yCoordinate.text = position.y.ToString("N0") + units;
+                zCoordinate.text = position.z.ToString("N0") + units;
+                break;
+            case UnitSystem.Imperial:
+                units = " mi";
+                xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.x).ToString("N0") + units;
+                yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.y).ToString("N0") + units;
+                zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.z).ToString("N0") + units;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
     
-    //private void UpdateCoordinatesFromData(int currentIndex)
-    //{
-    //    float x;
-    //    float y;
-    //    float z;
-
-    //    try
-    //    {
-    //        x = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][1]);
-    //        y = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][2]);
-    //        z = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][3]);
-    //    }
-    //    catch
-    //    {
-    //        Debug.LogWarning("No positional data available!");
-    //        return;
-    //    }
-        
-    //    SetCoordinates(x, y, z);
-    //}
     #endregion
 
     #region Update Distances

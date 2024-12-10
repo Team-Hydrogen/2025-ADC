@@ -102,7 +102,7 @@ public class SatelliteManager : MonoBehaviour
 
     public void RewindButtonPressed()
     {
-        timeScale = Mathf.Min(1, timeScale / 10);
+        timeScale = Mathf.Max(1, timeScale / 10);
         OnTimeScaleSet?.Invoke(timeScale);
     }
 
