@@ -384,9 +384,11 @@ public class SatelliteManager : MonoBehaviour
 
     private void OnMissionStageUpdated(MissionStage stage)
     {
-        currentTrajectoryRenderer = stage.nominalLineRenderer;
-        currentTrajectoryRenderer.SetPosition(0, satellite.transform.position);
-        print("updated mission stage:");
+        if (!currentTrajectoryRenderer.Equals(stage.nominalLineRenderer))
+        {
+            currentTrajectoryRenderer = stage.nominalLineRenderer;
+            currentTrajectoryRenderer.SetPosition(0, satellite.transform.position);
+        }
 
         // trigger animation here if it is correct stage
     }

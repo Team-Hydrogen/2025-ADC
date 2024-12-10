@@ -92,6 +92,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
+        DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
 
@@ -101,6 +102,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
+        DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
 
@@ -413,6 +415,11 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
+
+    private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
+    {
+        UpdateMissionStage(dataLoadedEventArgs.MissionStage);
+    }
 
     private void UpdateMissionStage(MissionStage stage)
     {
