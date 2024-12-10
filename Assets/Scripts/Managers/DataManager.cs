@@ -31,11 +31,12 @@ public class DataManager : MonoBehaviour
     private List<string[]> _antennaAvailabilityDataValues;
     public List<string[]> linkBudgetDataValues { get; private set; }
     
-    public string currentPrioritizedAntenna {get; private set;}
+    public string currentPrioritizedAntenna { get; private set; }
     private List<Vector3> _positionVectorsForGizmos;
 
     public MissionStage currentMissionStage { get; private set; }
-        
+    
+    #region Event Functions
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -74,6 +75,7 @@ public class DataManager : MonoBehaviour
     {
         SatelliteManager.OnCurrentIndexUpdated -= UpdateDataManager;
     }
+    #endregion
     
     private void UpdateDataManager(int index)
     {
@@ -135,14 +137,13 @@ public class DataManager : MonoBehaviour
     {
         var index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
         
-        if (index != -1)
+        if (index == -1 || stages[index].Equals(currentMissionStage))
         {
-            if (!stages[index].Equals(currentMissionStage))
-            {
-                currentMissionStage = stages[index];
-                OnMissionStageUpdated?.Invoke(stages[index]);
-            }
+            return;
         }
+        
+        currentMissionStage = stages[index];
+        OnMissionStageUpdated?.Invoke(stages[index]);
     }
     
     #region Gizmos

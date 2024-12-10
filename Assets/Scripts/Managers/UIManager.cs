@@ -32,11 +32,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hourCounter;
     [SerializeField] private TextMeshProUGUI minuteCounter;
     [SerializeField] private TextMeshProUGUI secondCounter;
-    
     [Header("Time Elapsed Bar")]
     [SerializeField] private GameObject timeElapsedBar;
 
-    [Header("Coordinate")]
+    [Header("Coordinates")]
     [SerializeField] private TextMeshProUGUI xCoordinate;
     [SerializeField] private TextMeshProUGUI yCoordinate;
     [SerializeField] private TextMeshProUGUI zCoordinate;
@@ -76,7 +75,8 @@ public class UIManager : MonoBehaviour
     private const string ThreeDecimalPlaces = "N3";
     
     private readonly List<string> _disabledAntennas = new();
-
+    
+    #region Event Functions
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -87,27 +87,7 @@ public class UIManager : MonoBehaviour
 
         instance = this;
     }
-
-    private void OnEnable()
-    {
-        SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
-        SatelliteManager.OnDistanceCalculated += UpdateDistances;
-        SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
-        SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
-        DataManager.OnDataLoaded += OnDataLoaded;
-        DataManager.OnMissionStageUpdated += UpdateMissionStage;
-    }
-
-    private void OnDisable()
-    {
-        SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
-        SatelliteManager.OnDistanceCalculated -= UpdateDistances;
-        SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
-        SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
-        DataManager.OnDataLoaded -= OnDataLoaded;
-        DataManager.OnMissionStageUpdated += UpdateMissionStage;
-    }
-
+    
     private void Start()
     {
         UpdateAntennasFromData(0);
@@ -117,10 +97,29 @@ public class UIManager : MonoBehaviour
     {
         HandleUIVisibility();
     }
+    
+    private void OnEnable()
+    {
+        SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
+        SatelliteManager.OnDistanceCalculated += UpdateDistances;
+        SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
+        DataManager.OnDataLoaded += OnDataLoaded;
+        DataManager.OnMissionStageUpdated += UpdateMissionStage;
+    }
+    
+    private void OnDisable()
+    {
+        SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
+        SatelliteManager.OnDistanceCalculated -= UpdateDistances;
+        SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
+        SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
+        DataManager.OnDataLoaded -= OnDataLoaded;
+        DataManager.OnMissionStageUpdated += UpdateMissionStage;
+    }
+    #endregion
 
-    #region Manage Buttons
-
-    #region Manage Timeline Buttons
+    #region Timeline Controls
     public void PlayButtonPressed()
     {
         Time.timeScale = 1f;
@@ -130,8 +129,7 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 0f;
     }
-    #endregion
-
+    
     public void RestartButtonPressed()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -141,7 +139,11 @@ public class UIManager : MonoBehaviour
     {
         SceneManager.LoadScene(0);
     }
-
+    #endregion
+    
+    #region Actions Panel
+    
+    #region Settings
     public void ToggleTimeElapsedBar(bool isBarEnabled)
     {
         timeElapsedBar.SetActive(isBarEnabled);
@@ -158,7 +160,19 @@ public class UIManager : MonoBehaviour
         _currentLengthUnit = UnitSystem.Metric;
     }
     #endregion
-
+    
+    #region Machine Learning
+    
+    public void BumpOffCourseButtonPressed()
+    {
+        
+    }
+    
+    #endregion
+    
+    #endregion
+    
+    
     //private void UpdateUIFromData(int currentIndex)
     //{
     //    // Notifications
@@ -175,16 +189,7 @@ public class UIManager : MonoBehaviour
     //    }
     //}
 
-    #region Manage Time
-    private void SetTime(int days, int hours, int minutes, int seconds)
-    {
-        const int maxNumberLength = 2;
-        dayCounter.text = days.ToString().PadLeft(maxNumberLength, '0');
-        hourCounter.text = hours.ToString().PadLeft(maxNumberLength, '0');
-        minuteCounter.text = minutes.ToString().PadLeft(maxNumberLength, '0');
-        secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
-    }
-
+    #region Time Counter and Elapsed Bar
     private void UpdateTimeFromMinutes(float timeInMinutes)
     {
         const int minutesPerDay = 1440;
@@ -201,11 +206,20 @@ public class UIManager : MonoBehaviour
         minutesLeft -= minutes;
         var seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
 
-        SetTime(days, hours, minutes, seconds);
-        UpdateTimeElapsedBar(timeInMinutes);
+        SetTimeCounter(days, hours, minutes, seconds);
+        SetTimeElapsedBar(timeInMinutes);
     }
-
-    private void UpdateTimeElapsedBar(float timeInMinutes)
+    
+    private void SetTimeCounter(int days, int hours, int minutes, int seconds)
+    {
+        const int maxNumberLength = 2;
+        dayCounter.text = days.ToString().PadLeft(maxNumberLength, '0');
+        hourCounter.text = hours.ToString().PadLeft(maxNumberLength, '0');
+        minuteCounter.text = minutes.ToString().PadLeft(maxNumberLength, '0');
+        secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
+    }
+    
+    private void SetTimeElapsedBar(float timeInMinutes)
     {
         var bar = timeElapsedBar.transform.GetChild(0);
         var barWidth = ((RectTransform)bar.transform).sizeDelta.x;
@@ -231,7 +245,7 @@ public class UIManager : MonoBehaviour
     }
     #endregion
     
-    #region Manage Coordinates
+    #region Coordinates
     private void UpdateCoordinatesText(Vector3 position)
     {
         string units;
@@ -257,7 +271,7 @@ public class UIManager : MonoBehaviour
     
     #endregion
 
-    #region Update Distances
+    #region Distances
     private void SetTotalDistance(float totalDistance)
     {
         totalDistanceTravelledText.text = _currentLengthUnit switch
@@ -297,8 +311,7 @@ public class UIManager : MonoBehaviour
     }
     #endregion
 
-    #region Manage Antennas
-
+    #region Antennas and Link Budget
     public void ToggleAntennaColors(bool isAntennaColored)
     {
         _isAntennaColored = isAntennaColored;
@@ -417,6 +430,7 @@ public class UIManager : MonoBehaviour
     
     #endregion
 
+    #region Mission Stage
     private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
@@ -433,6 +447,7 @@ public class UIManager : MonoBehaviour
         notification.SetActive(true);
         notificationText.text = text;
     }
+    #endregion
 
     #region UI Visibility
     private void HandleUIVisibility()
@@ -477,7 +492,7 @@ public class UIManager : MonoBehaviour
         canvasGroup.alpha = 1;
     }
     #endregion
-
+    
     private enum UnitSystem {
         Metric,
         Imperial
