@@ -385,10 +385,10 @@ public class UIManager : MonoBehaviour
         var childCount = antennasGrid.childCount;
         var antennaLabels = new Transform[childCount];
         
-        for (var i = 0; i < childCount; i++)
+        for (var index = 0; index < childCount; index++)
         {
-            var antennaLabel = antennasGrid.GetChild(i);
-            antennaLabels[i] = antennaLabel;
+            var antennaLabel = antennasGrid.GetChild(index);
+            antennaLabels[index] = antennaLabel;
         }
         
         var sortedLabels = antennaLabels
@@ -405,7 +405,7 @@ public class UIManager : MonoBehaviour
             .ThenByDescending(item => item.ConnectionSpeed)
             .Select(item => item.Label)
             .ToList();
-
+        
         foreach (var label in sortedLabels)
         {
             label.SetSiblingIndex(sortedLabels.IndexOf(label));
