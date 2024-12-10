@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -208,18 +209,15 @@ public class UIManager : MonoBehaviour
     {
         var bar = timeElapsedBar.transform.GetChild(0);
         var barWidth = ((RectTransform)bar.transform).sizeDelta.x;
+        var barXMargin = bar.GetComponent<HorizontalLayoutGroup>().padding.horizontal;
+        var barContentWidth = barWidth - barXMargin;
         
         var stageIndex = (int) DataManager.instance.currentMissionStage.stageType - 1;
         
         var stageSection = bar.transform.GetChild(stageIndex);
         var stageSectionTransform = (RectTransform)stageSection;
-        var stageSectionWidth = timeInMinutes / 12983.16998f * barWidth - stageSectionTransform.localPosition.x + 5.0f;
-        
-        print($"AT {timeInMinutes} MINUTES.....");
-        print(timeInMinutes / 12983.16998f);
-        print(timeInMinutes / 12983.16998f * barWidth);
-        print(timeInMinutes / 12983.16998f * barWidth - stageSectionTransform.localPosition.x);
-        print(timeInMinutes / 12983.16998f * barWidth - stageSectionTransform.localPosition.x + 5.0f);
+        var stageSectionWidth = timeInMinutes / 12983.16998f * barContentWidth 
+                                - stageSectionTransform.anchoredPosition.x;
         
         stageSectionTransform.sizeDelta = new Vector2(stageSectionWidth, stageSectionTransform.sizeDelta.y);
     }
