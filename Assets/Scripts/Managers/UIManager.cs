@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     public static UIManager instance { get; private set; }
     
     [SerializeField] private CanvasGroup canvasGroup;
-
+    
     [Header("Antennas")]
     [SerializeField] private Transform antennasGrid;
     [SerializeField] private List<string> antennaNames = new();
@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour
         new Color(0.9373f, 0.2588f, 0.2588f),
     };
     [SerializeField] private Color disabledAntennaBackgroundColor = new(0.8431f, 0.8510f, 0.9098f);
-
+    
     [Header("Time Counter")]
     [SerializeField] private GameObject timeCounter;
     [SerializeField] private TextMeshProUGUI dayCounter;
@@ -34,32 +34,32 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI secondCounter;
     [Header("Time Elapsed Bar")]
     [SerializeField] private GameObject timeElapsedBar;
-
+    
     [Header("Coordinates")]
     [SerializeField] private TextMeshProUGUI xCoordinate;
     [SerializeField] private TextMeshProUGUI yCoordinate;
     [SerializeField] private TextMeshProUGUI zCoordinate;
-
+    
     [Header("Distance")]
     [SerializeField] private TextMeshProUGUI totalDistanceTravelledText;
     [SerializeField] private TextMeshProUGUI distanceFromEarthText;
     [SerializeField] private TextMeshProUGUI distanceFromMoonText;
-
+    
     [Header("Mission Stage")]
     [SerializeField] private TextMeshProUGUI missionStageText;
     
     [Header("Notification")]
     [SerializeField] private GameObject notification;
     [SerializeField] private TextMeshProUGUI notificationText;
-
+    
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
     [SerializeField] private float inputInactivityTime;
     [SerializeField, Range(0, 1f)] private float minimumUIVisibility;
-
+    
     private bool _isAntennaColored = true;
     private bool _isAntennaPrioritized = true;
-
+    
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0.0f;
     private bool _isFadingOut = false;
@@ -226,7 +226,7 @@ public class UIManager : MonoBehaviour
         var stageSection = bar.transform.GetChild(stageIndex);
         var stageSectionTransform = (RectTransform)stageSection;
         var stageSectionWidth = timeInMinutes / 12983.16998f * barContentWidth 
-                                - stageSectionTransform.anchoredPosition.x;
+                                - stageSectionTransform.anchoredPosition.x + barXMargin / 2.0f;
         
         stageSectionTransform.sizeDelta = new Vector2(stageSectionWidth, stageSectionTransform.sizeDelta.y);
     }
@@ -267,6 +267,7 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Distances
+    
     private void SetTotalDistance(float totalDistance)
     {
         totalDistanceTravelledText.text = _currentLengthUnit switch
