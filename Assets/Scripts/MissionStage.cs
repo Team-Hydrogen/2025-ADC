@@ -8,10 +8,30 @@ public struct MissionStage : IEquatable<MissionStage>
     public int startDataIndex;
     public StageTypes stageType;
 
+    public LineRenderer nominalLineRenderer;
+    public LineRenderer minimapLineRenderer;
+    public LineRenderer offnominalLineRenderer;
+
     public MissionStage(int startDataIndex, StageTypes stageType)
     {
         this.startDataIndex = startDataIndex;
         this.stageType = stageType;
+        this.nominalLineRenderer = null;
+        this.minimapLineRenderer = null;
+        this.offnominalLineRenderer = null;
+    }
+
+    public MissionStage(
+        int startDataIndex, 
+        StageTypes stageType, 
+        LineRenderer nominalLineRenderer, 
+        LineRenderer offNominalLineRenderer, 
+        LineRenderer minimapLineRenderer) 
+        : this(startDataIndex, stageType)
+    {
+        this.nominalLineRenderer = nominalLineRenderer;
+        this.offnominalLineRenderer = offNominalLineRenderer;
+        this.minimapLineRenderer = minimapLineRenderer;
     }
 
     private static readonly Dictionary<StageTypes, Color> StageColors = new()
@@ -61,11 +81,6 @@ public struct MissionStage : IEquatable<MissionStage>
         }
     }
 
-    //public Color GetStageColor()
-    //{
-    //    return GetStageColor(stageType);
-    //}
-
     public static Color GetStageColor(StageTypes stageType)
     {
         if (StageColors.TryGetValue(stageType, out var color))
@@ -76,11 +91,6 @@ public struct MissionStage : IEquatable<MissionStage>
         // Default color
         return Color.white;
     }
-
-    //public string GetStageName()
-    //{
-    //    return GetStageName(stageType);
-    //}
 
     public static string GetStageName(StageTypes stageType)
     {

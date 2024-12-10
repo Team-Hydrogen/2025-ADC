@@ -18,11 +18,11 @@ public class SatelliteManager : MonoBehaviour
     [SerializeField] private GameObject moon;
     
     [Header("Nominal Trajectory")]
-    [SerializeField] private LineRenderer pastNominalTrajectory;
+    //[SerializeField] private LineRenderer pastNominalTrajectory;
     [SerializeField] private LineRenderer futureNominalTrajectory;
     
     [Header("Off Nominal Trajectory")]
-    [SerializeField] private LineRenderer pastOffnominalTrajectory;
+    //[SerializeField] private LineRenderer pastOffnominalTrajectory;
     [SerializeField] private LineRenderer futureOffnominalTrajectory;
 
     [Header("Time Scale")]
@@ -46,6 +46,8 @@ public class SatelliteManager : MonoBehaviour
     public static event Action<float> OnTimeScaleSet;
 
     private float _totalDistanceTravelled = 0.0f;
+
+    private LineRenderer currentTrajectoryRenderer;
 
     #region Material Variables
     
@@ -100,7 +102,7 @@ public class SatelliteManager : MonoBehaviour
 
     public void RewindButtonPressed()
     {
-        timeScale = Mathf.Min(1, timeScale / 10);
+        timeScale = Mathf.Max(1, timeScale / 10);
         OnTimeScaleSet?.Invoke(timeScale);
     }
 
@@ -126,6 +128,7 @@ public class SatelliteManager : MonoBehaviour
     {
         _nominalTrajectoryPoints = data.NominalTrajectoryData;
         _offNominalTrajectoryPoints = data.OffNominalTrajectoryData;
+        currentTrajectoryRenderer = data.MissionStage.nominalLineRenderer;
 
         PlotNominalTrajectory();
         PlotOffnominalTrajectory();
@@ -162,8 +165,8 @@ public class SatelliteManager : MonoBehaviour
         }
 
         // The first point of the pastTrajectory is added.
-        pastNominalTrajectory.positionCount = 2;
-        pastNominalTrajectory.SetPosition(0, futureTrajectoryPoints[0]);
+        currentTrajectoryRenderer.positionCount = 2;
+        currentTrajectoryRenderer.SetPosition(0, futureTrajectoryPoints[0]);
         // The processed points are pushed to the future trajectory line.
         futureNominalTrajectory.positionCount = numberOfPoints;
         futureNominalTrajectory.SetPositions(futureTrajectoryPoints);
@@ -194,12 +197,12 @@ public class SatelliteManager : MonoBehaviour
                 Debug.LogWarning("No positional data on line " + index + "!");
             }
         }
-        // The first point of the pastTrajectory is added.
-        pastOffnominalTrajectory.positionCount = 1;
-        pastOffnominalTrajectory.SetPosition(0, futureTrajectoryPoints[0]);
-        // The processed points are pushed to the future trajectory line.
-        futureOffnominalTrajectory.positionCount = numberOfPoints;
-        futureOffnominalTrajectory.SetPositions(futureTrajectoryPoints);
+        //// The first point of the pastTrajectory is added.
+        //currentTrajectoryRenderer.positionCount = 1;
+        //currentTrajectoryRenderer.SetPosition(0, futureTrajectoryPoints[0]);
+        //// The processed points are pushed to the future trajectory line.
+        //futureOffnominalTrajectory.positionCount = numberOfPoints;
+        //futureOffnominalTrajectory.SetPositions(futureTrajectoryPoints);
     }
     #endregion
 
@@ -272,6 +275,7 @@ public class SatelliteManager : MonoBehaviour
 
         OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
         UpdateNominalTrajectory(true, false);
+        UpdateVelocityVector(_currentPointIndex);
     }
 
     /// <summary>
@@ -282,7 +286,7 @@ public class SatelliteManager : MonoBehaviour
         if (positionUpdated)
         {
             futureNominalTrajectory.SetPosition(0, satellite.transform.position);
-            pastNominalTrajectory.SetPosition(pastNominalTrajectory.positionCount-1, satellite.transform.position);
+            currentTrajectoryRenderer.SetPosition(currentTrajectoryRenderer.positionCount-1, satellite.transform.position);
         }
 
         if (!indexUpdated)
@@ -303,8 +307,8 @@ public class SatelliteManager : MonoBehaviour
                 Array.Copy(futureTrajectoryPoints, 0, pointsToMove, 0, indexChange);
 
                 // Add these points to the past trajectory
-                var pastTrajectoryPoints = new Vector3[pastNominalTrajectory.positionCount];
-                pastNominalTrajectory.GetPositions(pastTrajectoryPoints);
+                var pastTrajectoryPoints = new Vector3[currentTrajectoryRenderer.positionCount];
+                currentTrajectoryRenderer.GetPositions(pastTrajectoryPoints);
 
                 // Combine past trajectory points and new points
                 var newPastTrajectoryPoints = new Vector3[pastTrajectoryPoints.Length + pointsToMove.Length];
@@ -312,8 +316,8 @@ public class SatelliteManager : MonoBehaviour
                 Array.Copy(pointsToMove, 0, newPastTrajectoryPoints, pastTrajectoryPoints.Length, pointsToMove.Length);
 
                 // Update past trajectory
-                pastNominalTrajectory.positionCount = newPastTrajectoryPoints.Length;
-                pastNominalTrajectory.SetPositions(newPastTrajectoryPoints);
+                currentTrajectoryRenderer.positionCount = newPastTrajectoryPoints.Length;
+                currentTrajectoryRenderer.SetPositions(newPastTrajectoryPoints);
 
                 // Remove moved points from future trajectory
                 var newFuturePointCount = futureNominalTrajectory.positionCount - indexChange;
@@ -329,8 +333,8 @@ public class SatelliteManager : MonoBehaviour
                 indexChange = -indexChange;
 
                 // Get all points in the past trajectory
-                var pastTrajectoryPoints = new Vector3[pastNominalTrajectory.positionCount];
-                pastNominalTrajectory.GetPositions(pastTrajectoryPoints);
+                var pastTrajectoryPoints = new Vector3[currentTrajectoryRenderer.positionCount];
+                currentTrajectoryRenderer.GetPositions(pastTrajectoryPoints);
 
                 // Extract points to move back to the future trajectory
                 var pointsToMove = new Vector3[indexChange];
@@ -349,30 +353,15 @@ public class SatelliteManager : MonoBehaviour
                 futureNominalTrajectory.SetPositions(newFutureTrajectoryPoints);
 
                 // Remove moved points from past trajectory
-                var newPastPointCount = pastNominalTrajectory.positionCount - indexChange;
+                var newPastPointCount = currentTrajectoryRenderer.positionCount - indexChange;
                 var newPastTrajectoryPoints = new Vector3[newPastPointCount];
                 Array.Copy(pastTrajectoryPoints, 0, newPastTrajectoryPoints, 0, newPastPointCount);
 
-                pastNominalTrajectory.positionCount = newPastPointCount;
-                pastNominalTrajectory.SetPositions(newPastTrajectoryPoints);
+                currentTrajectoryRenderer.positionCount = newPastPointCount;
+                currentTrajectoryRenderer.SetPositions(newPastTrajectoryPoints);
                 break;
             }
         }
-    }
-
-    private void OldUpdateNominalTrajectory() {
-        // The current future trajectory is loaded.
-        Vector3[] futureTrajectoryPoints = new Vector3[futureNominalTrajectory.positionCount];
-        futureNominalTrajectory.GetPositions(futureTrajectoryPoints);
-
-        // The past trajectory's list of positions expands, so the next future data point is added.
-        Vector3 nextTrajectoryPoint = futureTrajectoryPoints[1];
-        pastNominalTrajectory.positionCount++;
-        pastNominalTrajectory.SetPosition(pastNominalTrajectory.positionCount - 1, nextTrajectoryPoint);
-        // The next point in the future trajectory gets removed.
-        futureTrajectoryPoints = futureTrajectoryPoints[1..^1];
-        futureNominalTrajectory.positionCount--;
-        futureNominalTrajectory.SetPositions(futureTrajectoryPoints);
     }
     
     /// <summary>
@@ -395,6 +384,12 @@ public class SatelliteManager : MonoBehaviour
 
     private void OnMissionStageUpdated(MissionStage stage)
     {
+        if (!currentTrajectoryRenderer.Equals(stage.nominalLineRenderer))
+        {
+            currentTrajectoryRenderer = stage.nominalLineRenderer;
+            currentTrajectoryRenderer.SetPosition(0, satellite.transform.position);
+        }
+
         // trigger animation here if it is correct stage
     }
     
@@ -433,34 +428,5 @@ public class SatelliteManager : MonoBehaviour
             satellite.transform.position, moon.transform.position) / trajectoryScale;
         OnDistanceCalculated?.Invoke(
             new DistanceTravelledEventArgs(_totalDistanceTravelled, distanceToEarth, distanceToMoon));
-    }
-
-    private int GetClosestDataPointFromTime(float time)
-    {
-        var closestIndex = 0;
-        var closestTime = float.MaxValue;
-
-        for (var i = 0; i < _nominalTrajectoryPoints.Count; i++)
-        {
-            try
-            {
-                var timeDistance = Mathf.Abs(float.Parse(_nominalTrajectoryPoints[i][0]) - time);
-
-                if (timeDistance >= closestTime)
-                {
-                    continue;
-                }
-                
-                closestTime = timeDistance;
-                closestIndex = i;
-            }
-            catch (FormatException)
-            {
-                
-            }
-        }
-
-        Debug.Log(_nominalTrajectoryPoints[closestIndex][0]);
-        return closestIndex;
     }
 }

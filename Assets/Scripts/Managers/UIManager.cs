@@ -1,12 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
@@ -59,6 +58,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float inputInactivityTime;
     [SerializeField, Range(0, 1f)] private float minimumUIVisibility;
 
+    private bool _isAntennaColored = true;
+    private bool _isAntennaPrioritized = true;
+
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0.0f;
     private bool _isFadingOut = false;
@@ -92,6 +94,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
+        DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
 
@@ -101,6 +104,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
+        DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
 
@@ -157,10 +161,6 @@ public class UIManager : MonoBehaviour
 
     //private void UpdateUIFromData(int currentIndex)
     //{
-    //    UpdateCoordinatesFromData(currentIndex);
-    //    UpdateTimeFromData(currentIndex);
-    //    UpdateAntennaFromData(currentIndex);
-        
     //    // Notifications
     //    var currentTime = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]); 
     //    const float secondStageFireTime = 5_000.0f;
@@ -191,30 +191,37 @@ public class UIManager : MonoBehaviour
         const int minutesPerHour = 60;
         const int secondsPerMinute = 60;
 
-        float minutesLeft = timeInMinutes;
+        var minutesLeft = timeInMinutes;
 
-        int days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
+        var days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
         minutesLeft %= minutesPerDay;
-        int hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
+        var hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
         minutesLeft %= minutesPerHour;
-        int minutes = Mathf.FloorToInt(minutesLeft);
+        var minutes = Mathf.FloorToInt(minutesLeft);
         minutesLeft -= minutes;
-        int seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
+        var seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
 
         SetTime(days, hours, minutes, seconds);
-        UpdateTimeElapsedBar();
+        UpdateTimeElapsedBar(timeInMinutes);
     }
 
-    private void UpdateTimeElapsedBar()
+    private void UpdateTimeElapsedBar(float timeInMinutes)
     {
         var bar = timeElapsedBar.transform.GetChild(0);
-        foreach (Transform stageSection in bar)
-        {
-            var stageSectionTransform = (RectTransform)stageSection;
-            stageSectionTransform.sizeDelta = new Vector2(100, stageSectionTransform.sizeDelta.y);
-        }
+        var barWidth = ((RectTransform)bar.transform).sizeDelta.x;
+        var barXMargin = bar.GetComponent<HorizontalLayoutGroup>().padding.horizontal;
+        var barContentWidth = barWidth - barXMargin;
+        
+        var stageIndex = (int) DataManager.instance.currentMissionStage.stageType - 1;
+        
+        var stageSection = bar.transform.GetChild(stageIndex);
+        var stageSectionTransform = (RectTransform)stageSection;
+        var stageSectionWidth = timeInMinutes / 12983.16998f * barContentWidth 
+                                - stageSectionTransform.anchoredPosition.x;
+        
+        stageSectionTransform.sizeDelta = new Vector2(stageSectionWidth, stageSectionTransform.sizeDelta.y);
     }
-
+    
     public void IncrementTime(int changeInDays, int changeInHours, int changeInMinutes, int changeInSeconds)
     {
         dayCounter.text = (int.Parse(dayCounter.text) - changeInDays).ToString();
@@ -223,83 +230,63 @@ public class UIManager : MonoBehaviour
         secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
     }
     #endregion
-
+    
     #region Manage Coordinates
     private void UpdateCoordinatesText(Vector3 position)
     {
         string units;
-        
-        if (_currentLengthUnit == UnitSystem.Metric)
+
+        switch (_currentLengthUnit)
         {
-            units = " km";
-            xCoordinate.text = position.x.ToString("N0") + units;
-            yCoordinate.text = position.y.ToString("N0") + units;
-            zCoordinate.text = position.z.ToString("N0") + units;
-        } else if (_currentLengthUnit == UnitSystem.Imperial)
-        {
-            units = " mi";
-            xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.x).ToString("N0") + units;
-            yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.y).ToString("N0") + units;
-            zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.z).ToString("N0") + units;
+            case UnitSystem.Metric:
+                units = " km";
+                xCoordinate.text = position.x.ToString("N0") + units;
+                yCoordinate.text = position.y.ToString("N0") + units;
+                zCoordinate.text = position.z.ToString("N0") + units;
+                break;
+            case UnitSystem.Imperial:
+                units = " mi";
+                xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.x).ToString("N0") + units;
+                yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.y).ToString("N0") + units;
+                zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.z).ToString("N0") + units;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
     
-    //private void UpdateCoordinatesFromData(int currentIndex)
-    //{
-    //    float x;
-    //    float y;
-    //    float z;
-
-    //    try
-    //    {
-    //        x = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][1]);
-    //        y = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][2]);
-    //        z = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][3]);
-    //    }
-    //    catch
-    //    {
-    //        Debug.LogWarning("No positional data available!");
-    //        return;
-    //    }
-        
-    //    SetCoordinates(x, y, z);
-    //}
     #endregion
 
     #region Update Distances
     private void SetTotalDistance(float totalDistance)
     {
-        if (_currentLengthUnit == UnitSystem.Metric)
+        totalDistanceTravelledText.text = _currentLengthUnit switch
         {
-            totalDistanceTravelledText.text = totalDistance.ToString(ThreeDecimalPlaces) + " km";
-        }
-        else if (_currentLengthUnit == UnitSystem.Imperial)
-        {
-            totalDistanceTravelledText.text = UnitAndCoordinateConverter.KilometersToMiles(totalDistance).ToString(ThreeDecimalPlaces) + " mi";
-        }
+            UnitSystem.Metric => totalDistance.ToString(ThreeDecimalPlaces) + " km",
+            UnitSystem.Imperial => UnitAndCoordinateConverter.KilometersToMiles(totalDistance)
+                .ToString(ThreeDecimalPlaces) + " mi",
+            _ => totalDistanceTravelledText.text
+        };
     }
 
     private void SetDistanceFromEarth(float fromEarth)
     {
-        if (_currentLengthUnit == UnitSystem.Metric)
+        distanceFromEarthText.text = _currentLengthUnit switch
         {
-            distanceFromEarthText.text = fromEarth.ToString(ThreeDecimalPlaces) + " km";
-        } else if (_currentLengthUnit == UnitSystem.Imperial)
-        {
-            distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(fromEarth).ToString(ThreeDecimalPlaces) + " mi";
-        }
+            UnitSystem.Metric => $"{fromEarth:F3} km",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(fromEarth):F3} mi",
+            _ => distanceFromEarthText.text
+        };
     }
 
     private void SetDistanceFromMoon(float fromMoon)
     {
-        if (_currentLengthUnit == UnitSystem.Metric)
+        distanceFromMoonText.text = _currentLengthUnit switch
         {
-            distanceFromMoonText.text = fromMoon.ToString(ThreeDecimalPlaces) + " km";
-        }
-        else if (_currentLengthUnit == UnitSystem.Imperial)
-        {
-            distanceFromMoonText.text = UnitAndCoordinateConverter.KilometersToMiles(fromMoon).ToString(ThreeDecimalPlaces) + " mi";
-        }
+            UnitSystem.Metric => $"{fromMoon:F3} km",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(fromMoon):F3} mi",
+            _ => distanceFromMoonText.text
+        };
     }
     
     private void UpdateDistances(DistanceTravelledEventArgs distances)
@@ -311,6 +298,16 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Manage Antennas
+
+    public void ToggleAntennaColors(bool isAntennaColored)
+    {
+        _isAntennaColored = isAntennaColored;
+    }
+    
+    public void ToggleAntennaPrioritization(bool isAntennaPrioritized)
+    {
+        _isAntennaPrioritized = isAntennaPrioritized;
+    }
 
     private void UpdateAntennasFromData(int currentIndex)
     {
@@ -334,8 +331,14 @@ public class UIManager : MonoBehaviour
             UpdateAntenna(antennaNames[antennaIndex], currentLinkBudget[antennaIndex]);
         }
         
-        PrioritizeAntennas();
-        ColorAntennas();
+        if (_isAntennaColored)
+        {
+            ColorAntennas();
+        }
+        if (_isAntennaPrioritized)
+        {
+            PrioritizeAntennas();
+        }
     }
 
     private void UpdateAntenna(string antennaName, float connectionSpeed = 0.0f)
@@ -413,6 +416,11 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
+
+    private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
+    {
+        UpdateMissionStage(dataLoadedEventArgs.MissionStage);
+    }
 
     private void UpdateMissionStage(MissionStage stage)
     {
