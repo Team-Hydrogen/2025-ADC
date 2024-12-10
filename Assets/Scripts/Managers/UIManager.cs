@@ -2,11 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class UIManager : MonoBehaviour
 {
@@ -58,6 +55,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float uiFadeSpeed;
     [SerializeField] private float inputInactivityTime;
     [SerializeField, Range(0, 1f)] private float minimumUIVisibility;
+
+    private bool _isAntennaColored = true;
+    private bool _isAntennaPrioritized = true;
 
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0.0f;
@@ -193,15 +193,15 @@ public class UIManager : MonoBehaviour
         const int minutesPerHour = 60;
         const int secondsPerMinute = 60;
 
-        float minutesLeft = timeInMinutes;
+        var minutesLeft = timeInMinutes;
 
-        int days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
+        var days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
         minutesLeft %= minutesPerDay;
-        int hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
+        var hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
         minutesLeft %= minutesPerHour;
-        int minutes = Mathf.FloorToInt(minutesLeft);
+        var minutes = Mathf.FloorToInt(minutesLeft);
         minutesLeft -= minutes;
-        int seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
+        var seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
 
         SetTime(days, hours, minutes, seconds);
         UpdateTimeElapsedBar();
@@ -271,37 +271,33 @@ public class UIManager : MonoBehaviour
     #region Update Distances
     private void SetTotalDistance(float totalDistance)
     {
-        if (_currentLengthUnit == UnitSystem.Metric)
+        totalDistanceTravelledText.text = _currentLengthUnit switch
         {
-            totalDistanceTravelledText.text = totalDistance.ToString(ThreeDecimalPlaces) + " km";
-        }
-        else if (_currentLengthUnit == UnitSystem.Imperial)
-        {
-            totalDistanceTravelledText.text = UnitAndCoordinateConverter.KilometersToMiles(totalDistance).ToString(ThreeDecimalPlaces) + " mi";
-        }
+            UnitSystem.Metric => totalDistance.ToString(ThreeDecimalPlaces) + " km",
+            UnitSystem.Imperial => UnitAndCoordinateConverter.KilometersToMiles(totalDistance)
+                .ToString(ThreeDecimalPlaces) + " mi",
+            _ => totalDistanceTravelledText.text
+        };
     }
 
     private void SetDistanceFromEarth(float fromEarth)
     {
-        if (_currentLengthUnit == UnitSystem.Metric)
+        distanceFromEarthText.text = _currentLengthUnit switch
         {
-            distanceFromEarthText.text = fromEarth.ToString(ThreeDecimalPlaces) + " km";
-        } else if (_currentLengthUnit == UnitSystem.Imperial)
-        {
-            distanceFromEarthText.text = UnitAndCoordinateConverter.KilometersToMiles(fromEarth).ToString(ThreeDecimalPlaces) + " mi";
-        }
+            UnitSystem.Metric => $"{fromEarth:F3} km",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(fromEarth):F3} mi",
+            _ => distanceFromEarthText.text
+        };
     }
 
     private void SetDistanceFromMoon(float fromMoon)
     {
-        if (_currentLengthUnit == UnitSystem.Metric)
+        distanceFromMoonText.text = _currentLengthUnit switch
         {
-            distanceFromMoonText.text = fromMoon.ToString(ThreeDecimalPlaces) + " km";
-        }
-        else if (_currentLengthUnit == UnitSystem.Imperial)
-        {
-            distanceFromMoonText.text = UnitAndCoordinateConverter.KilometersToMiles(fromMoon).ToString(ThreeDecimalPlaces) + " mi";
-        }
+            UnitSystem.Metric => $"{fromMoon:F3} km",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(fromMoon):F3} mi",
+            _ => distanceFromMoonText.text
+        };
     }
     
     private void UpdateDistances(DistanceTravelledEventArgs distances)
@@ -313,6 +309,16 @@ public class UIManager : MonoBehaviour
     #endregion
 
     #region Manage Antennas
+
+    public void ToggleAntennaColors(bool isAntennaColored)
+    {
+        _isAntennaColored = isAntennaColored;
+    }
+    
+    public void ToggleAntennaPrioritization(bool isAntennaPrioritized)
+    {
+        _isAntennaPrioritized = isAntennaPrioritized;
+    }
 
     private void UpdateAntennasFromData(int currentIndex)
     {
@@ -336,8 +342,14 @@ public class UIManager : MonoBehaviour
             UpdateAntenna(antennaNames[antennaIndex], currentLinkBudget[antennaIndex]);
         }
         
-        PrioritizeAntennas();
-        ColorAntennas();
+        if (_isAntennaColored)
+        {
+            ColorAntennas();
+        }
+        if (_isAntennaPrioritized)
+        {
+            PrioritizeAntennas();
+        }
     }
 
     private void UpdateAntenna(string antennaName, float connectionSpeed = 0.0f)

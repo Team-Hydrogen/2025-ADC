@@ -3646,7 +3646,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 9,899
+  m_text: 10,000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9f783cb0c24684c2fbd572020d32f428, type: 2}
   m_sharedMaterial: {fileID: -4683113129509832059, guid: 9f783cb0c24684c2fbd572020d32f428,
@@ -3749,7 +3749,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328071167}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.70090926, y: -0.0000031715133, z: 0.0000031166373, w: 0.7132505}
+  m_LocalRotation: {x: 0.70090926, y: 0, z: 0, w: 0.71325046}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7868,9 +7868,9 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2145616801}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: ToggleAntennaColors
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7880,7 +7880,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!1 &608296513
 GameObject:
   m_ObjectHideFlags: 0
@@ -10598,7 +10598,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922644109}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6905201, y: -0.0000009162808, z: 0.000000874739, w: 0.7233132}
+  m_LocalRotation: {x: 0.6905201, y: 0, z: 0, w: 0.7233132}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -13068,7 +13068,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 10
+    m_Top: 20
     m_Bottom: 10
   m_ChildAlignment: 1
   m_Spacing: 20
@@ -13136,7 +13136,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 826
+  m_text: 10,000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9f783cb0c24684c2fbd572020d32f428, type: 2}
   m_sharedMaterial: {fileID: -4683113129509832059, guid: 9f783cb0c24684c2fbd572020d32f428,
@@ -15696,7 +15696,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 5,200
+  m_text: 10,000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9f783cb0c24684c2fbd572020d32f428, type: 2}
   m_sharedMaterial: {fileID: -4683113129509832059, guid: 9f783cb0c24684c2fbd572020d32f428,
@@ -16738,9 +16738,9 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2145616801}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: ToggleAntennaPrioritization
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -16750,7 +16750,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!1 &1363138986
 GameObject:
   m_ObjectHideFlags: 0
@@ -20491,7 +20491,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 2,192
+  m_text: 10,000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9f783cb0c24684c2fbd572020d32f428, type: 2}
   m_sharedMaterial: {fileID: -4683113129509832059, guid: 9f783cb0c24684c2fbd572020d32f428,
