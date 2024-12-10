@@ -40,11 +40,15 @@ public class SatelliteManager : MonoBehaviour
     private List<string[]> _offNominalTrajectoryPoints;
     private LineRenderer _currentTrajectoryRenderer;
     
+    private const int SecondStageFireIndex = 5_000;
+    private const int ServiceModuleFireIndex = 10_000;
+    
     public static event Action<int> OnCurrentIndexUpdated; 
     public static event Action<float> OnUpdateTime;
     public static event Action<Vector3> OnUpdateCoordinates;
     public static event Action<DistanceTravelledEventArgs> OnDistanceCalculated;
     public static event Action<float> OnTimeScaleSet;
+    public static event Action<string> OnStageFired;
 
     #region Material Variables
     
@@ -126,6 +130,16 @@ public class SatelliteManager : MonoBehaviour
         {
             UpdateSatellitePosition();
             
+            switch (_currentPointIndex)
+            {
+                case SecondStageFireIndex:
+                    OnStageFired?.Invoke("Second Stage Fired");
+                    break;
+                case ServiceModuleFireIndex:
+                    OnStageFired?.Invoke("Service Module Fired");
+                    break;
+            }
+
             // if (Input.GetKeyDown(KeyCode.LeftArrow))
             // {
             //     currentPointIndex = GetClosestDataPointFromTime(estimatedElapsedTime - 10f / timeScale);
@@ -246,13 +260,13 @@ public class SatelliteManager : MonoBehaviour
         _progress += Time.deltaTime / timeInterval * timeScale;
         
         // Interpolate position
-        Vector3 previousSatellitePosition = satellite.transform.position;
+        var previousSatellitePosition = satellite.transform.position;
         satellite.transform.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
         
         _totalDistanceTravelled += Vector3.Distance(previousSatellitePosition, satellite.transform.position) / trajectoryScale;
         
         // Calculate satellite direction
-        Vector3 direction = (nextPosition - currentPosition).normalized;
+        var direction = (nextPosition - currentPosition).normalized;
         
         const float rotationSpeed = 2.0f;
         if (direction != Vector3.zero)
@@ -262,8 +276,8 @@ public class SatelliteManager : MonoBehaviour
             
             satellite.transform.rotation = Quaternion.Slerp(
                 satellite.transform.rotation,
-                targetRotation,
-                rotationSpeed * Time.deltaTime
+                targetRotation, 
+                rotationSpeed * timeScale * Time.deltaTime
             );
         }
 

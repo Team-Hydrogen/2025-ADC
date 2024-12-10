@@ -72,7 +72,9 @@ public class UIManager : MonoBehaviour
     
     private readonly List<string> _disabledAntennas = new();
     
+    
     #region Event Functions
+    
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -100,6 +102,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
+        SatelliteManager.OnStageFired += ShowNotification;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
     }
@@ -110,12 +113,16 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
+        SatelliteManager.OnStageFired -= ShowNotification;
         DataManager.OnDataLoaded -= OnDataLoaded;
-        DataManager.OnMissionStageUpdated += UpdateMissionStage;
+        DataManager.OnMissionStageUpdated -= UpdateMissionStage;
     }
+    
     #endregion
-
+    
+    
     #region Timeline Controls
+    
     public void PlayButtonPressed()
     {
         Time.timeScale = 1f;
@@ -135,7 +142,9 @@ public class UIManager : MonoBehaviour
     {
         SceneManager.LoadScene(0);
     }
+    
     #endregion
+    
     
     #region Actions Panel
     
@@ -168,23 +177,9 @@ public class UIManager : MonoBehaviour
     
     #endregion
     
-    // private void UpdateUIFromData(int currentIndex)
-    // {
-    //     // Notifications
-    //     var currentTime = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]); 
-    //     const float secondStageFireTime = 5_000.0f;
-    //     const float serviceModuleFireTime = 10_000.0f;
-    //     if (Mathf.Approximately(currentTime, secondStageFireTime))
-    //     {
-    //         ShowNotification("Second Stage Fired");
-    //     }
-    //     if (Mathf.Approximately(currentTime, serviceModuleFireTime))
-    //     {
-    //         ShowNotification("Service Module Fired");
-    //     }
-    // }
     
     #region Time Counter and Elapsed Bar
+    
     private void UpdateTimeFromMinutes(float timeInMinutes)
     {
         const int minutesPerDay = 1440;
@@ -231,6 +226,13 @@ public class UIManager : MonoBehaviour
         stageSectionTransform.sizeDelta = new Vector2(stageSectionWidth, stageSectionTransform.sizeDelta.y);
     }
     
+    /// <summary>
+    /// This function will be deprecated before the application is sent to production.
+    /// </summary>
+    /// <param name="changeInDays"></param>
+    /// <param name="changeInHours"></param>
+    /// <param name="changeInMinutes"></param>
+    /// <param name="changeInSeconds"></param>
     public void IncrementTime(int changeInDays, int changeInHours, int changeInMinutes, int changeInSeconds)
     {
         dayCounter.text = (int.Parse(dayCounter.text) - changeInDays).ToString();
@@ -238,9 +240,12 @@ public class UIManager : MonoBehaviour
         minuteCounter.text = (int.Parse(minuteCounter.text) - changeInMinutes).ToString();
         secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
     }
+    
     #endregion
     
+    
     #region Coordinates
+    
     private void UpdateCoordinatesText(Vector3 position)
     {
         string units;
@@ -265,7 +270,8 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
-
+    
+    
     #region Distances
     
     private void SetTotalDistance(float totalDistance)
@@ -306,7 +312,8 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
-
+    
+    
     #region Antennas and Link Budget
     
     public void ToggleAntennaColors(bool isAntennaColored)
@@ -426,8 +433,10 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
-
+    
+    
     #region Mission Stage
+    
     private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
@@ -438,15 +447,23 @@ public class UIManager : MonoBehaviour
         missionStageText.text = stage.name;
         missionStageText.color = stage.color;
     }
-
+    
+    #endregion
+    
+    
+    #region Notifications
+    
     private void ShowNotification(string text)
     {
         notification.SetActive(true);
         notificationText.text = text;
     }
+    
     #endregion
-
+    
+    
     #region UI Visibility
+    
     private void HandleUIVisibility()
     {
         if (Input.anyKey || Input.mousePosition != _lastMousePosition)
@@ -488,6 +505,7 @@ public class UIManager : MonoBehaviour
 
         canvasGroup.alpha = 1;
     }
+    
     #endregion
     
     private enum UnitSystem {
