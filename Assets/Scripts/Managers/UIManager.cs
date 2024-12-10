@@ -12,7 +12,7 @@ public class UIManager : MonoBehaviour
     public static UIManager instance { get; private set; }
     
     [SerializeField] private CanvasGroup canvasGroup;
-
+    
     [Header("Antennas")]
     [SerializeField] private Transform antennasGrid;
     [SerializeField] private List<string> antennaNames = new();
@@ -25,42 +25,41 @@ public class UIManager : MonoBehaviour
         new Color(0.9373f, 0.2588f, 0.2588f),
     };
     [SerializeField] private Color disabledAntennaBackgroundColor = new(0.8431f, 0.8510f, 0.9098f);
-
+    
     [Header("Time Counter")]
     [SerializeField] private GameObject timeCounter;
     [SerializeField] private TextMeshProUGUI dayCounter;
     [SerializeField] private TextMeshProUGUI hourCounter;
     [SerializeField] private TextMeshProUGUI minuteCounter;
     [SerializeField] private TextMeshProUGUI secondCounter;
-    
     [Header("Time Elapsed Bar")]
     [SerializeField] private GameObject timeElapsedBar;
-
-    [Header("Coordinate")]
+    
+    [Header("Coordinates")]
     [SerializeField] private TextMeshProUGUI xCoordinate;
     [SerializeField] private TextMeshProUGUI yCoordinate;
     [SerializeField] private TextMeshProUGUI zCoordinate;
-
+    
     [Header("Distance")]
     [SerializeField] private TextMeshProUGUI totalDistanceTravelledText;
     [SerializeField] private TextMeshProUGUI distanceFromEarthText;
     [SerializeField] private TextMeshProUGUI distanceFromMoonText;
-
+    
     [Header("Mission Stage")]
     [SerializeField] private TextMeshProUGUI missionStageText;
     
     [Header("Notification")]
     [SerializeField] private GameObject notification;
     [SerializeField] private TextMeshProUGUI notificationText;
-
+    
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
     [SerializeField] private float inputInactivityTime;
     [SerializeField, Range(0, 1f)] private float minimumUIVisibility;
-
+    
     private bool _isAntennaColored = true;
     private bool _isAntennaPrioritized = true;
-
+    
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0.0f;
     private bool _isFadingOut = false;
@@ -71,12 +70,11 @@ public class UIManager : MonoBehaviour
     private const float MaximumConnectionSpeed = 10_000.0f;
     private const string ConnectionSpeedUnit = "kbps";
     
-    // Formatter constants
-    private const string NoDecimalPlaces = "N0";
-    private const string ThreeDecimalPlaces = "N3";
-    
     private readonly List<string> _disabledAntennas = new();
-
+    
+    
+    #region Event Functions
+    
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -87,27 +85,7 @@ public class UIManager : MonoBehaviour
 
         instance = this;
     }
-
-    private void OnEnable()
-    {
-        SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
-        SatelliteManager.OnDistanceCalculated += UpdateDistances;
-        SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
-        SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
-        DataManager.OnDataLoaded += OnDataLoaded;
-        DataManager.OnMissionStageUpdated += UpdateMissionStage;
-    }
-
-    private void OnDisable()
-    {
-        SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
-        SatelliteManager.OnDistanceCalculated -= UpdateDistances;
-        SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
-        SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
-        DataManager.OnDataLoaded -= OnDataLoaded;
-        DataManager.OnMissionStageUpdated += UpdateMissionStage;
-    }
-
+    
     private void Start()
     {
         UpdateAntennasFromData(0);
@@ -117,10 +95,34 @@ public class UIManager : MonoBehaviour
     {
         HandleUIVisibility();
     }
-
-    #region Manage Buttons
-
-    #region Manage Timeline Buttons
+    
+    private void OnEnable()
+    {
+        SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
+        SatelliteManager.OnDistanceCalculated += UpdateDistances;
+        SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
+        SatelliteManager.OnStageFired += ShowNotification;
+        DataManager.OnDataLoaded += OnDataLoaded;
+        DataManager.OnMissionStageUpdated += UpdateMissionStage;
+    }
+    
+    private void OnDisable()
+    {
+        SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
+        SatelliteManager.OnDistanceCalculated -= UpdateDistances;
+        SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
+        SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
+        SatelliteManager.OnStageFired -= ShowNotification;
+        DataManager.OnDataLoaded -= OnDataLoaded;
+        DataManager.OnMissionStageUpdated -= UpdateMissionStage;
+    }
+    
+    #endregion
+    
+    
+    #region Timeline Controls
+    
     public void PlayButtonPressed()
     {
         Time.timeScale = 1f;
@@ -130,8 +132,7 @@ public class UIManager : MonoBehaviour
     {
         Time.timeScale = 0f;
     }
-    #endregion
-
+    
     public void RestartButtonPressed()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -141,7 +142,13 @@ public class UIManager : MonoBehaviour
     {
         SceneManager.LoadScene(0);
     }
-
+    
+    #endregion
+    
+    
+    #region Actions Panel
+    
+    #region Settings
     public void ToggleTimeElapsedBar(bool isBarEnabled)
     {
         timeElapsedBar.SetActive(isBarEnabled);
@@ -158,33 +165,21 @@ public class UIManager : MonoBehaviour
         _currentLengthUnit = UnitSystem.Metric;
     }
     #endregion
-
-    //private void UpdateUIFromData(int currentIndex)
-    //{
-    //    // Notifications
-    //    var currentTime = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]); 
-    //    const float secondStageFireTime = 5_000.0f;
-    //    const float serviceModuleFireTime = 10_000.0f;
-    //    if (Mathf.Approximately(currentTime, secondStageFireTime))
-    //    {
-    //        ShowNotification("Second Stage Fired");
-    //    }
-    //    if (Mathf.Approximately(currentTime, serviceModuleFireTime))
-    //    {
-    //        ShowNotification("Service Module Fired");
-    //    }
-    //}
-
-    #region Manage Time
-    private void SetTime(int days, int hours, int minutes, int seconds)
+    
+    #region Machine Learning
+    
+    public void BumpOffCourseButtonPressed()
     {
-        const int maxNumberLength = 2;
-        dayCounter.text = days.ToString().PadLeft(maxNumberLength, '0');
-        hourCounter.text = hours.ToString().PadLeft(maxNumberLength, '0');
-        minuteCounter.text = minutes.ToString().PadLeft(maxNumberLength, '0');
-        secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
+        
     }
-
+    
+    #endregion
+    
+    #endregion
+    
+    
+    #region Time Counter and Elapsed Bar
+    
     private void UpdateTimeFromMinutes(float timeInMinutes)
     {
         const int minutesPerDay = 1440;
@@ -201,11 +196,20 @@ public class UIManager : MonoBehaviour
         minutesLeft -= minutes;
         var seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
 
-        SetTime(days, hours, minutes, seconds);
-        UpdateTimeElapsedBar(timeInMinutes);
+        SetTimeCounter(days, hours, minutes, seconds);
+        SetTimeElapsedBar(timeInMinutes);
     }
-
-    private void UpdateTimeElapsedBar(float timeInMinutes)
+    
+    private void SetTimeCounter(int days, int hours, int minutes, int seconds)
+    {
+        const int maxNumberLength = 2;
+        dayCounter.text = days.ToString().PadLeft(maxNumberLength, '0');
+        hourCounter.text = hours.ToString().PadLeft(maxNumberLength, '0');
+        minuteCounter.text = minutes.ToString().PadLeft(maxNumberLength, '0');
+        secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
+    }
+    
+    private void SetTimeElapsedBar(float timeInMinutes)
     {
         var bar = timeElapsedBar.transform.GetChild(0);
         var barWidth = ((RectTransform)bar.transform).sizeDelta.x;
@@ -217,11 +221,18 @@ public class UIManager : MonoBehaviour
         var stageSection = bar.transform.GetChild(stageIndex);
         var stageSectionTransform = (RectTransform)stageSection;
         var stageSectionWidth = timeInMinutes / 12983.16998f * barContentWidth 
-                                - stageSectionTransform.anchoredPosition.x;
+                                - stageSectionTransform.anchoredPosition.x + barXMargin / 2.0f;
         
         stageSectionTransform.sizeDelta = new Vector2(stageSectionWidth, stageSectionTransform.sizeDelta.y);
     }
     
+    /// <summary>
+    /// This function will be deprecated before the application is sent to production.
+    /// </summary>
+    /// <param name="changeInDays"></param>
+    /// <param name="changeInHours"></param>
+    /// <param name="changeInMinutes"></param>
+    /// <param name="changeInSeconds"></param>
     public void IncrementTime(int changeInDays, int changeInHours, int changeInMinutes, int changeInSeconds)
     {
         dayCounter.text = (int.Parse(dayCounter.text) - changeInDays).ToString();
@@ -229,9 +240,12 @@ public class UIManager : MonoBehaviour
         minuteCounter.text = (int.Parse(minuteCounter.text) - changeInMinutes).ToString();
         secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
     }
+    
     #endregion
     
-    #region Manage Coordinates
+    
+    #region Coordinates
+    
     private void UpdateCoordinatesText(Vector3 position)
     {
         string units;
@@ -256,15 +270,16 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
-
-    #region Update Distances
+    
+    
+    #region Distances
+    
     private void SetTotalDistance(float totalDistance)
     {
         totalDistanceTravelledText.text = _currentLengthUnit switch
         {
-            UnitSystem.Metric => totalDistance.ToString(ThreeDecimalPlaces) + " km",
-            UnitSystem.Imperial => UnitAndCoordinateConverter.KilometersToMiles(totalDistance)
-                .ToString(ThreeDecimalPlaces) + " mi",
+            UnitSystem.Metric => $"{totalDistance:F3} km",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(totalDistance):F3} mi",
             _ => totalDistanceTravelledText.text
         };
     }
@@ -295,10 +310,12 @@ public class UIManager : MonoBehaviour
         SetDistanceFromEarth(distances.DistanceFromEarth);
         SetDistanceFromMoon(distances.DistanceFromMoon);
     }
+    
     #endregion
-
-    #region Manage Antennas
-
+    
+    
+    #region Antennas and Link Budget
+    
     public void ToggleAntennaColors(bool isAntennaColored)
     {
         _isAntennaColored = isAntennaColored;
@@ -308,7 +325,7 @@ public class UIManager : MonoBehaviour
     {
         _isAntennaPrioritized = isAntennaPrioritized;
     }
-
+    
     private void UpdateAntennasFromData(int currentIndex)
     {
         var currentLinkBudget = new float[antennaNames.Count];
@@ -353,9 +370,9 @@ public class UIManager : MonoBehaviour
         var connectionSpeedText = antennaTexts[1];
         var unitsText = antennaTexts[2];
         
-        connectionSpeedText.text = connectionSpeed.ToString(NoDecimalPlaces);
+        connectionSpeedText.text = $"{connectionSpeed:F0}";
         unitsText.text = $" {ConnectionSpeedUnit}";
-
+        
         switch (connectionSpeed)
         {
             case 0 when !_disabledAntennas.Contains(antennaName):
@@ -376,10 +393,10 @@ public class UIManager : MonoBehaviour
         var childCount = antennasGrid.childCount;
         var antennaLabels = new Transform[childCount];
         
-        for (var i = 0; i < childCount; i++)
+        for (var index = 0; index < childCount; index++)
         {
-            var antennaLabel = antennasGrid.GetChild(i);
-            antennaLabels[i] = antennaLabel;
+            var antennaLabel = antennasGrid.GetChild(index);
+            antennaLabels[index] = antennaLabel;
         }
         
         var sortedLabels = antennaLabels
@@ -389,14 +406,14 @@ public class UIManager : MonoBehaviour
                 ConnectionSpeed = float.TryParse(
                     antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out var speed)
                         ? speed : float.MinValue,
-                PriorityWeight = (antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
-                                  == DataManager.instance.currentPrioritizedAntenna) ? 1.0f : 0.0f,
+                PriorityWeight = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
+                                  == DataManager.instance.currentPrioritizedAntenna ? 1.0f : 0.0f,
             })
             .OrderByDescending(item => item.PriorityWeight)
             .ThenByDescending(item => item.ConnectionSpeed)
             .Select(item => item.Label)
             .ToList();
-
+        
         foreach (var label in sortedLabels)
         {
             label.SetSiblingIndex(sortedLabels.IndexOf(label));
@@ -416,7 +433,10 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
-
+    
+    
+    #region Mission Stage
+    
     private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
@@ -427,14 +447,23 @@ public class UIManager : MonoBehaviour
         missionStageText.text = stage.name;
         missionStageText.color = stage.color;
     }
-
+    
+    #endregion
+    
+    
+    #region Notifications
+    
     private void ShowNotification(string text)
     {
         notification.SetActive(true);
         notificationText.text = text;
     }
-
+    
+    #endregion
+    
+    
     #region UI Visibility
+    
     private void HandleUIVisibility()
     {
         if (Input.anyKey || Input.mousePosition != _lastMousePosition)
@@ -476,8 +505,9 @@ public class UIManager : MonoBehaviour
 
         canvasGroup.alpha = 1;
     }
+    
     #endregion
-
+    
     private enum UnitSystem {
         Metric,
         Imperial

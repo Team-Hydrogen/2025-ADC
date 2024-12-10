@@ -31,11 +31,12 @@ public class DataManager : MonoBehaviour
     private List<string[]> _antennaAvailabilityDataValues;
     public List<string[]> linkBudgetDataValues { get; private set; }
     
-    public string currentPrioritizedAntenna {get; private set;}
+    public string currentPrioritizedAntenna { get; private set; }
     private List<Vector3> _positionVectorsForGizmos;
 
     public MissionStage currentMissionStage { get; private set; }
-        
+    
+    #region Event Functions
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -74,31 +75,32 @@ public class DataManager : MonoBehaviour
     {
         SatelliteManager.OnCurrentIndexUpdated -= UpdateDataManager;
     }
+    #endregion
     
     private void UpdateDataManager(int index)
     {
         UpdateMissionStage(index);
-        currentPrioritizedAntenna = PrioritizeLinkBudget(index);
+        currentPrioritizedAntenna = GetHighestPriorityAntenna(index);
     }
     
     /// <summary>
-    /// Reads a given CSV file and processes it.
+    /// Reads and processes a given CSV file.
     /// </summary>
-    /// <param name="dataFile">The data file</param>
-    /// <returns></returns>
+    /// <param name="dataFile">The raw data file (CSV only)</param>
+    /// <returns>The processed data file</returns>
     private List<string[]> ReadDataFile(TextAsset dataFile)
     {
         var dataValues = CsvReader.ReadCsvFile(dataFile);
-        dataValues.RemoveAt(0);
+        dataValues.RemoveAt(0); // The first row of headers is removed.
         return dataValues;
     }
     
     /// <summary>
-    /// Finds the more prioritized antenna.
+    /// Determines the highest priority antenna using link budget and future asset changes.
     /// </summary>
-    /// <param name="index">The index of the current row</param>
-    /// <returns>The name of the prioritized antenna</returns>
-    private string PrioritizeLinkBudget(int index)
+    /// <param name="index">The current data index</param>
+    /// <returns>The name of the highest priority antenna</returns>
+    private string GetHighestPriorityAntenna(int index)
     {
         var currentSatelliteName = _antennaAvailabilityDataValues[index][1];
 
@@ -135,14 +137,13 @@ public class DataManager : MonoBehaviour
     {
         var index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
         
-        if (index != -1)
+        if (index == -1 || stages[index].Equals(currentMissionStage))
         {
-            if (!stages[index].Equals(currentMissionStage))
-            {
-                currentMissionStage = stages[index];
-                OnMissionStageUpdated?.Invoke(stages[index]);
-            }
+            return;
         }
+        
+        currentMissionStage = stages[index];
+        OnMissionStageUpdated?.Invoke(stages[index]);
     }
     
     #region Gizmos
