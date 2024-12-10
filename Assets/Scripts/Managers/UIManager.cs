@@ -70,10 +70,6 @@ public class UIManager : MonoBehaviour
     private const float MaximumConnectionSpeed = 10_000.0f;
     private const string ConnectionSpeedUnit = "kbps";
     
-    // Formatter constants
-    private const string NoDecimalPlaces = "N0";
-    private const string ThreeDecimalPlaces = "N3";
-    
     private readonly List<string> _disabledAntennas = new();
     
     #region Event Functions
@@ -172,23 +168,22 @@ public class UIManager : MonoBehaviour
     
     #endregion
     
+    // private void UpdateUIFromData(int currentIndex)
+    // {
+    //     // Notifications
+    //     var currentTime = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]); 
+    //     const float secondStageFireTime = 5_000.0f;
+    //     const float serviceModuleFireTime = 10_000.0f;
+    //     if (Mathf.Approximately(currentTime, secondStageFireTime))
+    //     {
+    //         ShowNotification("Second Stage Fired");
+    //     }
+    //     if (Mathf.Approximately(currentTime, serviceModuleFireTime))
+    //     {
+    //         ShowNotification("Service Module Fired");
+    //     }
+    // }
     
-    //private void UpdateUIFromData(int currentIndex)
-    //{
-    //    // Notifications
-    //    var currentTime = float.Parse(SimulationManager.Instance.nominalTrajectoryDataValues[currentIndex][0]); 
-    //    const float secondStageFireTime = 5_000.0f;
-    //    const float serviceModuleFireTime = 10_000.0f;
-    //    if (Mathf.Approximately(currentTime, secondStageFireTime))
-    //    {
-    //        ShowNotification("Second Stage Fired");
-    //    }
-    //    if (Mathf.Approximately(currentTime, serviceModuleFireTime))
-    //    {
-    //        ShowNotification("Service Module Fired");
-    //    }
-    //}
-
     #region Time Counter and Elapsed Bar
     private void UpdateTimeFromMinutes(float timeInMinutes)
     {
@@ -276,9 +271,8 @@ public class UIManager : MonoBehaviour
     {
         totalDistanceTravelledText.text = _currentLengthUnit switch
         {
-            UnitSystem.Metric => totalDistance.ToString(ThreeDecimalPlaces) + " km",
-            UnitSystem.Imperial => UnitAndCoordinateConverter.KilometersToMiles(totalDistance)
-                .ToString(ThreeDecimalPlaces) + " mi",
+            UnitSystem.Metric => $"{totalDistance:F3} km",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(totalDistance):F3} mi",
             _ => totalDistanceTravelledText.text
         };
     }
@@ -309,9 +303,11 @@ public class UIManager : MonoBehaviour
         SetDistanceFromEarth(distances.DistanceFromEarth);
         SetDistanceFromMoon(distances.DistanceFromMoon);
     }
+    
     #endregion
 
     #region Antennas and Link Budget
+    
     public void ToggleAntennaColors(bool isAntennaColored)
     {
         _isAntennaColored = isAntennaColored;
@@ -321,7 +317,7 @@ public class UIManager : MonoBehaviour
     {
         _isAntennaPrioritized = isAntennaPrioritized;
     }
-
+    
     private void UpdateAntennasFromData(int currentIndex)
     {
         var currentLinkBudget = new float[antennaNames.Count];
@@ -366,9 +362,9 @@ public class UIManager : MonoBehaviour
         var connectionSpeedText = antennaTexts[1];
         var unitsText = antennaTexts[2];
         
-        connectionSpeedText.text = connectionSpeed.ToString(NoDecimalPlaces);
+        connectionSpeedText.text = $"{connectionSpeed:F0}";
         unitsText.text = $" {ConnectionSpeedUnit}";
-
+        
         switch (connectionSpeed)
         {
             case 0 when !_disabledAntennas.Contains(antennaName):
@@ -402,8 +398,8 @@ public class UIManager : MonoBehaviour
                 ConnectionSpeed = float.TryParse(
                     antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out var speed)
                         ? speed : float.MinValue,
-                PriorityWeight = (antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
-                                  == DataManager.instance.currentPrioritizedAntenna) ? 1.0f : 0.0f,
+                PriorityWeight = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
+                                  == DataManager.instance.currentPrioritizedAntenna ? 1.0f : 0.0f,
             })
             .OrderByDescending(item => item.PriorityWeight)
             .ThenByDescending(item => item.ConnectionSpeed)

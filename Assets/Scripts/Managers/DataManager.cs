@@ -80,27 +80,27 @@ public class DataManager : MonoBehaviour
     private void UpdateDataManager(int index)
     {
         UpdateMissionStage(index);
-        currentPrioritizedAntenna = PrioritizeLinkBudget(index);
+        currentPrioritizedAntenna = GetHighestPriorityAntenna(index);
     }
     
     /// <summary>
-    /// Reads a given CSV file and processes it.
+    /// Reads and processes a given CSV file.
     /// </summary>
-    /// <param name="dataFile">The data file</param>
-    /// <returns></returns>
+    /// <param name="dataFile">The raw data file (CSV only)</param>
+    /// <returns>The processed data file</returns>
     private List<string[]> ReadDataFile(TextAsset dataFile)
     {
         var dataValues = CsvReader.ReadCsvFile(dataFile);
-        dataValues.RemoveAt(0);
+        dataValues.RemoveAt(0); // The first row of headers is removed.
         return dataValues;
     }
     
     /// <summary>
-    /// Finds the more prioritized antenna.
+    /// Determines the highest priority antenna using link budget and future asset changes.
     /// </summary>
-    /// <param name="index">The index of the current row</param>
-    /// <returns>The name of the prioritized antenna</returns>
-    private string PrioritizeLinkBudget(int index)
+    /// <param name="index">The current data index</param>
+    /// <returns>The name of the highest priority antenna</returns>
+    private string GetHighestPriorityAntenna(int index)
     {
         var currentSatelliteName = _antennaAvailabilityDataValues[index][1];
 
