@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class UIManager : MonoBehaviour
 {
@@ -58,6 +59,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Button bumpOffCourseButton;
     [SerializeField] private TextMeshProUGUI thrustText;
     
+    [Header("Cutscene")]
+    [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField] private RawImage cutscene;
+    [SerializeField] private List<VideoClip> videoClips;
+    
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
     [SerializeField] private float inputInactivityTime;
@@ -85,6 +91,8 @@ public class UIManager : MonoBehaviour
     private List<string[]> _offnominalLinkBudgetData;
     private List<string[]> _thrustData;
     private SatelliteManager.SatelliteState _satelliteState;
+
+    private int cutscenesPlayed = 0;
     
     #region Event Functions
     
@@ -107,6 +115,7 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
+        SatelliteManager.OnUpdateTime += UpdateCutscenes;
         SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
@@ -116,11 +125,13 @@ public class UIManager : MonoBehaviour
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
         DataManager.OnMissionStageUpdated += SetBumpOffCourseButtonActive;
+        videoPlayer.loopPointReached += ContinueSimulation;
     }
     
     private void OnDisable()
     {
         SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
+        SatelliteManager.OnUpdateTime -= UpdateCutscenes;
         SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
@@ -130,6 +141,7 @@ public class UIManager : MonoBehaviour
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
         DataManager.OnMissionStageUpdated -= SetBumpOffCourseButtonActive;
+        videoPlayer.loopPointReached -= ContinueSimulation;
     }
     
     #endregion
@@ -471,7 +483,7 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
-    #region thrust
+    #region Thrust
 
     private void UpdateThrust(int index)
     {
@@ -494,14 +506,43 @@ public class UIManager : MonoBehaviour
             thrustText.text = "";
         }
     }
-
-
+    
+    
     #region Notifications
 
     private void ShowNotification(string text)
     {
         notification.SetActive(true);
         notificationText.text = text;
+    }
+    
+    #endregion
+    
+    #region Cutscenes
+
+    private void ContinueSimulation(VideoPlayer cutsceneVideoPlayer)
+    {
+        PlayButtonPressed();
+        cutscene.gameObject.SetActive(false);
+    }
+    
+    private void UpdateCutscenes(float currentTimeInMinutes)
+    {
+        switch (currentTimeInMinutes)
+        {
+            case >= 2.0f when cutscenesPlayed == 0:
+            case >= 8.0f when cutscenesPlayed == 1:
+            case >= 100.0f when cutscenesPlayed == 2:
+            case >= 12_000.0f when cutscenesPlayed == 3:
+            case >= 12_000.0f when cutscenesPlayed == 4:
+            case >= 12_000.0f when cutscenesPlayed == 5:
+                PauseButtonPressed();
+                cutscene.gameObject.SetActive(true);
+                cutscenesPlayed++;
+                videoPlayer.clip = videoClips[cutscenesPlayed];
+                videoPlayer.Play();
+                break;
+        }
     }
     
     #endregion
