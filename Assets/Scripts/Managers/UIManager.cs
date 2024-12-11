@@ -77,7 +77,9 @@ public class UIManager : MonoBehaviour
     private readonly List<string> _disabledAntennas = new();
     
     public static event Action OnBumpOffCoursePressed;
-    
+    public static event Action<SatelliteManager.SatelliteState> OnCurrentPathChanged;
+
+    private List<string[]> _linkBudgetData;
     
     #region Event Functions
     
@@ -90,11 +92,6 @@ public class UIManager : MonoBehaviour
         }
 
         instance = this;
-    }
-    
-    private void Start()
-    {
-        UpdateAntennasFromData(0);
     }
 
     private void Update()
@@ -344,16 +341,13 @@ public class UIManager : MonoBehaviour
     {
         var currentLinkBudget = new float[antennaNames.Count];
         
-        var linkBudgetDataValues = DataManager.instance.linkBudgetDataValues;
-        if (linkBudgetDataValues != null)
+        print("CURRENT INDEX: " + currentIndex);
+        var currentLinkBudgetValues = _linkBudgetData[currentIndex][18..22];
+        for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
         {
-            var currentLinkBudgetValues = DataManager.instance.linkBudgetDataValues[currentIndex][18..22];
-            for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
-            {
-                var antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
-                currentLinkBudget[antennaIndex] = antennaLinkBudgetValue > MaximumConnectionSpeed
-                    ? MaximumConnectionSpeed : antennaLinkBudgetValue;
-            }
+            var antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
+            currentLinkBudget[antennaIndex] = antennaLinkBudgetValue > MaximumConnectionSpeed
+                ? MaximumConnectionSpeed : antennaLinkBudgetValue;
         }
         
         // Updates each antenna with the latest link budget value.
@@ -413,7 +407,7 @@ public class UIManager : MonoBehaviour
             antennaLabels[index] = antennaLabel;
         }
         
-        print($"At time {Time.time}: {DataManager.instance.currentPrioritizedAntenna}");
+        //print($"At time {Time.time}: {DataManager.instance.currentPrioritizedAntenna}");
         
         var sortedLabels = antennaLabels
             .Select(antennaLabel => new
@@ -459,6 +453,7 @@ public class UIManager : MonoBehaviour
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
         SetBumpOffCourseButtonActive(dataLoadedEventArgs.MissionStage);
+        _linkBudgetData = dataLoadedEventArgs.LinkBudgetData;
     }
 
     private void UpdateMissionStage(MissionStage stage)
@@ -526,6 +521,16 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
+
+    public void NominalTogglePressed()
+    {
+        OnCurrentPathChanged?.Invoke(SatelliteManager.SatelliteState.Nominal);
+    }
+
+    public void OffnominalTogglePressed()
+    {
+        OnCurrentPathChanged?.Invoke(SatelliteManager.SatelliteState.OffNominal);
+    }
     
     private enum UnitSystem {
         Metric,

@@ -2174,7 +2174,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 512236118}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: ImperialButtonPressed
+        m_MethodName: OffnominalTogglePressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3897,8 +3897,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 328071167}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.70090926, y: -0.0000004854427, z: 0.00000047704316, w: 0.71325046}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.70090926, y: -0.0000011624181, z: 0.0000011423051, w: 0.7132505}
+  m_LocalPosition: {x: 0, y: 0.0000076293945, z: 0.0000009536743}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5007,7 +5007,7 @@ Transform:
   m_GameObject: {fileID: 411558178}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7009093, y: -0.00000008571096, z: 0.00000008422792, w: 0.71325046}
-  m_LocalPosition: {x: 29.75, y: 16.5, z: -8.85}
+  m_LocalPosition: {x: 29.75, y: 77.5, z: -9.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5701,6 +5701,37 @@ RectTransform:
   m_AnchoredPosition: {x: 200, y: -302}
   m_SizeDelta: {x: 370, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &485032612
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 485032613}
+  m_Layer: 0
+  m_Name: Nominal Satellite Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &485032613
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 485032612}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1539118347}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &508285135
 GameObject:
   m_ObjectHideFlags: 0
@@ -5862,7 +5893,7 @@ Transform:
   m_GameObject: {fileID: 508490928}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 29.75, y: 16.5, z: -8.85}
+  m_LocalPosition: {x: 29.75, y: 77.5, z: -9.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5965,12 +5996,12 @@ MonoBehaviour:
   m_BindingMode: 4
   m_SplineCurvature: 0.2
   m_Orbits:
-  - m_Height: 10
-    m_Radius: 0.09999999
+  - m_Height: 71
+    m_Radius: 0.71
   - m_Height: 0
-    m_Radius: 10
-  - m_Height: -10
-    m_Radius: 0.09999999
+    m_Radius: 71
+  - m_Height: -71
+    m_Radius: 0.71
   m_LegacyHeadingBias: 3.4028235e+38
   m_Rigs:
   - {fileID: 328071169}
@@ -6739,6 +6770,8 @@ MonoBehaviour:
   trajectoryScale: 0.01
   satellite: {fileID: 33029664}
   velocityVector: {fileID: 1684219207}
+  nominalSatellitePosition: {fileID: 485032613}
+  offnominalSatellitePosition: {fileID: 1549028642}
   earth: {fileID: 1228062427}
   moon: {fileID: 1207261695}
   futureNominalTrajectory: {fileID: 943471396}
@@ -7740,7 +7773,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 10, z: -0.09999999}
+  m_FollowOffset: {x: 0, y: 71, z: -0.71}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -9919,7 +9952,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 10, z: -0.09999999}
+  m_FollowOffset: {x: 0, y: 71, z: -0.71}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -10995,8 +11028,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 922644109}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.6905201, y: -0.0000030179929, z: 0.0000028811648, w: 0.7233133}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.6905201, y: -0.00000086513484, z: 0.0000008259119, w: 0.7233132}
+  m_LocalPosition: {x: 0, y: 0.0000076293945, z: 0.0000009536743}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11821,7 +11854,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 10, z: -0.09999999}
+  m_FollowOffset: {x: 0, y: 71, z: -0.71}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -16622,7 +16655,7 @@ MonoBehaviour:
         m_CallState: 2
       - m_Target: {fileID: 512236118}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: MetricButtonPressed
+        m_MethodName: NominalTogglePressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18879,6 +18912,8 @@ Transform:
   m_Children:
   - {fileID: 167741195}
   - {fileID: 1684219206}
+  - {fileID: 485032613}
+  - {fileID: 1549028642}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1547471409
@@ -18918,6 +18953,37 @@ RectTransform:
   m_AnchoredPosition: {x: 80, y: -69.98147}
   m_SizeDelta: {x: 160, y: 29.287647}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1549028641
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1549028642}
+  m_Layer: 0
+  m_Name: Offnominal Satellite Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1549028642
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1549028641}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1539118347}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1565740688
 GameObject:
   m_ObjectHideFlags: 0

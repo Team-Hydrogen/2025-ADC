@@ -29,7 +29,7 @@ public class DataManager : MonoBehaviour
     private List<string[]> _nominalTrajectoryDataValues;
     private List<string[]> _offNominalTrajectoryDataValues;
     private List<string[]> _antennaAvailabilityDataValues;
-    public List<string[]> linkBudgetDataValues { get; private set; }
+    public List<string[]> _linkBudgetDataValues { get; private set; }
     
     public string currentPrioritizedAntenna { get; private set; }
     private List<Vector3> _positionVectorsForGizmos;
@@ -55,13 +55,14 @@ public class DataManager : MonoBehaviour
         _nominalTrajectoryDataValues = ReadDataFile(nominalTrajectoryDataFile);
         _offNominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
         _antennaAvailabilityDataValues = ReadDataFile(antennaAvailabilityDataFile);
-        linkBudgetDataValues = ReadDataFile(linkBudgetDataFile);
+        _linkBudgetDataValues = ReadDataFile(linkBudgetDataFile);
         
         OnDataLoaded?.Invoke(
             new DataLoadedEventArgs(
                 _nominalTrajectoryDataValues, 
                 _offNominalTrajectoryDataValues, 
                 _antennaAvailabilityDataValues,
+                _linkBudgetDataValues,
                 stages[0]) // First stage should start right after simulation begins
             );
     }
