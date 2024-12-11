@@ -108,11 +108,9 @@ public class SatelliteManager : MonoBehaviour
             switch (_currentPointIndex)
             {
                 case SecondStageFireIndex:
-                    DisplayModel(1);
                     OnStageFired?.Invoke("Second Stage Fired");
                     break;
                 case ServiceModuleFireIndex:
-                    DisplayModel(2);
                     OnStageFired?.Invoke("Service Module Fired");
                     break;
             }
@@ -296,7 +294,7 @@ public class SatelliteManager : MonoBehaviour
             satellite.transform.rotation = Quaternion.Slerp(
                 satellite.transform.rotation,
                 targetRotation, 
-                rotationSpeed * timeScale * Time.deltaTime
+                rotationSpeed * Time.deltaTime
             );
         }
 
@@ -556,6 +554,8 @@ public class SatelliteManager : MonoBehaviour
     
     private void MoveSatellite()
     {
+        const float speed = 2.125f;
+        
         if (_currentState != SatelliteState.Manual)
         {
             return;
@@ -564,31 +564,31 @@ public class SatelliteManager : MonoBehaviour
         // Control the satellite on the left-right axis.
         if (Input.GetKey(KeyCode.A))
         {
-            satellite.transform.position += Vector3.left;
+            satellite.transform.position += speed * Time.deltaTime * Vector3.left;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            satellite.transform.position += Vector3.right;
+            satellite.transform.position += speed * Time.deltaTime * Vector3.right;
         }
         
         // Control the satellite on the forward-backward axis.
         if (Input.GetKey(KeyCode.W))
         {
-            satellite.transform.position += Vector3.forward;
+            satellite.transform.position += speed * Time.deltaTime * Vector3.forward;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            satellite.transform.position += Vector3.back;
+            satellite.transform.position += speed * Time.deltaTime * Vector3.back;
         }
         
         // Control the satellite on the up-down axis.
         if (Input.GetKey(KeyCode.Q))
         {
-            satellite.transform.position += Vector3.down;
+            satellite.transform.position += speed * Time.deltaTime * Vector3.down;
         }
         if (Input.GetKey(KeyCode.E))
         {
-            satellite.transform.position += Vector3.up;
+            satellite.transform.position += speed * Time.deltaTime * Vector3.up;
         }
     }
     
