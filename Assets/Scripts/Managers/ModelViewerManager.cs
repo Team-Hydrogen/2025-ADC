@@ -10,22 +10,24 @@ public class ModelViewerManager : MonoBehaviour
 
     private void Start()
     {
-        Button[] buttons = modelSelectorButtonsParent.GetComponentsInChildren<Button>();
+        var buttons = modelSelectorButtonsParent.GetComponentsInChildren<Button>();
 
-        for (int i = 0; i < buttons.Length; i++)
+        for (var i = 0; i < buttons.Length; i++)
         {
             buttons[i].onClick.RemoveAllListeners();
-
-            int index = i;
+            
+            var index = i;
             buttons[i].onClick.AddListener(() => ModelButtonClicked(index));
         }
+        
+        // Automatically selects the first button.
+        buttons[0].Select();
     }
-
+    
     private void ModelButtonClicked(int index)
     {
-        for (int i = 0; i < modelsParent.transform.childCount; i++)
+        for (var i = 0; i < modelsParent.transform.childCount; i++)
         {
-            print("INDEX: " + index + " " + i);
             modelsParent.GetChild(i).gameObject.SetActive(i == index);
         }
     }
