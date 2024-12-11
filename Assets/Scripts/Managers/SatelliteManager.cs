@@ -35,6 +35,7 @@ public class SatelliteManager : MonoBehaviour
     private int _previousPointIndex = 0;
     private int _currentPointIndex = 0;
     private bool _isPlaying = false;
+    private const int SkipIndexChange = 100;
     
     private float _progress = 0.0f;
     private float _estimatedElapsedTime;
@@ -116,12 +117,12 @@ public class SatelliteManager : MonoBehaviour
 
     public void ForwardButtonPressed()
     {
-        
+        _currentPointIndex = GetClosestDataPointIndexFromTime(_estimatedElapsedTime + SkipIndexChange / timeScale);
     }
 
     public void BackwardButtonPressed()
     {
-        
+        _currentPointIndex = GetClosestDataPointIndexFromTime(_estimatedElapsedTime - SkipIndexChange / timeScale);
     }
     
     public void FastForwardButtonPressed()
@@ -154,16 +155,6 @@ public class SatelliteManager : MonoBehaviour
                     OnStageFired?.Invoke("Service Module Fired");
                     break;
             }
-
-            // if (Input.GetKeyDown(KeyCode.LeftArrow))
-            // {
-            //     currentPointIndex = GetClosestDataPointFromTime(estimatedElapsedTime - 10f / timeScale);
-            // }
-            //
-            // if (Input.GetKeyDown(KeyCode.RightArrow))
-            // {
-            //     currentPointIndex = GetClosestDataPointFromTime(estimatedElapsedTime + 10f / timeScale);
-            // }
         }
     }
 
