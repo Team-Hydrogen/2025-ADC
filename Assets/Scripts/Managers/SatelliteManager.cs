@@ -171,6 +171,7 @@ public class SatelliteManager : MonoBehaviour
     }
 
     #region Plot Trajectories
+    
     /// <summary>
     /// Plots the provided data points into a visual trajectory. PlotTrajectory() is meant to be run only once.
     /// </summary>
@@ -238,6 +239,7 @@ public class SatelliteManager : MonoBehaviour
         //futureOffnominalTrajectory.positionCount = numberOfPoints;
         //futureOffnominalTrajectory.SetPositions(futureTrajectoryPoints);
     }
+    
     #endregion
 
     /// <summary>
@@ -475,7 +477,7 @@ public class SatelliteManager : MonoBehaviour
     {
         
     }
-
+    
     private void OnBumpOffCourse()
     {
         _currentState = SatelliteState.Manual;

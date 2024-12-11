@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -52,6 +53,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject notification;
     [SerializeField] private TextMeshProUGUI notificationText;
     
+    [Header("Machine Learning")]
+    [SerializeField] private Button bumpOffCourseButton;
+    
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
     [SerializeField] private float inputInactivityTime;
@@ -71,7 +75,7 @@ public class UIManager : MonoBehaviour
     private const string ConnectionSpeedUnit = "kbps";
     
     private readonly List<string> _disabledAntennas = new();
-
+    
     public static event Action OnBumpOffCoursePressed;
     
     
@@ -104,6 +108,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
+        SatelliteManager.OnCurrentIndexUpdated += SetBumpOffCourseButtonActive;
         SatelliteManager.OnStageFired += ShowNotification;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
@@ -115,6 +120,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
+        SatelliteManager.OnCurrentIndexUpdated -= SetBumpOffCourseButtonActive;
         SatelliteManager.OnStageFired -= ShowNotification;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
@@ -169,6 +175,19 @@ public class UIManager : MonoBehaviour
     #endregion
     
     #region Machine Learning
+    
+    private void SetBumpOffCourseButtonActive(int currentIndex)
+    {
+        const int lowerFirstBoundary = 2_500;
+        const int upperFirstBoundary = 5_000;
+        var isInFirstBoundary = currentIndex is >= lowerFirstBoundary and <= upperFirstBoundary;
+        
+        const int lowerSecondBoundary = 7_500;
+        const int upperSecondBoundary = 10_000;
+        var isInSecondBoundary = currentIndex is >= lowerSecondBoundary and <= upperSecondBoundary;
+        
+        bumpOffCourseButton.interactable = isInFirstBoundary || isInSecondBoundary;
+    }
     
     public void BumpOffCourseButtonPressed()
     {
