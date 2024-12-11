@@ -108,10 +108,10 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
-        SatelliteManager.OnCurrentIndexUpdated += SetBumpOffCourseButtonActive;
         SatelliteManager.OnStageFired += ShowNotification;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
+        DataManager.OnMissionStageUpdated += SetBumpOffCourseButtonActive;
     }
     
     private void OnDisable()
@@ -120,10 +120,10 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
-        SatelliteManager.OnCurrentIndexUpdated -= SetBumpOffCourseButtonActive;
         SatelliteManager.OnStageFired -= ShowNotification;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
+        DataManager.OnMissionStageUpdated -= SetBumpOffCourseButtonActive;
     }
     
     #endregion
@@ -176,17 +176,10 @@ public class UIManager : MonoBehaviour
     
     #region Machine Learning
     
-    private void SetBumpOffCourseButtonActive(int currentIndex)
+    private void SetBumpOffCourseButtonActive(MissionStage missionStage)
     {
-        const int lowerFirstBoundary = 2_500;
-        const int upperFirstBoundary = 5_000;
-        var isInFirstBoundary = currentIndex is >= lowerFirstBoundary and <= upperFirstBoundary;
-        
-        const int lowerSecondBoundary = 7_500;
-        const int upperSecondBoundary = 10_000;
-        var isInSecondBoundary = currentIndex is >= lowerSecondBoundary and <= upperSecondBoundary;
-        
-        bumpOffCourseButton.interactable = isInFirstBoundary || isInSecondBoundary;
+        bumpOffCourseButton.interactable = missionStage.stageType is MissionStage.StageTypes.TravellingToMoon 
+            or MissionStage.StageTypes.ReturningToEarth;
     }
     
     public void BumpOffCourseButtonPressed()
@@ -465,6 +458,7 @@ public class UIManager : MonoBehaviour
     private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
+        SetBumpOffCourseButtonActive(dataLoadedEventArgs.MissionStage);
     }
 
     private void UpdateMissionStage(MissionStage stage)
