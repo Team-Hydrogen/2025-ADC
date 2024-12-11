@@ -92,9 +92,29 @@ public class SatelliteManager : MonoBehaviour
     }
     
     private void Start()
-    { 
+    {
+        _totalDistanceTravelled = 0.0f;
         _vectorRenderers = velocityVector.GetComponentsInChildren<Renderer>();
         OnTimeScaleSet?.Invoke(timeScale);
+    }
+    
+    private void Update()
+    {
+        if (_isPlaying)
+        {
+            UpdateSatellitePosition();
+            MoveSatellite();
+            
+            switch (_currentPointIndex)
+            {
+                case SecondStageFireIndex:
+                    OnStageFired?.Invoke("Second Stage Fired");
+                    break;
+                case ServiceModuleFireIndex:
+                    OnStageFired?.Invoke("Service Module Fired");
+                    break;
+            }
+        }
     }
     
     private void OnEnable()
@@ -138,25 +158,6 @@ public class SatelliteManager : MonoBehaviour
     }
     
     #endregion
-    
-    private void Update()
-    {
-        if (_isPlaying)
-        {
-            UpdateSatellitePosition();
-            MoveSatellite();
-            
-            switch (_currentPointIndex)
-            {
-                case SecondStageFireIndex:
-                    OnStageFired?.Invoke("Second Stage Fired");
-                    break;
-                case ServiceModuleFireIndex:
-                    OnStageFired?.Invoke("Service Module Fired");
-                    break;
-            }
-        }
-    }
 
     private void OnDataLoaded(DataLoadedEventArgs data)
     {
@@ -168,6 +169,8 @@ public class SatelliteManager : MonoBehaviour
         PlotOffnominalTrajectory();
 
         _isPlaying = true;
+        
+        OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
     }
 
     #region Plot Trajectories
@@ -275,8 +278,9 @@ public class SatelliteManager : MonoBehaviour
         // Interpolate position
         var previousSatellitePosition = satellite.transform.position;
         satellite.transform.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
-        
-        _totalDistanceTravelled += Vector3.Distance(previousSatellitePosition, satellite.transform.position) / trajectoryScale;
+
+        var netDistance = Vector3.Distance(previousSatellitePosition, satellite.transform.position);
+        _totalDistanceTravelled += netDistance / trajectoryScale;
         
         // Calculate satellite direction
         var direction = (nextPosition - currentPosition).normalized;
