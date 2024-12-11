@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
@@ -55,6 +56,7 @@ public class UIManager : MonoBehaviour
     
     [Header("Machine Learning")]
     [SerializeField] private Button bumpOffCourseButton;
+    [SerializeField] private TextMeshProUGUI thrustText;
     
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
@@ -80,6 +82,8 @@ public class UIManager : MonoBehaviour
     public static event Action<SatelliteManager.SatelliteState> OnCurrentPathChanged;
 
     private List<string[]> _linkBudgetData;
+    private List<string[]> _thrustData;
+    private SatelliteManager.SatelliteState _satelliteState;
     
     #region Event Functions
     
@@ -105,7 +109,9 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateThrust;
         SatelliteManager.OnStageFired += ShowNotification;
+        SatelliteManager.OnSatelliteStateUpdated += UpdateSatelliteState;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
         DataManager.OnMissionStageUpdated += SetBumpOffCourseButtonActive;
@@ -117,7 +123,9 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
+        SatelliteManager.OnCurrentIndexUpdated -= UpdateThrust;
         SatelliteManager.OnStageFired -= ShowNotification;
+        SatelliteManager.OnSatelliteStateUpdated -= UpdateSatelliteState;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
         DataManager.OnMissionStageUpdated -= SetBumpOffCourseButtonActive;
@@ -341,7 +349,6 @@ public class UIManager : MonoBehaviour
     {
         var currentLinkBudget = new float[antennaNames.Count];
         
-        print("CURRENT INDEX: " + currentIndex);
         var currentLinkBudgetValues = _linkBudgetData[currentIndex][18..22];
         for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
         {
@@ -407,8 +414,6 @@ public class UIManager : MonoBehaviour
             antennaLabels[index] = antennaLabel;
         }
         
-        //print($"At time {Time.time}: {DataManager.instance.currentPrioritizedAntenna}");
-        
         var sortedLabels = antennaLabels
             .Select(antennaLabel => new
             {
@@ -454,6 +459,7 @@ public class UIManager : MonoBehaviour
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
         SetBumpOffCourseButtonActive(dataLoadedEventArgs.MissionStage);
         _linkBudgetData = dataLoadedEventArgs.LinkBudgetData;
+        _thrustData = dataLoadedEventArgs.ThrustData;
     }
 
     private void UpdateMissionStage(MissionStage stage)
@@ -461,12 +467,36 @@ public class UIManager : MonoBehaviour
         missionStageText.text = stage.name;
         missionStageText.color = stage.color;
     }
-    
+
     #endregion
-    
-    
+
+    #region thrust
+
+    private void UpdateThrust(int index)
+    {
+        Vector3 thrust = new Vector3(float.Parse(_thrustData[index][23]), float.Parse(_thrustData[index][24]), float.Parse(_thrustData[index][25]));
+        float magnitude = thrust.magnitude;
+
+        if (_satelliteState == SatelliteManager.SatelliteState.OffNominal)
+        {
+            thrustText.text = $"{magnitude:f3} N";
+        }
+    }
+
+    #endregion
+
+    private void UpdateSatelliteState(SatelliteManager.SatelliteState state)
+    {
+        _satelliteState = state;
+        if (!(_satelliteState == SatelliteManager.SatelliteState.OffNominal))
+        {
+            thrustText.text = "";
+        }
+    }
+
+
     #region Notifications
-    
+
     private void ShowNotification(string text)
     {
         notification.SetActive(true);

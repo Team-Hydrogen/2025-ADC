@@ -12,6 +12,7 @@ public class DataManager : MonoBehaviour
     [SerializeField] private TextAsset offNominalTrajectoryDataFile;
     [SerializeField] private TextAsset antennaAvailabilityDataFile;
     [SerializeField] private TextAsset linkBudgetDataFile;
+    [SerializeField] private TextAsset thrustDataFile;
     
     [Header("Mission Stages")]
     [SerializeField] private List<MissionStage> stages;
@@ -29,6 +30,7 @@ public class DataManager : MonoBehaviour
     private List<string[]> _nominalTrajectoryDataValues;
     private List<string[]> _offNominalTrajectoryDataValues;
     private List<string[]> _antennaAvailabilityDataValues;
+    private List<string[]> _thrustDataValues;
     public List<string[]> _linkBudgetDataValues { get; private set; }
     
     public string currentPrioritizedAntenna { get; private set; }
@@ -56,6 +58,7 @@ public class DataManager : MonoBehaviour
         _offNominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
         _antennaAvailabilityDataValues = ReadDataFile(antennaAvailabilityDataFile);
         _linkBudgetDataValues = ReadDataFile(linkBudgetDataFile);
+        _thrustDataValues = ReadDataFile(thrustDataFile);
         
         OnDataLoaded?.Invoke(
             new DataLoadedEventArgs(
@@ -63,6 +66,7 @@ public class DataManager : MonoBehaviour
                 _offNominalTrajectoryDataValues, 
                 _antennaAvailabilityDataValues,
                 _linkBudgetDataValues,
+                _thrustDataValues,
                 stages[0]) // First stage should start right after simulation begins
             );
     }

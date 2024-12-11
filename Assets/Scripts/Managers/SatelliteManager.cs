@@ -67,6 +67,7 @@ public class SatelliteManager : MonoBehaviour
     public static event Action<DistanceTravelledEventArgs> OnDistanceCalculated;
     public static event Action<float> OnTimeScaleSet;
     public static event Action<string> OnStageFired;
+    public static event Action<SatelliteState> OnSatelliteStateUpdated;
 
     #region Material Variables
     
@@ -399,7 +400,6 @@ public class SatelliteManager : MonoBehaviour
 
         _previousPointIndex = _currentPointIndex;
         // The simulation is reset.
-        print("why is index like this: " + _currentPointIndex + " Progress: " + Mathf.FloorToInt(_progress));
         _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalTrajectoryPoints.Count;
         // The progress is reset.
         _progress %= 1;
@@ -584,6 +584,7 @@ public class SatelliteManager : MonoBehaviour
         if (_currentState != SatelliteState.Returning || _currentState != SatelliteState.Manual)
         {
             _currentState = state;
+            OnSatelliteStateUpdated?.Invoke(_currentState);
         }
     }
 
