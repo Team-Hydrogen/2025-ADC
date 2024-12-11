@@ -369,13 +369,13 @@ public class UIManager : MonoBehaviour
             UpdateAntenna(antennaNames[antennaIndex], currentLinkBudget[antennaIndex]);
         }
         
-        if (_isAntennaColored)
-        {
-            ColorAntennas();
-        }
         if (_isAntennaPrioritized)
         {
             PrioritizeAntennas();
+        }
+        if (_isAntennaColored)
+        {
+            ColorAntennas();
         }
     }
 
@@ -420,6 +420,8 @@ public class UIManager : MonoBehaviour
             antennaLabels[index] = antennaLabel;
         }
         
+        print($"At time {Time.time}: {DataManager.instance.currentPrioritizedAntenna}");
+        
         var sortedLabels = antennaLabels
             .Select(antennaLabel => new
             {
@@ -429,9 +431,11 @@ public class UIManager : MonoBehaviour
                         ? speed : float.MinValue,
                 PriorityWeight = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
                                   == DataManager.instance.currentPrioritizedAntenna ? 1.0f : 0.0f,
+                Name = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text,
             })
             .OrderByDescending(item => item.PriorityWeight)
             .ThenByDescending(item => item.ConnectionSpeed)
+            .ThenBy(item => item.Name)
             .Select(item => item.Label)
             .ToList();
         
