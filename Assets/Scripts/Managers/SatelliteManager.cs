@@ -644,9 +644,9 @@ public class SatelliteManager : MonoBehaviour
             new DistanceTravelledEventArgs(distanceTravelledToSend, distanceToEarth, distanceToMoon));
     }
 
-    private void DisplayModel(int displayedModelIndex)
+    public void DisplayModel(int displayedModelIndex)
     {
-        var rocketParts = transform.GetChild(0);
+        var rocketParts = satellite.transform.GetChild(0);
         for (var modelIndex = 0; modelIndex < rocketParts.childCount; modelIndex++)
         {
             rocketParts.GetChild(displayedModelIndex).gameObject.SetActive(modelIndex == displayedModelIndex);
