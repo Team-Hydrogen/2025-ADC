@@ -525,25 +525,45 @@ public class UIManager : MonoBehaviour
 
     private void ContinueSimulation(VideoPlayer cutsceneVideoPlayer)
     {
-        PlayButtonPressed();
-        cutscene.gameObject.SetActive(false);
+        if (cutscenesPlayed <= 3)
+        {
+            PlayButtonPressed();
+            cutscene.gameObject.SetActive(false);
+        }
+        else if (cutscenesPlayed < videoClips.Count)
+        {
+            videoPlayer.clip = videoClips[cutscenesPlayed];
+            videoPlayer.Play();
+            cutscenesPlayed++;
+        }
     }
     
     private void UpdateCutscenes(float currentTimeInMinutes)
     {
+        switch (cutscenesPlayed)
+        {
+            case 0:
+                SatelliteManager.instance.DisplayModel(0);
+                break;
+            case 1:
+                SatelliteManager.instance.DisplayModel(1);
+                break;
+            case 2:
+                SatelliteManager.instance.DisplayModel(2);
+                break;
+        }
+
         switch (currentTimeInMinutes)
         {
-            case >= 2.0f when cutscenesPlayed == 0:
-            case >= 8.0f when cutscenesPlayed == 1:
-            case >= 100.0f when cutscenesPlayed == 2:
-            case >= 12_000.0f when cutscenesPlayed == 3:
-            case >= 12_000.0f when cutscenesPlayed == 4:
-            case >= 12_000.0f when cutscenesPlayed == 5:
+            case >= 2.0f when cutscenesPlayed == 0: // first
+            case >= 8.0f when cutscenesPlayed == 1: // second
+            case >= 100.0f when cutscenesPlayed == 2: // third
+            case >= 12983.0f when cutscenesPlayed == 3: // fourth
                 PauseButtonPressed();
-                cutscene.gameObject.SetActive(true);
-                cutscenesPlayed++;
                 videoPlayer.clip = videoClips[cutscenesPlayed];
                 videoPlayer.Play();
+                cutscene.gameObject.SetActive(true);
+                cutscenesPlayed++;
                 break;
         }
     }
