@@ -103,7 +103,7 @@ public class DataManager : MonoBehaviour
     private string GetHighestPriorityAntenna(int index)
     {
         var currentSatelliteName = _antennaAvailabilityDataValues[index][1];
-
+        
         if (index <= 0)
         {
             return currentSatelliteName;

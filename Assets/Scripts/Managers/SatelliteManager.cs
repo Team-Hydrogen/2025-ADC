@@ -108,9 +108,11 @@ public class SatelliteManager : MonoBehaviour
             switch (_currentPointIndex)
             {
                 case SecondStageFireIndex:
+                    DisplayModel(1);
                     OnStageFired?.Invoke("Second Stage Fired");
                     break;
                 case ServiceModuleFireIndex:
+                    DisplayModel(2);
                     OnStageFired?.Invoke("Service Module Fired");
                     break;
             }
@@ -479,7 +481,11 @@ public class SatelliteManager : MonoBehaviour
 
     private void DisplayModel(int displayedModelIndex)
     {
-        
+        var rocketParts = transform.GetChild(0);
+        for (var modelIndex = 0; modelIndex < rocketParts.childCount; modelIndex++)
+        {
+            rocketParts.GetChild(displayedModelIndex).gameObject.SetActive(modelIndex == displayedModelIndex);
+        }
     }
     
     private void OnBumpOffCourse()
