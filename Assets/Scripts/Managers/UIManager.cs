@@ -57,6 +57,7 @@ public class UIManager : MonoBehaviour
     
     [Header("Machine Learning")]
     [SerializeField] private Button bumpOffCourseButton;
+    [SerializeField] private GameObject thrustSection;
     [SerializeField] private TextMeshProUGUI thrustText;
     
     [Header("Cutscene")]
@@ -501,7 +502,8 @@ public class UIManager : MonoBehaviour
     private void UpdateSatelliteState(SatelliteManager.SatelliteState state)
     {
         _satelliteState = state;
-        thrustText.gameObject.SetActive(_satelliteState == SatelliteManager.SatelliteState.OffNominal);
+        
+        thrustSection.SetActive(_satelliteState == SatelliteManager.SatelliteState.OffNominal);
         if (_satelliteState != SatelliteManager.SatelliteState.OffNominal)
         {
             thrustText.text = "";
