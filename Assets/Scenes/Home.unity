@@ -1254,7 +1254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 0, z: -10.85}
+  m_FollowOffset: {x: 0, y: 0, z: -10.05}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -1789,7 +1789,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 0, z: -10.85}
+  m_FollowOffset: {x: 0, y: 0, z: -10.05}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -1916,7 +1916,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BindingMode: 4
-  m_FollowOffset: {x: 0, y: 0, z: -10.85}
+  m_FollowOffset: {x: 0, y: 0, z: -10.05}
   m_XDamping: 0
   m_YDamping: 0
   m_ZDamping: 0
@@ -3330,7 +3330,7 @@ Transform:
   m_GameObject: {fileID: 1074453995}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10.85}
+  m_LocalPosition: {x: 0, y: 0, z: -10.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3433,12 +3433,12 @@ MonoBehaviour:
   m_BindingMode: 4
   m_SplineCurvature: 0.2
   m_Orbits:
-  - m_Height: 10.85
-    m_Radius: 0.1085
+  - m_Height: 10.05
+    m_Radius: 0.1005
   - m_Height: 0
-    m_Radius: 10.85
-  - m_Height: -10.85
-    m_Radius: 0.1085
+    m_Radius: 10.05
+  - m_Height: -10.05
+    m_Radius: 0.1005
   m_LegacyHeadingBias: 3.4028235e+38
   m_Rigs:
   - {fileID: 1283564968}
@@ -4110,8 +4110,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1283564966}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.000000005051338, y: -0.000000007450578, z: -3.3068782e-17,
-    w: 1}
+  m_LocalRotation: {x: -4.6565465e-10, y: -4.606897e-10, z: -1.3264529e-19, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4475,7 +4474,7 @@ Transform:
   m_GameObject: {fileID: 1427912034}
   serializedVersion: 2
   m_LocalRotation: {x: -0.018189484, y: 0.000000033293865, z: 6.056984e-10, w: 0.9998346}
-  m_LocalPosition: {x: 0, y: 0, z: -10.85}
+  m_LocalPosition: {x: 0, y: 0, z: -10.05}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4964,68 +4963,72 @@ MonoBehaviour:
 
     <b>Introduction</b>
 
-    LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
+    Artemis
+    II is the next Artemis mission by NASA.
 
 
-    <b>Phase 1:
-    Launch</b>
+    <b>Crew</b>
 
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
+    Commander: United
+    States, Reid Wiseman, NASA, second spaceflight
+
+    Pilot: United States, Victor
+    Glover, NASA, second spaceflight
+
+    Flight Engineer: United States, Christina
+    Koch, NASA, second spaceflight
+
+    Mission Specialist: Canada, Jeremy Hansen,
+    CSA, first spaceflight
+
+
+    <b>Phase 1: Launch</b>
+
+    Mention vehicle (SLS
+    Block 1), launch site (Kennedy Space Center, Launch Complex 39B), duration (~8
+    minutes to reach initial orbit), and trajectory (initially LEO, proceeds to highly-eccentric
+    orbit within ~24 hours).
+
+
+    <b>Phase 2: Earth Orbit and Systems Checkout</b>
+
+    Mention
+    vehicle (SLS Block 1), launch site (Kennedy Space Center, Launch Complex 39B),
+    duration (~8 minutes to reach initial orbit), and trajectory (initially LEO,
+    proceeds to highly-eccentric orbit within ~24 hours).
+
+
+    <b>Phase 3: Translunar
+    Injection</b>
+
+    Mention vehicle (SLS Block 1), launch site (Kennedy Space
+    Center, Launch Complex 39B), duration (~8 minutes to reach initial orbit), and
+    trajectory (initially LEO, proceeds to highly-eccentric orbit within ~24 hours).
+
+
+    </b>Phase
+    4: Lunar Flyby</b>
+
+    Mention vehicle (SLS Block 1), launch site (Kennedy Space
+    Center, Launch Complex 39B), duration (~8 minutes to reach initial orbit), and
+    trajectory (initially LEO, proceeds to highly-eccentric orbit within ~24 hours).
 
 
     <b>Phase
-    1: Launch</b>
+    5: Return Trajectory</b>
 
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER
+    Mention vehicle (SLS Block 1), launch site (Kennedy
+    Space Center, Launch Complex 39B), duration (~8 minutes to reach initial orbit),
+    and trajectory (initially LEO, proceeds to highly-eccentric orbit within ~24
+    hours).
 
 
-    <b>Phase 1: Launch</b>
+    <b>Phase 6: Re-entry and Splashdown</b>
 
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER
-
-
-    <b>Phase 1: Launch</b>
-
-    LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER'
+    Mention vehicle (SLS
+    Block 1), launch site (Kennedy Space Center, Launch Complex 39B), duration (~8
+    minutes to reach initial orbit), and trajectory (initially LEO, proceeds to highly-eccentric
+    orbit within ~24 hours).'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4b009e6b9d07d4f59a95453bcb8c61a8, type: 2}
   m_sharedMaterial: {fileID: 1508867962351748385, guid: 4b009e6b9d07d4f59a95453bcb8c61a8,
