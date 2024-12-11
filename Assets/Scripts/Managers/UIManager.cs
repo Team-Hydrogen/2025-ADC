@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -52,6 +53,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject notification;
     [SerializeField] private TextMeshProUGUI notificationText;
     
+    [Header("Machine Learning")]
+    [SerializeField] private Button bumpOffCourseButton;
+    
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
     [SerializeField] private float inputInactivityTime;
@@ -71,6 +75,8 @@ public class UIManager : MonoBehaviour
     private const string ConnectionSpeedUnit = "kbps";
     
     private readonly List<string> _disabledAntennas = new();
+    
+    public static event Action OnBumpOffCoursePressed;
     
     
     #region Event Functions
@@ -105,6 +111,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnStageFired += ShowNotification;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
+        DataManager.OnMissionStageUpdated += SetBumpOffCourseButtonActive;
     }
     
     private void OnDisable()
@@ -116,6 +123,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnStageFired -= ShowNotification;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
+        DataManager.OnMissionStageUpdated -= SetBumpOffCourseButtonActive;
     }
     
     #endregion
@@ -168,9 +176,15 @@ public class UIManager : MonoBehaviour
     
     #region Machine Learning
     
+    private void SetBumpOffCourseButtonActive(MissionStage missionStage)
+    {
+        bumpOffCourseButton.interactable = missionStage.stageType is MissionStage.StageTypes.TravellingToMoon 
+            or MissionStage.StageTypes.ReturningToEarth;
+    }
+    
     public void BumpOffCourseButtonPressed()
     {
-        
+        OnBumpOffCoursePressed?.Invoke();
     }
     
     #endregion
@@ -348,13 +362,13 @@ public class UIManager : MonoBehaviour
             UpdateAntenna(antennaNames[antennaIndex], currentLinkBudget[antennaIndex]);
         }
         
-        if (_isAntennaColored)
-        {
-            ColorAntennas();
-        }
         if (_isAntennaPrioritized)
         {
             PrioritizeAntennas();
+        }
+        if (_isAntennaColored)
+        {
+            ColorAntennas();
         }
     }
 
@@ -399,6 +413,8 @@ public class UIManager : MonoBehaviour
             antennaLabels[index] = antennaLabel;
         }
         
+        print($"At time {Time.time}: {DataManager.instance.currentPrioritizedAntenna}");
+        
         var sortedLabels = antennaLabels
             .Select(antennaLabel => new
             {
@@ -408,9 +424,11 @@ public class UIManager : MonoBehaviour
                         ? speed : float.MinValue,
                 PriorityWeight = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
                                   == DataManager.instance.currentPrioritizedAntenna ? 1.0f : 0.0f,
+                Name = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text,
             })
             .OrderByDescending(item => item.PriorityWeight)
             .ThenByDescending(item => item.ConnectionSpeed)
+            .ThenBy(item => item.Name)
             .Select(item => item.Label)
             .ToList();
         
@@ -440,6 +458,7 @@ public class UIManager : MonoBehaviour
     private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
+        SetBumpOffCourseButtonActive(dataLoadedEventArgs.MissionStage);
     }
 
     private void UpdateMissionStage(MissionStage stage)

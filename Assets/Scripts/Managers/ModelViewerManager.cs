@@ -14,7 +14,6 @@ public class ModelViewerManager : MonoBehaviour
 
         for (int i = 0; i < buttons.Length; i++)
         {
-            print(i);
             buttons[i].onClick.RemoveAllListeners();
 
             int index = i;
