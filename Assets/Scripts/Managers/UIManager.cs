@@ -82,6 +82,7 @@ public class UIManager : MonoBehaviour
     public static event Action<SatelliteManager.SatelliteState> OnCurrentPathChanged;
 
     private List<string[]> _linkBudgetData;
+    private List<string[]> _offnominalLinkBudgetData;
     private List<string[]> _thrustData;
     private SatelliteManager.SatelliteState _satelliteState;
     
@@ -452,16 +453,16 @@ public class UIManager : MonoBehaviour
     #endregion
     
     
-    #region Mission Stage
-    
     private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
         SetBumpOffCourseButtonActive(dataLoadedEventArgs.MissionStage);
         _linkBudgetData = dataLoadedEventArgs.LinkBudgetData;
+        _offnominalLinkBudgetData = dataLoadedEventArgs.OffnominalLinkBudgetData;
         _thrustData = dataLoadedEventArgs.ThrustData;
     }
 
+    #region Mission Stage
     private void UpdateMissionStage(MissionStage stage)
     {
         missionStageText.text = stage.name;
