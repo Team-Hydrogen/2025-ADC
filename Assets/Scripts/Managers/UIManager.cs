@@ -71,6 +71,8 @@ public class UIManager : MonoBehaviour
     private const string ConnectionSpeedUnit = "kbps";
     
     private readonly List<string> _disabledAntennas = new();
+
+    public static event Action OnBumpOffCoursePressed;
     
     
     #region Event Functions
@@ -170,7 +172,7 @@ public class UIManager : MonoBehaviour
     
     public void BumpOffCourseButtonPressed()
     {
-        
+        OnBumpOffCoursePressed?.Invoke();
     }
     
     #endregion

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Cinemachine;
 using UnityEngine;
 
 public class SatelliteManager : MonoBehaviour
@@ -28,6 +30,8 @@ public class SatelliteManager : MonoBehaviour
     [Header("Time Scale")]
     [SerializeField] private float timeScale;
     
+    private SatelliteState _currentState = SatelliteState.Nominal;
+    
     private int _previousPointIndex = 0;
     private int _currentPointIndex = 0;
     private bool _isPlaying = false;
@@ -42,6 +46,14 @@ public class SatelliteManager : MonoBehaviour
     
     private const int SecondStageFireIndex = 5_000;
     private const int ServiceModuleFireIndex = 10_000;
+    
+    private Vector3 _lastAutomaticSatellitePosition;
+    private Vector3 _lastManualSatellitePosition;
+    private int _lastAutomaticSatelliteIndex;
+    private int _lastManualSatelliteIndex;
+    
+    private const float MaximumManualControlTime = 5.0f;
+    private const int MaximumFutureDataPoints = 60;
     
     public static event Action<int> OnCurrentIndexUpdated; 
     public static event Action<float> OnUpdateTime;
@@ -88,12 +100,14 @@ public class SatelliteManager : MonoBehaviour
     {
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += OnMissionStageUpdated;
+        UIManager.OnBumpOffCoursePressed += OnBumpOffCourse;
     }
     
     private void OnDisable()
     {
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= OnMissionStageUpdated;
+        UIManager.OnBumpOffCoursePressed -= OnBumpOffCourse;
     }
     
     #endregion
@@ -123,12 +137,13 @@ public class SatelliteManager : MonoBehaviour
     }
     
     #endregion
-
+    
     private void Update()
     {
         if (_isPlaying)
         {
             UpdateSatellitePosition();
+            MoveSatellite();
             
             switch (_currentPointIndex)
             {
@@ -239,6 +254,11 @@ public class SatelliteManager : MonoBehaviour
     /// </summary>
     private void UpdateSatellitePosition()
     {
+        if (_currentState is SatelliteState.Manual or SatelliteState.Returning)
+        {
+            return;
+        }
+        
         var currentPoint = _nominalTrajectoryPoints[_currentPointIndex];
         var nextPoint = _nominalTrajectoryPoints[(_currentPointIndex + 1) % _nominalTrajectoryPoints.Count];
         
@@ -458,5 +478,151 @@ public class SatelliteManager : MonoBehaviour
             satellite.transform.position, moon.transform.position) / trajectoryScale;
         OnDistanceCalculated?.Invoke(
             new DistanceTravelledEventArgs(_totalDistanceTravelled, distanceToEarth, distanceToMoon));
+    }
+
+    private void DisplayModel(int displayedModelIndex)
+    {
+        
+    }
+
+    private void OnBumpOffCourse()
+    {
+        _currentState = SatelliteState.Manual;
+        _lastAutomaticSatellitePosition = transform.position;
+        _lastAutomaticSatelliteIndex = _currentPointIndex;
+        
+        Invoke(nameof(PushOnCourse), MaximumManualControlTime);
+    }
+
+    private void PushOnCourse()
+    {
+        _currentState = SatelliteState.Returning;
+        _lastManualSatellitePosition = transform.position;
+        _lastManualSatelliteIndex = _currentPointIndex;
+        
+        // The future path is predicted.
+        var futureExpectedPositionIndex = GetClosestDataPointIndexFromTime(
+            _estimatedElapsedTime + MaximumManualControlTime);
+        var futureExpectedPosition = new Vector3(
+            float.Parse(_nominalTrajectoryPoints[futureExpectedPositionIndex][1]),
+            float.Parse(_nominalTrajectoryPoints[futureExpectedPositionIndex][2]),
+            float.Parse(_nominalTrajectoryPoints[futureExpectedPositionIndex][3]));
+        
+        // Get the current velocity.
+        var velocity = new Vector3(
+            float.Parse(_nominalTrajectoryPoints[_lastManualSatelliteIndex][4]),
+            float.Parse(_nominalTrajectoryPoints[_lastManualSatelliteIndex][5]),
+            float.Parse(_nominalTrajectoryPoints[_lastManualSatelliteIndex][6]));
+
+        var minimumTimes = new List<float>();
+        
+        // Reads up to 60 points into the future
+        for (var futureIndex = 0; futureIndex <= MaximumFutureDataPoints; futureIndex++)
+        {
+            var machineLearningFutureIndex = futureExpectedPositionIndex + futureIndex;
+            var machineLearningPosition = new Vector3(
+                float.Parse(_nominalTrajectoryPoints[machineLearningFutureIndex][1]),
+                float.Parse(_nominalTrajectoryPoints[machineLearningFutureIndex][2]),
+                float.Parse(_nominalTrajectoryPoints[machineLearningFutureIndex][3]));
+            
+            var distance = Vector3.Distance(satellite.transform.position, machineLearningPosition);
+            var minimumTime = distance / velocity.magnitude;
+
+            var statusCode = 200;
+            var isError = false;
+            
+            do
+            {
+                minimumTime += 30;
+                // ping API
+                isError = statusCode != 200;
+            }
+            while (isError);
+            
+            minimumTimes.Add(minimumTime);
+        }
+        
+        var absoluteMinimumTime = minimumTimes.Min();
+        var absoluteMinimumIndex = minimumTimes.IndexOf(absoluteMinimumTime);
+        // ping API
+
+        // Vector3.Lerp(_lastManualSatellitePosition, futureExpectedPosition, 0.5f);
+        
+        _currentState = SatelliteState.Nominal;
+    }
+    
+    private void MoveSatellite()
+    {
+        if (_currentState != SatelliteState.Manual)
+        {
+            return;
+        }
+        
+        // Control the satellite on the left-right axis.
+        if (Input.GetKey(KeyCode.A))
+        {
+            satellite.transform.position += Vector3.left;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            satellite.transform.position += Vector3.right;
+        }
+        
+        // Control the satellite on the forward-backward axis.
+        if (Input.GetKey(KeyCode.W))
+        {
+            satellite.transform.position += Vector3.forward;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            satellite.transform.position += Vector3.back;
+        }
+        
+        // Control the satellite on the up-down axis.
+        if (Input.GetKey(KeyCode.Q))
+        {
+            satellite.transform.position += Vector3.down;
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            satellite.transform.position += Vector3.up;
+        }
+    }
+    
+    private int GetClosestDataPointIndexFromTime(float time)
+    {
+        var closestIndex = 0;
+        var closestTime = float.MaxValue;
+
+        for (var i = 0; i < _nominalTrajectoryPoints.Count; i++)
+        {
+            try
+            {
+                var timeDistance = Mathf.Abs(float.Parse(_nominalTrajectoryPoints[i][0]) - time);
+
+                if (timeDistance >= closestTime)
+                {
+                    continue;
+                }
+
+                closestTime = timeDistance;
+                closestIndex = i;
+            }
+            catch (FormatException)
+            {
+
+            }
+        }
+
+        Debug.Log(_nominalTrajectoryPoints[closestIndex][0]);
+        return closestIndex;
+    }
+    
+    private enum SatelliteState
+    {
+        Nominal,
+        OffNominal,
+        Manual,
+        Returning,
     }
 }
