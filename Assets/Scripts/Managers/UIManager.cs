@@ -501,7 +501,8 @@ public class UIManager : MonoBehaviour
     private void UpdateSatelliteState(SatelliteManager.SatelliteState state)
     {
         _satelliteState = state;
-        if (!(_satelliteState == SatelliteManager.SatelliteState.OffNominal))
+        thrustText.gameObject.SetActive(_satelliteState == SatelliteManager.SatelliteState.OffNominal);
+        if (_satelliteState != SatelliteManager.SatelliteState.OffNominal)
         {
             thrustText.text = "";
         }
