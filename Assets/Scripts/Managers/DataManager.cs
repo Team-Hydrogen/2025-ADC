@@ -12,6 +12,8 @@ public class DataManager : MonoBehaviour
     [SerializeField] private TextAsset offNominalTrajectoryDataFile;
     [SerializeField] private TextAsset antennaAvailabilityDataFile;
     [SerializeField] private TextAsset linkBudgetDataFile;
+    [SerializeField] private TextAsset offnominalLinkBudgetDataFile;
+    [SerializeField] private TextAsset thrustDataFile;
     
     [Header("Mission Stages")]
     [SerializeField] private List<MissionStage> stages;
@@ -29,12 +31,16 @@ public class DataManager : MonoBehaviour
     private List<string[]> _nominalTrajectoryDataValues;
     private List<string[]> _offNominalTrajectoryDataValues;
     private List<string[]> _antennaAvailabilityDataValues;
-    public List<string[]> linkBudgetDataValues { get; private set; }
+    private List<string[]> _thrustDataValues;
+    public List<string[]> _linkBudgetDataValues { get; private set; }
+    public List<string[]> _offnominalLinkBudgetDataValues { get; private set; }
     
     public string currentPrioritizedAntenna { get; private set; }
     private List<Vector3> _positionVectorsForGizmos;
 
     public MissionStage currentMissionStage { get; private set; }
+
+    private SatelliteManager.SatelliteState _satelliteState;
     
     #region Event Functions
     private void Awake()
@@ -55,13 +61,18 @@ public class DataManager : MonoBehaviour
         _nominalTrajectoryDataValues = ReadDataFile(nominalTrajectoryDataFile);
         _offNominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
         _antennaAvailabilityDataValues = ReadDataFile(antennaAvailabilityDataFile);
-        linkBudgetDataValues = ReadDataFile(linkBudgetDataFile);
+        _linkBudgetDataValues = ReadDataFile(linkBudgetDataFile);
+        _offnominalLinkBudgetDataValues = ReadDataFile(offnominalLinkBudgetDataFile);
+        _thrustDataValues = ReadDataFile(thrustDataFile);
         
         OnDataLoaded?.Invoke(
             new DataLoadedEventArgs(
                 _nominalTrajectoryDataValues, 
                 _offNominalTrajectoryDataValues, 
                 _antennaAvailabilityDataValues,
+                _linkBudgetDataValues,
+                _offnominalLinkBudgetDataValues,
+                _thrustDataValues,
                 stages[0]) // First stage should start right after simulation begins
             );
     }
@@ -69,11 +80,13 @@ public class DataManager : MonoBehaviour
     private void OnEnable()
     {
         SatelliteManager.OnCurrentIndexUpdated += UpdateDataManager;
+        SatelliteManager.OnSatelliteStateUpdated += SatelliteStateUpdated;
     }
     
     private void OnDisable()
     {
         SatelliteManager.OnCurrentIndexUpdated -= UpdateDataManager;
+        SatelliteManager.OnSatelliteStateUpdated -= SatelliteStateUpdated;
     }
     #endregion
     
@@ -94,7 +107,12 @@ public class DataManager : MonoBehaviour
         dataValues.RemoveAt(0); // The first row of headers is removed.
         return dataValues;
     }
-    
+
+    private void SatelliteStateUpdated(SatelliteManager.SatelliteState state)
+    {
+        _satelliteState = state;
+    }
+
     /// <summary>
     /// Determines the highest priority antenna using link budget and future asset changes.
     /// </summary>
@@ -102,15 +120,15 @@ public class DataManager : MonoBehaviour
     /// <returns>The name of the highest priority antenna</returns>
     private string GetHighestPriorityAntenna(int index)
     {
-        var currentSatelliteName = _antennaAvailabilityDataValues[index][1];
+        var currentSatelliteName = _satelliteState == SatelliteManager.SatelliteState.Nominal ? _antennaAvailabilityDataValues[index][1] : _offNominalTrajectoryDataValues[index][1];
         
         if (index <= 0)
         {
             return currentSatelliteName;
         }
         
-        var previousSatelliteName = _antennaAvailabilityDataValues[index - 1][1];
-        
+        var previousSatelliteName = _satelliteState == SatelliteManager.SatelliteState.Nominal ? _antennaAvailabilityDataValues[index - 1][1] : _offNominalTrajectoryDataValues[index - 1][1];
+
         if (previousSatelliteName == currentSatelliteName)
         {
             return previousSatelliteName;
@@ -118,7 +136,7 @@ public class DataManager : MonoBehaviour
         
         for (var futureIndex = 1; futureIndex <= 20; futureIndex++)
         {
-            var futureSatelliteName = _antennaAvailabilityDataValues[index + futureIndex][1];
+            var futureSatelliteName =_satelliteState == SatelliteManager.SatelliteState.Nominal ? _antennaAvailabilityDataValues[index + futureIndex][1] : _offNominalTrajectoryDataValues[index + futureIndex][1];
             if (currentSatelliteName != futureSatelliteName)
             {
                 return previousSatelliteName;

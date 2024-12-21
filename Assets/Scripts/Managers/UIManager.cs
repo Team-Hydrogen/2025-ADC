@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class UIManager : MonoBehaviour
 {
@@ -55,6 +57,13 @@ public class UIManager : MonoBehaviour
     
     [Header("Machine Learning")]
     [SerializeField] private Button bumpOffCourseButton;
+    [SerializeField] private GameObject thrustSection;
+    [SerializeField] private TextMeshProUGUI thrustText;
+    
+    [Header("Cutscene")]
+    [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField] private RawImage cutscene;
+    [SerializeField] private List<VideoClip> videoClips;
     
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
@@ -77,7 +86,14 @@ public class UIManager : MonoBehaviour
     private readonly List<string> _disabledAntennas = new();
     
     public static event Action OnBumpOffCoursePressed;
-    
+    public static event Action<SatelliteManager.SatelliteState> OnCurrentPathChanged;
+
+    private List<string[]> _linkBudgetData;
+    private List<string[]> _offnominalLinkBudgetData;
+    private List<string[]> _thrustData;
+    private SatelliteManager.SatelliteState _satelliteState;
+
+    private int cutscenesPlayed = 0;
     
     #region Event Functions
     
@@ -91,11 +107,6 @@ public class UIManager : MonoBehaviour
 
         instance = this;
     }
-    
-    private void Start()
-    {
-        UpdateAntennasFromData(0);
-    }
 
     private void Update()
     {
@@ -105,25 +116,33 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
+        SatelliteManager.OnUpdateTime += UpdateCutscenes;
         SatelliteManager.OnDistanceCalculated += UpdateDistances;
         SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
+        SatelliteManager.OnCurrentIndexUpdated += UpdateThrust;
         SatelliteManager.OnStageFired += ShowNotification;
+        SatelliteManager.OnSatelliteStateUpdated += UpdateSatelliteState;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
         DataManager.OnMissionStageUpdated += SetBumpOffCourseButtonActive;
+        videoPlayer.loopPointReached += ContinueSimulation;
     }
     
     private void OnDisable()
     {
         SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
+        SatelliteManager.OnUpdateTime -= UpdateCutscenes;
         SatelliteManager.OnDistanceCalculated -= UpdateDistances;
         SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
+        SatelliteManager.OnCurrentIndexUpdated -= UpdateThrust;
         SatelliteManager.OnStageFired -= ShowNotification;
+        SatelliteManager.OnSatelliteStateUpdated -= UpdateSatelliteState;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
         DataManager.OnMissionStageUpdated -= SetBumpOffCourseButtonActive;
+        videoPlayer.loopPointReached -= ContinueSimulation;
     }
     
     #endregion
@@ -344,16 +363,12 @@ public class UIManager : MonoBehaviour
     {
         var currentLinkBudget = new float[antennaNames.Count];
         
-        var linkBudgetDataValues = DataManager.instance.linkBudgetDataValues;
-        if (linkBudgetDataValues != null)
+        var currentLinkBudgetValues = _linkBudgetData[currentIndex][18..22];
+        for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
         {
-            var currentLinkBudgetValues = DataManager.instance.linkBudgetDataValues[currentIndex][18..22];
-            for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
-            {
-                var antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
-                currentLinkBudget[antennaIndex] = antennaLinkBudgetValue > MaximumConnectionSpeed
-                    ? MaximumConnectionSpeed : antennaLinkBudgetValue;
-            }
+            var antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
+            currentLinkBudget[antennaIndex] = antennaLinkBudgetValue > MaximumConnectionSpeed
+                ? MaximumConnectionSpeed : antennaLinkBudgetValue;
         }
         
         // Updates each antenna with the latest link budget value.
@@ -413,8 +428,6 @@ public class UIManager : MonoBehaviour
             antennaLabels[index] = antennaLabel;
         }
         
-        print($"At time {Time.time}: {DataManager.instance.currentPrioritizedAntenna}");
-        
         var sortedLabels = antennaLabels
             .Select(antennaLabel => new
             {
@@ -453,29 +466,106 @@ public class UIManager : MonoBehaviour
     #endregion
     
     
-    #region Mission Stage
-    
     private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
         SetBumpOffCourseButtonActive(dataLoadedEventArgs.MissionStage);
+        _linkBudgetData = dataLoadedEventArgs.LinkBudgetData;
+        _offnominalLinkBudgetData = dataLoadedEventArgs.OffnominalLinkBudgetData;
+        _thrustData = dataLoadedEventArgs.ThrustData;
     }
 
+    #region Mission Stage
     private void UpdateMissionStage(MissionStage stage)
     {
         missionStageText.text = stage.name;
         missionStageText.color = stage.color;
     }
-    
+
     #endregion
+
+    #region Thrust
+
+    private void UpdateThrust(int index)
+    {
+        Vector3 thrust = new Vector3(float.Parse(_thrustData[index][23]), float.Parse(_thrustData[index][24]), float.Parse(_thrustData[index][25]));
+        float magnitude = thrust.magnitude;
+
+        if (_satelliteState == SatelliteManager.SatelliteState.OffNominal)
+        {
+            thrustText.text = $"{magnitude:f3} N";
+        }
+    }
+
+    #endregion
+
+    private void UpdateSatelliteState(SatelliteManager.SatelliteState state)
+    {
+        _satelliteState = state;
+        
+        thrustSection.SetActive(_satelliteState == SatelliteManager.SatelliteState.OffNominal);
+        if (_satelliteState != SatelliteManager.SatelliteState.OffNominal)
+        {
+            thrustText.text = "";
+        }
+    }
     
     
     #region Notifications
-    
+
     private void ShowNotification(string text)
     {
         notification.SetActive(true);
         notificationText.text = text;
+    }
+    
+    #endregion
+    
+    #region Cutscenes
+
+    private void ContinueSimulation(VideoPlayer cutsceneVideoPlayer)
+    {
+        if (cutscenesPlayed <= 3)
+        {
+            PlayButtonPressed();
+            cutscene.gameObject.SetActive(false);
+        }
+        else if (cutscenesPlayed < videoClips.Count)
+        {
+            videoPlayer.clip = videoClips[cutscenesPlayed];
+            videoPlayer.Play();
+            cutscenesPlayed++;
+        }
+    }
+    
+    private void UpdateCutscenes(float currentTimeInMinutes)
+    {
+        switch (cutscenesPlayed)
+        {
+            case 0:
+                SatelliteManager.instance.DisplayModel(0);
+                break;
+            case 1:
+                SatelliteManager.instance.DisplayModel(1);
+                break;
+            case 2:
+                SatelliteManager.instance.DisplayModel(2);
+                break;
+        }
+
+        switch (currentTimeInMinutes)
+        {
+            case >= 2.0f when cutscenesPlayed == 0: // first
+            case >= 8.0f when cutscenesPlayed == 1: // second
+            case >= 100.0f when cutscenesPlayed == 2: // third
+            case >= 12983.0f when cutscenesPlayed == 3: // fourth
+                PauseButtonPressed();
+                videoPlayer.clip = videoClips[cutscenesPlayed];
+                videoPlayer.Play();
+                cutscene.gameObject.SetActive(true);
+                cutscenesPlayed++;
+                break;
+        }
     }
     
     #endregion
@@ -526,6 +616,16 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
+
+    public void NominalTogglePressed()
+    {
+        OnCurrentPathChanged?.Invoke(SatelliteManager.SatelliteState.Nominal);
+    }
+
+    public void OffnominalTogglePressed()
+    {
+        OnCurrentPathChanged?.Invoke(SatelliteManager.SatelliteState.OffNominal);
+    }
     
     private enum UnitSystem {
         Metric,
