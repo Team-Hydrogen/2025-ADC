@@ -649,7 +649,7 @@ public class SatelliteManager : MonoBehaviour
         var rocketParts = satellite.transform.GetChild(0);
         for (var modelIndex = 0; modelIndex < rocketParts.childCount; modelIndex++)
         {
-            rocketParts.GetChild(displayedModelIndex).gameObject.SetActive(modelIndex == displayedModelIndex);
+            rocketParts.GetChild(modelIndex).gameObject.SetActive(modelIndex == displayedModelIndex);
         }
     }
     
