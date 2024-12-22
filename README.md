@@ -1,5 +1,5 @@
 # Team Hydrogen - 2025 NASA App Development Challenge Submission
-This is Team Hydrogen's application for the 2025 NASA App Development Challenge.
+This is Team Hydrogen's submission for the 2025 NASA App Development Challenge.
 
 ## Download Instructions
 Clone the repository using the command:
