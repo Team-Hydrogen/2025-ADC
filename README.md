@@ -4,7 +4,7 @@ This is Team Hydrogen's application for the 2025 NASA App Development Challenge.
 ## Download Instructions
 Clone the repository using the command:
 ```commandline
-git clone https://github.com/Team-Hydrogen/NASA-ADC-App.git
+git clone https://github.com/Team-Hydrogen/2025-ADC.git
 ```
 You can also download the repository and open it as a separate folder.
 
