@@ -36,5 +36,5 @@ Team Hydrogen would like to thank the following members of our founding organiza
 ###### <sup>1</sup> Lowndes High School, Valdosta, GA
 ###### <sup>2</sup> Lowndes High School, Valdosta, GA
 ###### <sup>3</sup> Foothill High School, Pleasanton, CA
-###### <sup>4</sup> Foothill High School, Pleasanton, CA
+###### <sup>4</sup> Emerald High School, Dublin, CA
 ###### <sup>5</sup> Andover High School, Andover, MA
