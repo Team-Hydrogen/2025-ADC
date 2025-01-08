@@ -14,11 +14,11 @@ Then, open Unity Hub. In the top-right corner, click `Add` > `Add project from d
 In the 2025 NASA App Development Challenge, high school teams have 10 weeks to create a video showcasing their application visualizing the flight path of Artemis II while indicating which of SCaN’s antennas are available to communicate with Earth in real-time.
 
 ## Team Members
-- [Aarav Dave](https://github.com/aaravdave)<sup>1</sup>: Project Manager, UI/UX Designer
-- [Aarin Dave](https://github.com/aarindave)<sup>2</sup>: UI/UX Developer, Simulation Programmer
-- [Jacob Liu](https://github.com/Dancesthatbreak)<sup>3</sup>: 3-D Modeler, 3-D Animator
-- [Nathan Apte](https://github.com/Boomexe)<sup>4</sup>: VFX Artist, Simulation Programmer
-- [Vignesha Jayakumar](https://github.com/vigcode123)<sup>5</sup>: Data Specialist, AI Developer
+- [Aarav Dave](https://github.com/aaravdave)[^1]: Project Manager, UI/UX Designer
+- [Aarin Dave](https://github.com/aarindave)[^1]: UI/UX Developer, Simulation Programmer
+- [Jacob Liu](https://github.com/Dancesthatbreak)[^2]: 3-D Modeler, 3-D Animator
+- [Nathan Apte](https://github.com/Boomexe)[^3]: VFX Artist, Simulation Programmer
+- [Vignesha Jayakumar](https://github.com/vigcode123)[^4]: Data Specialist, AI Developer
 
 ## Technical Specifications
 - Blender (4.2 LTS)
@@ -33,8 +33,7 @@ Team Hydrogen would like to thank the following members of our founding organiza
 - Shivendra Singh, for his assistance in 3-D modeling and animation.
 - Jayson Harriott, for kickstarting our project and performing required formal procedures.
 
-###### <sup>1</sup> Lowndes High School, Valdosta, GA
-###### <sup>2</sup> Lowndes High School, Valdosta, GA
-###### <sup>3</sup> Foothill High School, Pleasanton, CA
-###### <sup>4</sup> Emerald High School, Dublin, CA
-###### <sup>5</sup> Andover High School, Andover, MA
+[^1]: Lowndes High School, Valdosta, GA
+[^2]: Foothill High School, Pleasanton, CA
+[^3]: Emerald High School, Dublin, CA
+[^4]: Andover High School, Andover, MA
