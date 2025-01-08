@@ -1,114 +1,120 @@
+using System;
 using System.Collections;
-using TMPro;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using UnityEngine.Video;
 
 public class CutsceneManager : MonoBehaviour
 {
-    [SerializeField] private VideoPlayer player;
-    [SerializeField] private int nextSceneBuildIndex;
-    [SerializeField] private bool loadNextSceneAsync = false;
+    public static SatelliteManager instance { get; private set; }
+    
+    private static readonly int FadeToCutscene = Animator.StringToHash("StartCutscene");
+    private static readonly int FadeToSimulation = Animator.StringToHash("StopCutscene");
+    
+    [Header("UI Elements")]
+    [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField] private RawImage cutsceneImage;
+    
+    [Header("UI Visual Effects")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private GameObject fadeImage;
+    
+    [Header("Animations")]
+    [SerializeField] private List<VideoClip> cutscenes;
+    [SerializeField] private List<float> cutsceneSimulationTimes;
+    
+    private int _cutscenesPlayed = 0;
+    private CutsceneState _state = CutsceneState.NotPlaying;
 
-    [SerializeField] private TextMeshProUGUI statusText;
-
-    private float sceneLoadDelay = 2f;
-    private float sceneActiveTime = 0;
-    private bool startedLoadingScene = false;
-    private bool videoFinished = false;
-
+    public static event Action OnCutsceneStart;
+    public static event Action OnCutsceneEnd;
+    
     private void OnEnable()
     {
-        player.loopPointReached += SwitchScene;
+        SatelliteManager.OnUpdateTime += StartCutsceneTransition;
+        videoPlayer.loopPointReached += EndCutsceneTransition;
     }
-
+    
     private void OnDisable()
     {
-        player.loopPointReached -= SwitchScene;
+        SatelliteManager.OnUpdateTime -= StartCutsceneTransition;
+        videoPlayer.loopPointReached -= EndCutsceneTransition;
     }
-
-    private void Start()
+    
+    private void StartCutsceneTransition(float currentTimeInMinutes)
     {
-        if (!loadNextSceneAsync)
+        if (_state == CutsceneState.Playing)
         {
-            statusText.text = "Press space to skip";
-        }
-    }
-
-    private void Update()
-    {
-        sceneActiveTime += Time.deltaTime;
-        if (sceneActiveTime > sceneLoadDelay && !startedLoadingScene)
-        {
-            if (loadNextSceneAsync)
-            {
-                print("Started loading next scene");
-                startedLoadingScene = true;
-                StartCoroutine(LoadSceneAsync());
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SwitchSceneMainMenu();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Space) && !loadNextSceneAsync)
-        {
-            ForceSwitchScene();
-        }
-    }
-
-    private void ForceSwitchScene()
-    {
-        SceneManager.LoadScene(nextSceneBuildIndex);
-    }
-
-    private void SwitchScene(VideoPlayer source)
-    {
-        if (!loadNextSceneAsync)
-        {
-            SceneManager.LoadScene(nextSceneBuildIndex);
+            return;
         }
         
-        // if scene loading is async
-        videoFinished = true;
-        print("VIDEO FINISHED");
-    }
-
-    private void SwitchSceneMainMenu()
-    {
-        SceneManager.LoadScene(0);
-    }
-
-    private IEnumerator LoadSceneAsync()
-    {
-        yield return null;
-
-        AsyncOperation asyncOperation = SceneManager.LoadSceneAsync(nextSceneBuildIndex);
-        asyncOperation.allowSceneActivation = false;
-
-        Application.backgroundLoadingPriority = ThreadPriority.Low;
-
-        while (!asyncOperation.isDone)
+        if (_cutscenesPlayed >= cutscenes.Count)
         {
-            statusText.text = "Loading... (" + (asyncOperation.progress * 100) + "%)";
-
-            if (asyncOperation.progress >= 0.9f)
-            {
-                if (videoFinished)
-                {
-                    asyncOperation.allowSceneActivation = true;
-                }
-
-                statusText.text = "Press space to skip";
-                if (Input.GetKeyDown (KeyCode.Space))
-                {
-                    asyncOperation.allowSceneActivation = true;
-                }
-            }
-
-            yield return null;
+            return;
         }
+        
+        if (currentTimeInMinutes < cutsceneSimulationTimes[_cutscenesPlayed])
+        {
+            return;
+        }
+        
+        _state = CutsceneState.Playing;
+        Time.timeScale = 0.0f;
+        
+        fadeImage.gameObject.SetActive(true);
+        animator.enabled = true;
+        
+        StartCoroutine(nameof(PlayCutscene));
+    }
+    
+    private IEnumerator PlayCutscene()
+    {
+        yield return new WaitForSecondsRealtime(1.5f);
+        
+        animator.SetTrigger(FadeToCutscene);
+        
+        videoPlayer.clip = cutscenes[_cutscenesPlayed];
+        videoPlayer.Play();
+        cutsceneImage.gameObject.SetActive(true);
+        
+        OnCutsceneStart?.Invoke();
+    }
+    
+    private void EndCutsceneTransition(VideoPlayer video)
+    {
+        animator.SetTrigger(FadeToSimulation);
+        
+        StartCoroutine(nameof(StopCutscene));
+    }
+    
+    private IEnumerator StopCutscene()
+    {
+        yield return new WaitForSecondsRealtime(1.5f);
+        
+        animator.SetTrigger(FadeToCutscene);
+        
+        videoPlayer.Stop();
+        cutsceneImage.gameObject.SetActive(false);
+        
+        OnCutsceneEnd?.Invoke();
+        
+        yield return new WaitForSecondsRealtime(1.5f);
+        
+        animator.enabled = false;
+        fadeImage.gameObject.SetActive(false);
+        
+        _cutscenesPlayed++;
+        
+        _state = CutsceneState.NotPlaying;
+        Time.timeScale = 1.0f;
+    }
+    
+    private enum CutsceneState
+    {
+        NotPlaying,
+        FadeOut,
+        Playing,
+        FadeIn,
     }
 }
