@@ -10385,7 +10385,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1261763867}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.2070203
+  m_Size: 0.63474154
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -13731,7 +13731,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 2757.92}
+  m_SizeDelta: {x: 0, y: 414.31995}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1065987306
 MonoBehaviour:
@@ -13767,73 +13767,37 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<align="center"><b>ARTEMIS II</b></align>
+  m_text: '<align="center"><b>Prioritization Rationale</b></align>
 
 
-    <b>Introduction</b>
+    <b>Procedure</b>
 
-    LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
+    1.
+    Choose the antenna with the highest link budget.
 
+    2. If the chosen antenna
+    changes, check each step for 20 data values (~20 minutes) in the future.
 
-    <b>Phase 1:
-    Launch</b>
+    3.
+    If the potential change switches back to the chosen antenna in those 20 data
+    steps, then you continue on without changing.
 
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
+    4. Else, if the potential
+    change continues on OR (if the chosen antenna goes to 0 kbps and the potential
+    change goes on for at least 15 data lines), then it makes sense to waste the
+    power to switch prioritized antenna.
 
 
-    <b>Phase
-    1: Launch</b>
+    <b>Rationale</b>
 
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER
-
-
-    <b>Phase 1: Launch</b>
-
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER
-
-
-    <b>Phase 1: Launch</b>
-
-    LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER
-    LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM
-    IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER LOREM IPSUM
-    DOLER LOREM IPSUM DOLER LOREM IPSUM DOLER'
+    Changing antennae
+    can take up saved up power that can hurt the success of the satellite if numerous
+    unneccessary changes are made. This coupled with the many small deviations in
+    the antennae who have the highest link budget at any one moment make for a need
+    for a more complex prioritization algorithm than just picking one with the highest
+    link budget. Therefore, we also adopt a proactive scheme where we look into a
+    set time in the future and see if possible variations make it useful to switch
+    or to just stay with the current antenna.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4b009e6b9d07d4f59a95453bcb8c61a8, type: 2}
   m_sharedMaterial: {fileID: 1508867962351748385, guid: 4b009e6b9d07d4f59a95453bcb8c61a8,
@@ -13883,7 +13847,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -16682,7 +16646,7 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 980607901}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.7929797}
+  m_AnchorMin: {x: 0, y: 0.36525846}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 6, y: 0}

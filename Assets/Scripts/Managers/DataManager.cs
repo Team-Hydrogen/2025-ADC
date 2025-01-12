@@ -120,14 +120,18 @@ public class DataManager : MonoBehaviour
     /// <returns>The name of the highest priority antenna</returns>
     private string GetHighestPriorityAntenna(int index)
     {
-        var currentSatelliteName = _satelliteState == SatelliteManager.SatelliteState.Nominal ? _antennaAvailabilityDataValues[index][1] : _offNominalTrajectoryDataValues[index][1];
+        var currentSatelliteName = _satelliteState == SatelliteManager.SatelliteState.Nominal
+            ? _antennaAvailabilityDataValues[index][1]
+            : _offNominalTrajectoryDataValues[index][1];
         
         if (index <= 0)
         {
             return currentSatelliteName;
         }
         
-        var previousSatelliteName = _satelliteState == SatelliteManager.SatelliteState.Nominal ? _antennaAvailabilityDataValues[index - 1][1] : _offNominalTrajectoryDataValues[index - 1][1];
+        var previousSatelliteName = _satelliteState == SatelliteManager.SatelliteState.Nominal
+            ? _antennaAvailabilityDataValues[index - 1][1]
+            : _offNominalTrajectoryDataValues[index - 1][1];
 
         if (previousSatelliteName == currentSatelliteName)
         {
@@ -136,7 +140,9 @@ public class DataManager : MonoBehaviour
         
         for (var futureIndex = 1; futureIndex <= 20; futureIndex++)
         {
-            var futureSatelliteName =_satelliteState == SatelliteManager.SatelliteState.Nominal ? _antennaAvailabilityDataValues[index + futureIndex][1] : _offNominalTrajectoryDataValues[index + futureIndex][1];
+            var futureSatelliteName =_satelliteState == SatelliteManager.SatelliteState.Nominal
+                ? _antennaAvailabilityDataValues[index + futureIndex][1]
+                : _offNominalTrajectoryDataValues[index + futureIndex][1];
             if (currentSatelliteName != futureSatelliteName)
             {
                 return previousSatelliteName;
