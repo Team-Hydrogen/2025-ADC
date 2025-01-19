@@ -1,10 +1,11 @@
-using Cinemachine;
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField, Header("Free Look Camera")]
-    private CinemachineFreeLook freeLookCamera;
+    [SerializeField, Header("Orbital Follow")]
+    private CinemachineOrbitalFollow orbitalFollow;
     
     [Header("Camera Zoom Settings")]
     [SerializeField, Range(0.0f, 15.0f)]
@@ -18,9 +19,9 @@ public class CameraManager : MonoBehaviour
     
     private void Start()
     {
-        if (freeLookCamera == null)
+        if (orbitalFollow == null)
         {
-            freeLookCamera = GetComponent<CinemachineFreeLook>();
+            orbitalFollow = GetComponent<CinemachineOrbitalFollow>();
         }
         CinemachineCore.GetInputAxis = GetAxisCustom;
     }
@@ -33,25 +34,25 @@ public class CameraManager : MonoBehaviour
     private void Zoom()
     {
         var netScrollSpeed = -zoomSpeed * Input.GetAxis("Mouse ScrollWheel");
-        var newCameraRadius = freeLookCamera.m_Orbits[1].m_Radius + netScrollSpeed;
+        var newCameraRadius = orbitalFollow.Orbits.Center.Radius + netScrollSpeed;
         
-        freeLookCamera.m_Orbits[0].m_Radius = Mathf.Clamp(
+        orbitalFollow.Orbits.Top.Radius = Mathf.Clamp(
             newCameraRadius * TopBottomRadiusRatio,
             minimumCameraDistance * TopBottomRadiusRatio,
             maximumCameraDistance * TopBottomRadiusRatio);
-        freeLookCamera.m_Orbits[0].m_Height = newCameraRadius;
+        orbitalFollow.Orbits.Top.Height = newCameraRadius;
         
-        freeLookCamera.m_Orbits[1].m_Radius = Mathf.Clamp(
+        orbitalFollow.Orbits.Center.Radius = Mathf.Clamp(
             newCameraRadius,
             minimumCameraDistance,
             maximumCameraDistance);
-        freeLookCamera.m_Orbits[1].m_Height = 0.0f;
+        orbitalFollow.Orbits.Center.Height = 0.0f;
         
-        freeLookCamera.m_Orbits[2].m_Radius = Mathf.Clamp(
+        orbitalFollow.Orbits.Bottom.Radius = Mathf.Clamp(
             newCameraRadius * TopBottomRadiusRatio,
             minimumCameraDistance * TopBottomRadiusRatio,
             maximumCameraDistance * TopBottomRadiusRatio);
-        freeLookCamera.m_Orbits[2].m_Height = -newCameraRadius;
+        orbitalFollow.Orbits.Bottom.Height = -newCameraRadius;
     }
     
     public float GetAxisCustom(string axisName)
