@@ -605,7 +605,7 @@ public class SatelliteManager : MonoBehaviour
             float.Parse(_nominalPathPoints[_lastManualSatelliteIndex][4]),
             float.Parse(_nominalPathPoints[_lastManualSatelliteIndex][5]),
             float.Parse(_nominalPathPoints[_lastManualSatelliteIndex][6]));
-
+    
         var minimumTimes = new List<float>();
         
         // Reads up to 60 points into the future
@@ -619,7 +619,7 @@ public class SatelliteManager : MonoBehaviour
             
             var distance = Vector3.Distance(satellite.transform.position, machineLearningPosition);
             var minimumTime = distance / velocity.magnitude;
-
+            
             var statusCode = 200;
             var isError = false;
             
@@ -637,7 +637,7 @@ public class SatelliteManager : MonoBehaviour
         var absoluteMinimumTime = minimumTimes.Min();
         var absoluteMinimumIndex = minimumTimes.IndexOf(absoluteMinimumTime);
         // ping API
-
+    
         // Vector3.Lerp(_lastManualSatellitePosition, futureExpectedPosition, 0.5f);
         
         _currentState = SatelliteState.Nominal;
@@ -656,27 +656,27 @@ public class SatelliteManager : MonoBehaviour
     {
         var closestIndex = 0;
         var closestTime = float.MaxValue;
-
+    
         for (var i = 0; i < _nominalPathPoints.Count; i++)
         {
             try
             {
                 var timeDistance = Mathf.Abs(float.Parse(_nominalPathPoints[i][0]) - time);
-
+    
                 if (timeDistance >= closestTime)
                 {
                     continue;
                 }
-
+    
                 closestTime = timeDistance;
                 closestIndex = i;
             }
             catch (FormatException)
             {
-
+    
             }
         }
-
+    
         Debug.Log(_nominalPathPoints[closestIndex][0]);
         return closestIndex;
     }
