@@ -71,7 +71,7 @@ public class CameraManager : MonoBehaviour
         {
             if (Input.GetMouseButton(1))
             {
-                return Input.GetAxis("Mouse Y");
+                return -Input.GetAxis("Mouse Y");
             }
 
             return 0;

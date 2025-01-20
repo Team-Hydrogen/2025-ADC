@@ -205,15 +205,17 @@ public class UIManager : MonoBehaviour
         const int minutesPerHour = 60;
         const int secondsPerMinute = 60;
 
-        var minutesLeft = timeInMinutes;
+        // So the simulation starts at 8 minutes instead of 0
+        const float startTimeMinutesOffset = 8.236480545f;
+        float minutesLeft = timeInMinutes + startTimeMinutesOffset;
 
-        var days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
+        int days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
         minutesLeft %= minutesPerDay;
-        var hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
+        int hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
         minutesLeft %= minutesPerHour;
-        var minutes = Mathf.FloorToInt(minutesLeft);
+        int minutes = Mathf.FloorToInt(minutesLeft);
         minutesLeft -= minutes;
-        var seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
+        int seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
 
         SetTimeCounter(days, hours, minutes, seconds);
         SetTimeElapsedBar(timeInMinutes);
