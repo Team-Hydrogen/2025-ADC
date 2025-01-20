@@ -30,6 +30,9 @@ public class SatelliteManager : MonoBehaviour
     [SerializeField] private float timeScale;
     
     private SatelliteState _currentState = SatelliteState.Nominal;
+
+    private const float MinimumTimeScale = 1.0f;
+    private const float MaximumTimeScale = 100_000.0f;
     
     private int _previousPointIndex = 0;
     private int _currentPointIndex = 0;
@@ -158,7 +161,6 @@ public class SatelliteManager : MonoBehaviour
     public void ForwardButtonPressed()
     {
         _progress = SkipTimeChange * timeScale;
-        //print(_progress);
     }
 
     public void BackwardButtonPressed()
@@ -168,13 +170,13 @@ public class SatelliteManager : MonoBehaviour
     
     public void FastForwardButtonPressed()
     {
-        timeScale *= 10;
+        timeScale = Mathf.Min(MaximumTimeScale, timeScale * 10);
         OnTimeScaleSet?.Invoke(timeScale);
     }
 
     public void RewindButtonPressed()
     {
-        timeScale = Mathf.Max(1, timeScale / 10);
+        timeScale = Mathf.Max(MinimumTimeScale, timeScale / 10);
         OnTimeScaleSet?.Invoke(timeScale);
     }
     
@@ -353,7 +355,7 @@ public class SatelliteManager : MonoBehaviour
             true);
         
         // Move to the next point when progress is complete
-        if (_progress < 1.0f && _progress > -1.0f)
+        if (_progress is < 1.0f and > -1.0f)
         {
             return;
         }
