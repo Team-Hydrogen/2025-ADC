@@ -3747,7 +3747,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1462774670}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.2070203
+  m_Size: 0.10956452
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4424,7 +4424,7 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1512057812}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.7929797}
+  m_AnchorMin: {x: 0, y: 0.89043546}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 6, y: 0}
@@ -4802,7 +4802,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 2757.92}
+  m_SizeDelta: {x: 0, y: 5851.47}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1668397641
 MonoBehaviour:
@@ -4824,77 +4824,86 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '<align="center"><b>ARTEMIS II</b></align>
-
-
-    <b>Introduction</b>
-
-    Artemis
-    II is the next Artemis mission by NASA.
-
-
-    <b>Crew</b>
-
-    Commander: United
-    States, Reid Wiseman, NASA, second spaceflight
-
-    Pilot: United States, Victor
-    Glover, NASA, second spaceflight
-
-    Flight Engineer: United States, Christina
-    Koch, NASA, second spaceflight
-
-    Mission Specialist: Canada, Jeremy Hansen,
-    CSA, first spaceflight
-
-
-    <b>Phase 1: Launch</b>
-
-    Mention vehicle (SLS
-    Block 1), launch site (Kennedy Space Center, Launch Complex 39B), duration (~8
-    minutes to reach initial orbit), and trajectory (initially LEO, proceeds to highly-eccentric
-    orbit within ~24 hours).
-
-
-    <b>Phase 2: Earth Orbit and Systems Checkout</b>
-
-    Mention
-    vehicle (SLS Block 1), launch site (Kennedy Space Center, Launch Complex 39B),
-    duration (~8 minutes to reach initial orbit), and trajectory (initially LEO,
-    proceeds to highly-eccentric orbit within ~24 hours).
-
-
-    <b>Phase 3: Translunar
-    Injection</b>
-
-    Mention vehicle (SLS Block 1), launch site (Kennedy Space
-    Center, Launch Complex 39B), duration (~8 minutes to reach initial orbit), and
-    trajectory (initially LEO, proceeds to highly-eccentric orbit within ~24 hours).
-
-
-    </b>Phase
-    4: Lunar Flyby</b>
-
-    Mention vehicle (SLS Block 1), launch site (Kennedy Space
-    Center, Launch Complex 39B), duration (~8 minutes to reach initial orbit), and
-    trajectory (initially LEO, proceeds to highly-eccentric orbit within ~24 hours).
-
-
-    <b>Phase
-    5: Return Trajectory</b>
-
-    Mention vehicle (SLS Block 1), launch site (Kennedy
-    Space Center, Launch Complex 39B), duration (~8 minutes to reach initial orbit),
-    and trajectory (initially LEO, proceeds to highly-eccentric orbit within ~24
-    hours).
-
-
-    <b>Phase 6: Re-entry and Splashdown</b>
-
-    Mention vehicle (SLS
-    Block 1), launch site (Kennedy Space Center, Launch Complex 39B), duration (~8
-    minutes to reach initial orbit), and trajectory (initially LEO, proceeds to highly-eccentric
-    orbit within ~24 hours).'
+  m_text: "<align=\"center\"><sprite name=\"SpaceIcons\"></align>\n\n<align=\"center\"><b>ARTEMIS
+    II</b></align>\n\n<align=\"center\"><b>Introduction</b></align>\nThe Artemis
+    II mission marks NASA's first crewed journey to the Moon in over five decades.
+    This mission is a collaborative effort involving NASA and the Canadian Space
+    Agency (CSA), aiming to test the Space Launch System (SLS) rocket and the Orion
+    spacecraft's capabilities for future deep space exploration. The launch is scheduled
+    from Kennedy Space Center's Launch Complex 39B.\n\n<align=\"center\"><b>Crew</b></align>\n\n<b>Prime
+    Crew</b>\n<sprite name=\"reid-wiseman.png\">\nCommander: Reid Wiseman (United
+    States, NASA)\n\u25CF Second spaceflight\n\u25CF Previously served on Expedition
+    40/41 to the International Space Station in 2014\n\u25CF Former Chief of the
+    Astronaut Office\nPilot: Victor Glover (United States, NASA)\n\u25CF Second spaceflight\n\u25CF
+    First person of color to travel beyond Low Earth Orbit\n\u25CF Previously piloted
+    the SpaceX Crew-1 mission to the ISS\nFlight Engineer: Christina Koch (United
+    States, NASA)\n\u25CF Second spaceflight\n\u25CF First woman to travel beyond
+    Low Earth Orbit\n\u25CF Holds the record for the longest single spaceflight by
+    a woman\nMission Specialist: Jeremy Hansen (Canada, CSA)\n\u25CF First spaceflight\n\u25CF
+    First non-American to travel beyond Low Earth Orbit\n\u25CF Former Royal Canadian
+    Air Force fighter pilot\n\n<b>Backup Crew</b>\nCommander/Pilot/Mission Specialist:
+    Andre Douglas (United States, NASA)\n<indent=5%>\u25CF Serves as backup for the
+    three NASA astronauts</indent>\nMission Specialist: Jenni Gibbons (Canada, CSA)\n<indent=5%>\u25CF
+    Serves as backup for CSA astronaut Jeremy Hansen</indent>\nThe inclusion of Canadian
+    astronauts Hansen and Gibbons stems from a 2020 treaty between the United States
+    and Canada, solidifying CSA's participation in the Artemis program.\n\n<align=\"center\"><b>Mission
+    Stages</b></align>\n\n<b>Phase 1: Launch</b>\nThe Artemis II mission will commence
+    with the launch of the Space Launch System (SLS) Block 1 rocket from Kennedy
+    Space Center's Launch Complex 39B. This powerful launch vehicle is designed to
+    propel the Orion spacecraft and its crew beyond Earth's atmosphere. The ascent
+    to initial Low Earth Orbit (LEO) is expected to take approximately 8 minutes.
+    Following this, the spacecraft will transition to a highly eccentric orbit within
+    about 24 hours, setting the stage for its journey toward the Moon.\n\n<b>Phase
+    2: Earth Orbit and Systems Checkout</b>\nOnce in the highly eccentric orbit,
+    which extends beyond the altitude of typical communications satellites, the crew
+    will undertake a series of system checks over a 24-hour period. These evaluations
+    are crucial to ensure that all of Orion's systems are functioning optimally before
+    proceeding further. Additionally, the crew will perform proximity operations
+    with the upper stage of the launch vehicle, demonstrating the spacecraft's capability
+    to maneuver and interact with other objects in space.\n\n<b>Phase 3: Translunar
+    Injection</b>\nAfter confirming the spacecraft's readiness, the Orion will execute
+    a Translunar Injection (TLI) burn using its Service Module. This precise maneuver
+    will propel the spacecraft out of Earth's orbit and set it on a trajectory toward
+    the Moon. The TLI is a critical step, as it provides the necessary velocity change
+    to reach lunar orbit.\n\n<b>Phase 4: Lunar Flyby</b>\nAs Orion approaches the
+    Moon, it will perform a flyby at a closest approach of approximately 7,400 kilometers
+    (4,600 miles) from the lunar surface. This phase will span several days, during
+    which the crew will continue to monitor and test the spacecraft's systems. They
+    will also gather valuable data on the effects of deep space travel, contributing
+    to the understanding of human health and performance in such environments.\n\n<b>Phase
+    5: Return Trajectory</b>\nFollowing the lunar flyby, Orion will leverage the
+    Moon's gravitational field to initiate a free-return trajectory. This path is
+    designed to naturally guide the spacecraft back to Earth without the need for
+    additional propulsion, serving as a contingency in case of system failures. The
+    free-return trajectory is a safety measure that ensures the crew's return even
+    in unforeseen circumstances.\n\n<b>Phase 6: Re-entry and Splashdown</b>\nUpon
+    approaching Earth, Orion will re-enter the atmosphere, enduring extreme temperatures
+    and forces. The spacecraft is engineered with advanced heat shield technology
+    to withstand these conditions. Following re-entry, Orion will descend and splash
+    down in the Pacific Ocean, where recovery teams will be stationed to retrieve
+    the crew and spacecraft. The entire mission is expected to last approximately
+    10 days, marking a significant milestone in human space exploration.\n\n<align=\"center\"><b>Implications</b></align>\nThe
+    successful execution of the Artemis II mission holds profound implications for
+    the future of space exploration. It will validate the performance of the SLS
+    rocket and Orion spacecraft in crewed missions, paving the way for subsequent
+    lunar landings and establishing a sustainable human presence on the Moon. Moreover,
+    the inclusion of international partners, such as the CSA, underscores the collaborative
+    nature of modern space endeavors, fostering global cooperation in exploring beyond
+    Earth. The mission also serves as a critical step toward future expeditions to
+    Mars, as the technologies and experiences gained will inform the planning and
+    execution of long-duration deep space missions.\n\n<align=\"center\"><b>References</b></align>\nConnolly,
+    A. (2020, December 16). A Canadian astronaut will be on NASA\u2019s Artemis deep
+    space lunar orbit. Global News. Retrieved January 19, 2025, from https://globalnews.ca/news/7525408/nasa-artemis-program-canadian-astronaut-moon/\n\nEuropean
+    Space Agency. (n.d.). ESA - Artemis II. European Space Agency. Retrieved January
+    19, 2025, from https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/Orion/Artemis_II\nThe
+    four astronauts NASA picked for the first crewed moon mission in 50 years. (2023,
+    April 4). CNN. Retrieved January 19, 2025, from https://www.cnn.com/2023/04/03/world/artemis-2-astronaut-crew-scn/index.html\nNASA
+    Names Astronauts to Next Moon Mission, First Crew Under Artemis. (2023, April
+    3). NASA. Retrieved January 19, 2025, from https://www.nasa.gov/news-release/nasa-names-astronauts-to-next-moon-mission-first-crew-under-artemis/\nStamm,
+    A. (2023, April 3). Meet the Crew of Artemis II. National Air and Space Museum.
+    Retrieved January 19, 2025, from https://airandspace.si.edu/stories/editorial/meet-crew-artemis-ii\nWall,
+    M. (2023, April 3). Meet the 4 astronauts flying on NASA's Artemis 2 moon mission.
+    Space.com. Retrieved January 19, 2025, from https://www.space.com/artemis-2-moon-mission-astronauts-meet-the-crew"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4b009e6b9d07d4f59a95453bcb8c61a8, type: 2}
   m_sharedMaterial: {fileID: 1508867962351748385, guid: 4b009e6b9d07d4f59a95453bcb8c61a8,
@@ -4944,7 +4953,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1

@@ -6757,7 +6757,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 417}
-  m_SizeDelta: {x: 400, y: 80}
+  m_SizeDelta: {x: 500, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &531740764
 MonoBehaviour:
@@ -6788,7 +6788,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 1.5
 --- !u!222 &531740765
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -9648,8 +9648,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b22c94f73e0315346b3b44c7c0d480fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetTransform: {fileID: 411558181}
-  orbitSpeedIfNotSet: 0
 --- !u!1 &781522141
 GameObject:
   m_ObjectHideFlags: 0
@@ -10764,8 +10762,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b22c94f73e0315346b3b44c7c0d480fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetTransform: {fileID: 2095082124}
-  orbitSpeedIfNotSet: 1
 --- !u!1 &895187384
 GameObject:
   m_ObjectHideFlags: 0
@@ -15353,16 +15349,18 @@ MonoBehaviour:
   animator: {fileID: 975478469}
   fadeImage: {fileID: 975478465}
   cutscenes:
-  - {fileID: 32900000, guid: c04c41b10af474741a4da8ac8d03714e, type: 3}
-  - {fileID: 32900000, guid: 256b83d9313e14223a6c5be6a5bd7587, type: 3}
-  - {fileID: 32900000, guid: 5ee4e95e169a540578e34e7006aaff3f, type: 3}
-  - {fileID: 32900000, guid: 50e7661ccc9ff4dde9d07c2be6e2b8bc, type: 3}
-  - {fileID: 32900000, guid: 13dbe6d383b9f4bb98e6f09b9b54ee93, type: 3}
-  - {fileID: 32900000, guid: 1d8aac17e353c4a9f9d3c35f55cfbee4, type: 3}
+  - {fileID: 32900000, guid: 3d4c51507b1bb40d9ba5333c5000a70e, type: 3}
+  - {fileID: 32900000, guid: 09b8e14543dab4cafbbeb36762894d10, type: 3}
+  - {fileID: 32900000, guid: 253e44f5878f5457dad2cab341e66add, type: 3}
+  - {fileID: 32900000, guid: 689a9494ea89b4c679ac540baa17e39e, type: 3}
+  - {fileID: 32900000, guid: 9e93af1b8893340c6bb1661b3e1b6d43, type: 3}
+  - {fileID: 32900000, guid: c0fc066b0e7fb4f73b27f85f640f05c9, type: 3}
+  - {fileID: 32900000, guid: 0193d3c1f25e74972a4fbfa3f7922ffa, type: 3}
   cutsceneSimulationTimes:
-  - 2
-  - 8
-  - 100
+  - 2.35
+  - 5.275
+  - 8.2
+  - 117.2
   - 12983
   - 12983
   - 12983
@@ -15473,7 +15471,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
@@ -16399,7 +16397,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 156, y: 0}
+  m_AnchoredPosition: {x: 210, y: 0}
   m_SizeDelta: {x: 45, y: 45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1200518622
@@ -18238,7 +18236,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 320, y: 80}
+  m_SizeDelta: {x: 440, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1301292952
 MonoBehaviour:
@@ -18260,7 +18258,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Second Stage Fired
+  m_text: Second Stage / Service Module Fired
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 9f783cb0c24684c2fbd572020d32f428, type: 2}
   m_sharedMaterial: {fileID: -4683113129509832059, guid: 9f783cb0c24684c2fbd572020d32f428,
@@ -18310,7 +18308,7 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 1
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 6e72656b
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
