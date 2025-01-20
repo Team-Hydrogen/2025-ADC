@@ -2321,6 +2321,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Velocity Vector
       objectReference: {fileID: 0}
+    - target: {fileID: 3500766755424783714, guid: dc17b8d20b4e94a219e7acb84a16cce2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

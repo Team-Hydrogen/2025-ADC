@@ -46,8 +46,8 @@ public class SatelliteManager : MonoBehaviour
     private LineRenderer _currentNominalTrajectoryRenderer;
     private LineRenderer _currentOffNominalTrajectoryRenderer;
     
-    private const int SecondStageFireIndex = 5_000;
-    private const int ServiceModuleFireIndex = 10_000;
+    // The second stage is the same as the service module.
+    private const int SecondStageFireIndex = 120;
 
     private const float FirstModelEndTime = 2.0f;
     private const float SecondModelEndTime = 8.0f;
@@ -82,7 +82,9 @@ public class SatelliteManager : MonoBehaviour
     #region Material Variables
     
     private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
-    
+    private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+    private const float Intensity = 0.5f;
+
     private const float LowThreshold = 0.4000f;
     private const float MediumThreshold = 3.0000f;
     private const float HighThreshold = 8.0000f;
@@ -121,20 +123,15 @@ public class SatelliteManager : MonoBehaviour
         if (_isPlaying)
         {
             UpdateSatellitePosition();
-
+            
             if (_currentState == SatelliteState.Manual)
             {
                 ManuallyControlSatellite();
             }
             
-            switch (_currentPointIndex)
+            if (_currentPointIndex == SecondStageFireIndex)
             {
-                case SecondStageFireIndex:
-                    OnStageFired?.Invoke("Second Stage Fired");
-                    break;
-                case ServiceModuleFireIndex:
-                    OnStageFired?.Invoke("Service Module Fired");
-                    break;
+                OnStageFired?.Invoke("Second Stage / Service Module Fired");
             }
         }
     }
@@ -552,6 +549,7 @@ public class SatelliteManager : MonoBehaviour
         foreach (var meshRenderer in _vectorRenderers)
         {
             meshRenderer.material.SetColor(BaseColor, _colors[bracketIndex]);
+            meshRenderer.material.SetColor(EmissionColor, _colors[bracketIndex] * Intensity);
         }
     }
     
