@@ -30,7 +30,7 @@ public class CutsceneManager : MonoBehaviour
     public static event Action OnCutsceneStart;
     public static event Action OnCutsceneEnd; // unused
 
-    private bool playCutscenes = false;
+    private bool playCutscenes = true;
     
     private void OnEnable()
     {

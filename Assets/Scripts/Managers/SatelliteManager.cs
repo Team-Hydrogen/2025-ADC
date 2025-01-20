@@ -34,7 +34,7 @@ public class SatelliteManager : MonoBehaviour
     private int _previousPointIndex = 0;
     private int _currentPointIndex = 0;
     private bool _isPlaying = false;
-    private const int SkipIndexChange = 100;
+    private const int SkipTimeChange = 10;
     
     private float _progress = 0.0f;
     private float _estimatedElapsedTime;
@@ -160,12 +160,13 @@ public class SatelliteManager : MonoBehaviour
 
     public void ForwardButtonPressed()
     {
-        _currentPointIndex = GetClosestDataPointIndexFromTime(_estimatedElapsedTime + SkipIndexChange / timeScale);
+        _progress = SkipTimeChange * timeScale;
+        //print(_progress);
     }
 
     public void BackwardButtonPressed()
     {
-        _currentPointIndex = GetClosestDataPointIndexFromTime(_estimatedElapsedTime - SkipIndexChange / timeScale);
+        _progress = -SkipTimeChange * timeScale;
     }
     
     public void FastForwardButtonPressed()
@@ -252,8 +253,8 @@ public class SatelliteManager : MonoBehaviour
         UpdateTimeIntervalAndProgress();
         _totalNominalDistance += UpdateGeneralSatellitePosition(_nominalPathPoints, nominalSatelliteTransform);
         _totalOffNominalDistance += UpdateGeneralSatellitePosition(_offNominalPathPoints, offNominalSatelliteTransform);
-        SetSatelliteVisualToPosition();
         UpdateAfter();
+        SetSatelliteVisualToPosition();
     }
 
     private void SetSatelliteVisualToPosition()
@@ -355,14 +356,26 @@ public class SatelliteManager : MonoBehaviour
             true);
         
         // Move to the next point when progress is complete
-        if (_progress < 1.0f)
+        if (_progress < 1.0f && _progress > -1.0f)
         {
             return;
         }
 
         _previousPointIndex = _currentPointIndex;
         // The simulation is reset.
+
         _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalPathPoints.Count;
+
+        //if (_progress >= 0.0f)
+        //{
+        //    _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalPathPoints.Count;
+        //}
+
+        //if (_progress <= 0.0f)
+        //{
+        //    _currentPointIndex = (_currentPointIndex + Mathf.CeilToInt(_progress)) % _nominalPathPoints.Count;
+        //}
+
         // The progress is reset.
         _progress %= 1;
 
@@ -531,11 +544,20 @@ public class SatelliteManager : MonoBehaviour
     
     private void UpdateVelocityVector(int currentIndex)
     {
-        // A Vector3 variable is created to store and compute information about the current velocity vector.
-        var vector = new Vector3(
-            float.Parse(_nominalPathPoints[currentIndex][4]),
-            float.Parse(_nominalPathPoints[currentIndex][5]),
-            float.Parse(_nominalPathPoints[currentIndex][6]));
+        Vector3 vector;
+        try
+        {
+            // A Vector3 variable is created to store and compute information about the current velocity vector.
+            vector = new Vector3(
+                float.Parse(_nominalPathPoints[currentIndex][4]),
+                float.Parse(_nominalPathPoints[currentIndex][5]),
+                float.Parse(_nominalPathPoints[currentIndex][6]));
+        } 
+        catch (FormatException e)
+        {
+            Debug.LogWarning($"Incorrect data format provided at line {currentIndex}: {e}");
+            return;
+        }
         
         velocityVector.transform.SetPositionAndRotation(
             satellite.transform.position - satellite.transform.forward,

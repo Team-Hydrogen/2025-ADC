@@ -99,6 +99,9 @@ public class MinimapManager : MonoBehaviour
         int indexChange = index - previousIndex;
         previousIndex = index;
 
+        //print(previousIndex);
+        //indexChange = Mathf.Abs(indexChange);
+
         if (indexChange > 0)
         {
             Vector3[] futureTrajectoryPoints = new Vector3[futureMinimapTrajectory.positionCount];
