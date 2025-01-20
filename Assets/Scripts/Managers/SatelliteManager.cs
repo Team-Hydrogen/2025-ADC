@@ -312,7 +312,7 @@ public class SatelliteManager : MonoBehaviour
         satellitePosition.rotation = Quaternion.Slerp(
             satellitePosition.rotation,
             targetRotation, 
-            rotationSpeed * Time.deltaTime
+            rotationSpeed * Time.deltaTime * timeScale
         );
 
         return netDistance;
