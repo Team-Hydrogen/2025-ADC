@@ -34,7 +34,7 @@ public class MoveSun : MonoBehaviour
     private void UpdateRotationSpeed(float timeScale)
     {
         //print(timeScale);
-        float updatedRotationSpeed = 360f /  27.3f / 24f / 60f / 60f * timeScale;
+        float updatedRotationSpeed = 360f / 27.3f / 24f / 60f / 60f * timeScale;
 
         orbitSpeed = updatedRotationSpeed;
     }

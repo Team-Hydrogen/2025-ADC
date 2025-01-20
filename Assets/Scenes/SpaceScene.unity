@@ -9649,7 +9649,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetTransform: {fileID: 411558181}
-  orbitSpeedIfNotSet: 1
+  orbitSpeedIfNotSet: 0
 --- !u!1 &781522141
 GameObject:
   m_ObjectHideFlags: 0
