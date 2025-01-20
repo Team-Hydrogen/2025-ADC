@@ -27,7 +27,7 @@ public class CutsceneManager : MonoBehaviour
     private int _cutscenesPlayed = 0;
     private CutsceneState _state = CutsceneState.NotPlaying;
 
-    public static event Action OnCutsceneStart;
+    public static event Action<int> OnCutsceneStart;
     public static event Action OnCutsceneEnd; // unused
 
     private bool playCutscenes = true;
@@ -68,7 +68,7 @@ public class CutsceneManager : MonoBehaviour
 
         if (!playCutscenes)
         {
-            OnCutsceneStart?.Invoke();
+            OnCutsceneStart?.Invoke(_cutscenesPlayed);
             OnCutsceneEnd?.Invoke();
             _cutscenesPlayed++;
 
@@ -94,7 +94,7 @@ public class CutsceneManager : MonoBehaviour
         videoPlayer.Play();
         cutsceneImage.gameObject.SetActive(true);
         
-        OnCutsceneStart?.Invoke();
+        OnCutsceneStart?.Invoke(_cutscenesPlayed);
     }
     
     private void EndCutsceneTransition(VideoPlayer video)

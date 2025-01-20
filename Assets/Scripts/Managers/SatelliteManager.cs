@@ -48,9 +48,6 @@ public class SatelliteManager : MonoBehaviour
     
     // The second stage is the same as the service module.
     private const int SecondStageFireIndex = 120;
-
-    private const float FirstModelEndTime = 2.0f;
-    private const float SecondModelEndTime = 8.0f;
     
     private Vector3 _lastAutomaticSatellitePosition;
     private Vector3 _lastManualSatellitePosition;
@@ -705,19 +702,17 @@ public class SatelliteManager : MonoBehaviour
         return closestIndex;
     }
 
-    private void UpdateModel()
+    private void UpdateModel(int cutsceneIndex)
     {
-        switch (_estimatedElapsedTime)
+        switch (cutsceneIndex)
         {
-            case < FirstModelEndTime:
-                DisplayModel(0);
+            case <= 3:
+                DisplayModel(cutsceneIndex + 1);
                 return;
-            case < SecondModelEndTime:
-                DisplayModel(1);
-                return;
+
             default:
-                DisplayModel(2);
-                break;
+                DisplayModel(4);
+                return;
         }
     }
     

@@ -22617,7 +22617,7 @@ PrefabInstance:
     - target: {fileID: 7088708598304600203, guid: b52849ed1c749424ab5e4de3d6c2337f,
         type: 3}
       propertyPath: m_Name
-      value: Satellite
+      value: Spacecraft
       objectReference: {fileID: 0}
     - target: {fileID: 7140857783654530220, guid: b52849ed1c749424ab5e4de3d6c2337f,
         type: 3}
