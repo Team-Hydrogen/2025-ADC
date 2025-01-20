@@ -13,8 +13,8 @@ public class SatelliteManager : MonoBehaviour
     [Header("Satellite")]
     [SerializeField] private GameObject satellite;
     [SerializeField] private GameObject velocityVector;
-    [SerializeField] private Transform nominalSatellitePosition;
-    [SerializeField] private Transform offNominalSatellitePosition;
+    [SerializeField] private Transform nominalSatelliteTransform;
+    [SerializeField] private Transform offNominalSatelliteTransform;
     
     [Header("Celestial Bodies")]
     [SerializeField] private GameObject earth;
@@ -250,8 +250,8 @@ public class SatelliteManager : MonoBehaviour
         }
         
         UpdateTimeIntervalAndProgress();
-        _totalNominalDistance += UpdateGeneralSatellitePosition(_nominalPathPoints, nominalSatellitePosition);
-        _totalOffNominalDistance += UpdateGeneralSatellitePosition(_offNominalPathPoints, offNominalSatellitePosition);
+        _totalNominalDistance += UpdateGeneralSatellitePosition(_nominalPathPoints, nominalSatelliteTransform);
+        _totalOffNominalDistance += UpdateGeneralSatellitePosition(_offNominalPathPoints, offNominalSatelliteTransform);
         SetSatelliteVisualToPosition();
         UpdateAfter();
     }
@@ -261,12 +261,12 @@ public class SatelliteManager : MonoBehaviour
         switch (_currentState)
         {
             case SatelliteState.Nominal:
-                satellite.transform.position = nominalSatellitePosition.position;
-                satellite.transform.rotation = nominalSatellitePosition.rotation;
+                satellite.transform.position = nominalSatelliteTransform.position;
+                satellite.transform.rotation = nominalSatelliteTransform.rotation;
                 break;
             case SatelliteState.OffNominal:
-                satellite.transform.position = offNominalSatellitePosition.position;
-                satellite.transform.rotation = offNominalSatellitePosition.rotation;
+                satellite.transform.position = offNominalSatelliteTransform.position;
+                satellite.transform.rotation = offNominalSatelliteTransform.rotation;
                 break;
             case SatelliteState.Manual:
             case SatelliteState.Returning:
@@ -342,11 +342,13 @@ public class SatelliteManager : MonoBehaviour
         CalculateDistances();
         
         UpdateTrajectory(
+            nominalSatelliteTransform,
             _currentNominalTrajectoryRenderer,
             futureNominalTrajectory,
             false,
             true);
         UpdateTrajectory(
+            offNominalSatelliteTransform,
             _currentOffNominalTrajectoryRenderer,
             futureOffNominalTrajectory,
             false,
@@ -367,11 +369,13 @@ public class SatelliteManager : MonoBehaviour
         OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
         
         UpdateTrajectory(
+            nominalSatelliteTransform,
             _currentNominalTrajectoryRenderer,
             futureNominalTrajectory,
             true,
             false);
         UpdateTrajectory(
+            offNominalSatelliteTransform,
             _currentOffNominalTrajectoryRenderer,
             futureOffNominalTrajectory,
             true,
@@ -380,12 +384,12 @@ public class SatelliteManager : MonoBehaviour
         UpdateVelocityVector(_currentPointIndex);
     }
 
-    private void UpdateTrajectory(LineRenderer current, LineRenderer future, bool indexUpdated, bool positionUpdated)
+    private void UpdateTrajectory(Transform satelliteTransform, LineRenderer current, LineRenderer future, bool indexUpdated, bool positionUpdated)
     {
         if (positionUpdated)
         {
-            future.SetPosition(0, satellite.transform.position);
-            current.SetPosition(current.positionCount - 1, satellite.transform.position);
+            future.SetPosition(0, satelliteTransform.position);
+            current.SetPosition(current.positionCount - 1, satelliteTransform.position);
         }
 
         if (!indexUpdated)
@@ -517,10 +521,10 @@ public class SatelliteManager : MonoBehaviour
         }
         
         _currentNominalTrajectoryRenderer = stage.nominalLineRenderer;
-        _currentNominalTrajectoryRenderer.SetPosition(0, nominalSatellitePosition.position);
+        _currentNominalTrajectoryRenderer.SetPosition(0, nominalSatelliteTransform.position);
 
         _currentOffNominalTrajectoryRenderer = stage.offnominalLineRenderer;
-        _currentOffNominalTrajectoryRenderer.SetPosition(0, offNominalSatellitePosition.position);
+        _currentOffNominalTrajectoryRenderer.SetPosition(0, offNominalSatelliteTransform.position);
         
         // trigger animation here if it is correct stage
     }
