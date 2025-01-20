@@ -29,7 +29,7 @@ MonoBehaviour:
     m_LocalIntensity: 1
     lensFlareTexture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
     uniformScale: 3.26
-    sizeXY: {x: 0.5, y: 0.5}
+    sizeXY: {x: 0.7, y: 0.7}
     allowMultipleElement: 0
     m_Count: 5
     preserveAspectRatio: 0
@@ -233,7 +233,7 @@ MonoBehaviour:
     m_LocalIntensity: 1
     lensFlareTexture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
     uniformScale: 6.4
-    sizeXY: {x: 0.5, y: 0.5}
+    sizeXY: {x: 0.3, y: 0.3}
     allowMultipleElement: 0
     m_Count: 5
     preserveAspectRatio: 0
