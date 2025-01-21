@@ -217,11 +217,9 @@ public class UIManager : MonoBehaviour
         const int minutesPerDay = 1440;
         const int minutesPerHour = 60;
         const int secondsPerMinute = 60;
-
-        // So the simulation starts at 8 minutes instead of 0
-        const float startTimeMinutesOffset = 8.236480545f;
-        var minutesLeft = timeInMinutes + startTimeMinutesOffset;
-
+        
+        var minutesLeft = timeInMinutes;
+        
         var days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
         minutesLeft %= minutesPerDay;
         var hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
@@ -248,7 +246,7 @@ public class UIManager : MonoBehaviour
         var barWidth = ((RectTransform)_bar.transform).sizeDelta.x;
         var barContentWidth = barWidth - _barXMargin;
         
-        var stageIndex = (int) DataManager.instance.currentMissionStage.stageType - 1;
+        var stageIndex = (int) DataManager.Instance.currentMissionStage.stageType - 1;
         
         var stageSection = _bar.transform.GetChild(stageIndex);
         var stageSectionTransform = (RectTransform)stageSection;
@@ -429,7 +427,7 @@ public class UIManager : MonoBehaviour
                     antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out var speed)
                         ? speed : float.MinValue,
                 PriorityWeight = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
-                                  == DataManager.instance.currentPrioritizedAntenna ? 1.0f : 0.0f,
+                                  == DataManager.Instance.currentPrioritizedAntenna ? 1.0f : 0.0f,
                 Name = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text,
             })
             .OrderByDescending(item => item.PriorityWeight)

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SatelliteManager : MonoBehaviour
 {
-    public static SatelliteManager instance { get; private set; }
+    public static SatelliteManager Instance { get; private set; }
     
     [Header("Settings")]
     [SerializeField] private float trajectoryScale;
@@ -102,13 +102,13 @@ public class SatelliteManager : MonoBehaviour
     
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
         
-        instance = this;
+        Instance = this;
     }
     
     private void Start()
@@ -191,6 +191,7 @@ public class SatelliteManager : MonoBehaviour
         
         PlotTrajectory(_nominalPathPoints, _currentNominalTrajectoryRenderer, futureNominalTrajectory);
         PlotTrajectory(_offNominalPathPoints, _currentOffNominalTrajectoryRenderer, futureOffNominalTrajectory);
+        UpdateVelocityVector(_currentPointIndex);
         
         _isPlaying = true;
         
@@ -279,8 +280,18 @@ public class SatelliteManager : MonoBehaviour
     private float UpdateGeneralSatellitePosition(List<string[]> points, Transform satellitePosition)
     {
         var currentPoint = points[_currentPointIndex];
+        var currentVelocityVector = new Vector3(
+            float.Parse(currentPoint[4]),
+            float.Parse(currentPoint[5]),
+            float.Parse(currentPoint[6]));
+        
         var nextPoint = points[(_currentPointIndex + 1) % points.Count];
-
+        var nextVelocityVector = new Vector3(
+            float.Parse(nextPoint[4]),
+            float.Parse(nextPoint[5]),
+            float.Parse(nextPoint[6]));
+        
+        
         var currentPosition = new Vector3(
             float.Parse(currentPoint[1]) * trajectoryScale,
             float.Parse(currentPoint[2]) * trajectoryScale,
@@ -300,21 +311,16 @@ public class SatelliteManager : MonoBehaviour
 
         // Calculate satellite direction
         var direction = (nextPosition - currentPosition).normalized;
-        
-        const float rotationSpeed = 2.0f;
-        
         if (direction == Vector3.zero)
         {
             return netDistance;
         }
         
-        var targetRotation = Quaternion.LookRotation(direction);
-        targetRotation *= Quaternion.Euler(90.0f, 0.0f, 0.0f);
-        
+        // Interpolate rotation
         satellitePosition.rotation = Quaternion.Slerp(
-            satellitePosition.rotation,
-            targetRotation, 
-            rotationSpeed * Time.deltaTime * timeScale
+            Quaternion.LookRotation(currentVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f),
+            Quaternion.LookRotation(nextVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
+            _progress
         );
 
         return netDistance;
@@ -361,23 +367,13 @@ public class SatelliteManager : MonoBehaviour
         }
 
         _previousPointIndex = _currentPointIndex;
+        
         // The simulation is reset.
-
         _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalPathPoints.Count;
-
-        //if (_progress >= 0.0f)
-        //{
-        //    _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalPathPoints.Count;
-        //}
-
-        //if (_progress <= 0.0f)
-        //{
-        //    _currentPointIndex = (_currentPointIndex + Mathf.CeilToInt(_progress)) % _nominalPathPoints.Count;
-        //}
-
+        
         // The progress is reset.
         _progress %= 1;
-
+        
         OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
         
         UpdateTrajectory(
@@ -543,28 +539,38 @@ public class SatelliteManager : MonoBehaviour
     
     private void UpdateVelocityVector(int currentIndex)
     {
-        Vector3 vector;
+        Vector3 currentVelocityVector;
+        Vector3 nextVelocityVector;
         try
         {
             // A Vector3 variable is created to store and compute information about the current velocity vector.
-            vector = new Vector3(
+            currentVelocityVector = new Vector3(
                 float.Parse(_nominalPathPoints[currentIndex][4]),
                 float.Parse(_nominalPathPoints[currentIndex][5]),
                 float.Parse(_nominalPathPoints[currentIndex][6]));
+            nextVelocityVector = new Vector3(
+                float.Parse(_nominalPathPoints[currentIndex + 1][4]),
+                float.Parse(_nominalPathPoints[currentIndex + 1][5]),
+                float.Parse(_nominalPathPoints[currentIndex + 1][6]));
         } 
         catch (FormatException e)
         {
             Debug.LogWarning($"Incorrect data format provided at line {currentIndex}: {e}");
             return;
         }
+
+        velocityVector.transform.position = satellite.transform.position - satellite.transform.forward;
+        // velocityVector.transform.rotation = Quaternion.Slerp(
+        //     Quaternion.LookRotation(currentVelocityVector),
+        //     Quaternion.LookRotation(nextVelocityVector), 
+        //     _progress
+        // );
+
+        var magnitude = Mathf.Lerp(currentVelocityVector.magnitude, nextVelocityVector.magnitude, _progress);
+        velocityVector.transform.GetChild(0).localScale = new Vector3(1.0f, 1.0f, magnitude);
+        velocityVector.transform.GetChild(1).localPosition = new Vector3(0.0f, 0.0f, magnitude + 1);
         
-        velocityVector.transform.SetPositionAndRotation(
-            satellite.transform.position - satellite.transform.forward,
-            Quaternion.LookRotation(vector));
-        velocityVector.transform.GetChild(0).localScale = new Vector3(1.0f, 1.0f, vector.magnitude);
-        velocityVector.transform.GetChild(1).localPosition = new Vector3(0.0f, 0.0f, vector.magnitude + 1);
-        
-        var bracketIndex = vector.magnitude switch
+        var bracketIndex = magnitude switch
         {
             >= HighThreshold => 0,
             >= MediumThreshold => 1,

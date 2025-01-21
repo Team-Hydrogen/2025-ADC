@@ -7091,7 +7091,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   trajectoryScale: 0.01
   satellite: {fileID: 33029664}
-  velocityVector: {fileID: 1684219207}
+  velocityVector: {fileID: 1758129117}
   nominalSatelliteTransform: {fileID: 485032613}
   offNominalSatelliteTransform: {fileID: 1549028642}
   earth: {fileID: 1228062427}
@@ -10764,7 +10764,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1684219207}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 0
@@ -15983,10 +15983,10 @@ MonoBehaviour:
   - {fileID: 32900000, guid: c0fc066b0e7fb4f73b27f85f640f05c9, type: 3}
   - {fileID: 32900000, guid: 0193d3c1f25e74972a4fbfa3f7922ffa, type: 3}
   cutsceneSimulationTimes:
-  - 2.35
-  - 5.275
-  - 8.2
-  - 117.2
+  - 10.58648
+  - 13.51148
+  - 16.436481
+  - 125.43648
   - 12983
   - 12983
   - 12983
@@ -23124,6 +23124,21 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: -8.5
       objectReference: {fileID: 0}
+    - target: {fileID: 6703545627320244336, guid: b52849ed1c749424ab5e4de3d6c2337f,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6703545627320244336, guid: b52849ed1c749424ab5e4de3d6c2337f,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6703545627320244336, guid: b52849ed1c749424ab5e4de3d6c2337f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -90
+      objectReference: {fileID: 0}
     - target: {fileID: 6885793896828660483, guid: b52849ed1c749424ab5e4de3d6c2337f,
         type: 3}
       propertyPath: m_Layer
@@ -23208,12 +23223,6 @@ PrefabInstance:
 --- !u!4 &1684219206 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3486432567636085673, guid: b52849ed1c749424ab5e4de3d6c2337f,
-    type: 3}
-  m_PrefabInstance: {fileID: 1684219205}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1684219207 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5548525391167617999, guid: b52849ed1c749424ab5e4de3d6c2337f,
     type: 3}
   m_PrefabInstance: {fileID: 1684219205}
   m_PrefabAsset: {fileID: 0}
@@ -24213,6 +24222,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1756589121}
   m_CullTransparentMesh: 1
+--- !u!1 &1758129117 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5548525391167617999, guid: b52849ed1c749424ab5e4de3d6c2337f,
+    type: 3}
+  m_PrefabInstance: {fileID: 1684219205}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1766798848
 GameObject:
   m_ObjectHideFlags: 0
