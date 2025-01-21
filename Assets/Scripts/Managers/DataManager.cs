@@ -80,13 +80,13 @@ public class DataManager : MonoBehaviour
     private void OnEnable()
     {
         SatelliteManager.OnCurrentIndexUpdated += UpdateDataManager;
-        SatelliteManager.OnSatelliteStateUpdated += SatelliteStateUpdated;
+        SatelliteManager.OnSatelliteStateUpdated += UpdateSatelliteState;
     }
     
     private void OnDisable()
     {
         SatelliteManager.OnCurrentIndexUpdated -= UpdateDataManager;
-        SatelliteManager.OnSatelliteStateUpdated -= SatelliteStateUpdated;
+        SatelliteManager.OnSatelliteStateUpdated -= UpdateSatelliteState;
     }
     #endregion
     
@@ -109,7 +109,7 @@ public class DataManager : MonoBehaviour
         return dataValues;
     }
 
-    private void SatelliteStateUpdated(SatelliteManager.SatelliteState state)
+    private void UpdateSatelliteState(SatelliteManager.SatelliteState state)
     {
         _satelliteState = state;
     }

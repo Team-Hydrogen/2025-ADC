@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!21 &-8763818903064659317
+--- !u!21 &-5432705081038662131
 Material:
   serializedVersion: 8
   m_ObjectHideFlags: 0
@@ -77,9 +77,72 @@ MonoBehaviour:
     m_StrikethroughOffset: 0
     m_StrikethroughThickness: 0
     m_TabWidth: 0
-  m_Material: {fileID: -8763818903064659317}
+  m_Material: {fileID: -5432705081038662131}
   spriteSheet: {fileID: 2800000, guid: 584b335687af04a7db394f92d4473047, type: 3}
-  m_SpriteCharacterTable: []
-  m_GlyphTable: []
+  m_SpriteCharacterTable:
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 0
+    m_Scale: 5
+    m_Name: SpaceIcons_0
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 1
+    m_Scale: 5
+    m_Name: SpaceIcons_1
+  - m_ElementType: 2
+    m_Unicode: 65534
+    m_GlyphIndex: 2
+    m_Scale: 5
+    m_Name: SpaceIcons_2
+  m_GlyphTable:
+  - m_Index: 0
+    m_Metrics:
+      m_Width: 388
+      m_Height: 445
+      m_HorizontalBearingX: -194
+      m_HorizontalBearingY: 222.5
+      m_HorizontalAdvance: 388
+    m_GlyphRect:
+      m_X: 0
+      m_Y: 0
+      m_Width: 388
+      m_Height: 445
+    m_Scale: 1
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: 1998874273, guid: 584b335687af04a7db394f92d4473047, type: 3}
+  - m_Index: 1
+    m_Metrics:
+      m_Width: 388
+      m_Height: 445
+      m_HorizontalBearingX: -194
+      m_HorizontalBearingY: 222.5
+      m_HorizontalAdvance: 388
+    m_GlyphRect:
+      m_X: 388
+      m_Y: 0
+      m_Width: 388
+      m_Height: 445
+    m_Scale: 1
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: 846107872, guid: 584b335687af04a7db394f92d4473047, type: 3}
+  - m_Index: 2
+    m_Metrics:
+      m_Width: 388
+      m_Height: 445
+      m_HorizontalBearingX: -194
+      m_HorizontalBearingY: 222.5
+      m_HorizontalAdvance: 388
+    m_GlyphRect:
+      m_X: 776
+      m_Y: 0
+      m_Width: 388
+      m_Height: 445
+    m_Scale: 1
+    m_AtlasIndex: 0
+    m_ClassDefinitionType: 0
+    sprite: {fileID: -1478385403, guid: 584b335687af04a7db394f92d4473047, type: 3}
   spriteInfoList: []
   fallbackSpriteAssets: []
