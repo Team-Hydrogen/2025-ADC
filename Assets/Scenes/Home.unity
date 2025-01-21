@@ -3747,7 +3747,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1462774670}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.10956452
+  m_Size: 0.108023435
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4424,7 +4424,7 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1512057812}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.89043546}
+  m_AnchorMin: {x: 0, y: 0.8919766}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 6, y: 0}
@@ -4802,7 +4802,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 5851.47}
+  m_SizeDelta: {x: 0, y: 5945.22}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1668397641
 MonoBehaviour:
@@ -4824,13 +4824,13 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "<align=\"center\"><sprite name=\"SpaceIcons\"></align>\n\n<align=\"center\"><b>ARTEMIS
-    II</b></align>\n\n<align=\"center\"><b>Introduction</b></align>\nThe Artemis
-    II mission marks NASA's first crewed journey to the Moon in over five decades.
-    This mission is a collaborative effort involving NASA and the Canadian Space
-    Agency (CSA), aiming to test the Space Launch System (SLS) rocket and the Orion
-    spacecraft's capabilities for future deep space exploration. The launch is scheduled
-    from Kennedy Space Center's Launch Complex 39B.\n\n<align=\"center\"><b>Crew</b></align>\n\n<b>Prime
+  m_text: "<align=\"center\">\n\t<sprite name=\"SpaceIcons_0\"> <sprite name=\"SpaceIcons_1\">
+    <sprite name=\"SpaceIcons_2\">\n</align>\n\n<align=\"center\"><b>ARTEMIS II</b></align>\n\n<align=\"center\"><b>Introduction</b></align>\nThe
+    Artemis II mission marks NASA's first crewed journey to the Moon in over five
+    decades. This mission is a collaborative effort involving NASA and the Canadian
+    Space Agency (CSA), aiming to test the Space Launch System (SLS) rocket and the
+    Orion spacecraft's capabilities for future deep space exploration. The launch
+    is scheduled from Kennedy Space Center's Launch Complex 39B.\n\n<align=\"center\"><b>Crew</b></align>\n\n<b>Prime
     Crew</b>\n<sprite name=\"reid-wiseman.png\">\nCommander: Reid Wiseman (United
     States, NASA)\n\u25CF Second spaceflight\n\u25CF Previously served on Expedition
     40/41 to the International Space Station in 2014\n\u25CF Former Chief of the
@@ -4923,7 +4923,7 @@ MonoBehaviour:
     bottomLeft: {r: 1, g: 1, b: 1, a: 1}
     bottomRight: {r: 1, g: 1, b: 1, a: 1}
   m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
+  m_spriteAsset: {fileID: 11400000, guid: 5a6dd0ad48c32415391169ac93d144ac, type: 2}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
   m_TextStyleHashCode: -1183493901
