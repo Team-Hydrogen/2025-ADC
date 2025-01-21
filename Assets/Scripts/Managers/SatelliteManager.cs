@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class SatelliteManager : MonoBehaviour
 {
-    public static SatelliteManager instance { get; private set; }
+    public static SatelliteManager Instance { get; private set; }
     
     [Header("Settings")]
     [SerializeField] private float trajectoryScale;
@@ -13,8 +13,8 @@ public class SatelliteManager : MonoBehaviour
     [Header("Satellite")]
     [SerializeField] private GameObject satellite;
     [SerializeField] private GameObject velocityVector;
-    [SerializeField] private Transform nominalSatellitePosition;
-    [SerializeField] private Transform offNominalSatellitePosition;
+    [SerializeField] private Transform nominalSatelliteTransform;
+    [SerializeField] private Transform offNominalSatelliteTransform;
     
     [Header("Celestial Bodies")]
     [SerializeField] private GameObject earth;
@@ -30,11 +30,14 @@ public class SatelliteManager : MonoBehaviour
     [SerializeField] private float timeScale;
     
     private SatelliteState _currentState = SatelliteState.Nominal;
+
+    private const float MinimumTimeScale = 1.0f;
+    private const float MaximumTimeScale = 100_000.0f;
     
     private int _previousPointIndex = 0;
     private int _currentPointIndex = 0;
     private bool _isPlaying = false;
-    private const int SkipIndexChange = 100;
+    private const int SkipTimeChange = 10;
     
     private float _progress = 0.0f;
     private float _estimatedElapsedTime;
@@ -48,9 +51,6 @@ public class SatelliteManager : MonoBehaviour
     
     // The second stage is the same as the service module.
     private const int SecondStageFireIndex = 120;
-
-    private const float FirstModelEndTime = 2.0f;
-    private const float SecondModelEndTime = 8.0f;
     
     private Vector3 _lastAutomaticSatellitePosition;
     private Vector3 _lastManualSatellitePosition;
@@ -102,13 +102,13 @@ public class SatelliteManager : MonoBehaviour
     
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
         
-        instance = this;
+        Instance = this;
     }
     
     private void Start()
@@ -160,23 +160,23 @@ public class SatelliteManager : MonoBehaviour
 
     public void ForwardButtonPressed()
     {
-        _currentPointIndex = GetClosestDataPointIndexFromTime(_estimatedElapsedTime + SkipIndexChange / timeScale);
+        _progress = SkipTimeChange * timeScale;
     }
 
     public void BackwardButtonPressed()
     {
-        _currentPointIndex = GetClosestDataPointIndexFromTime(_estimatedElapsedTime - SkipIndexChange / timeScale);
+        _progress = -SkipTimeChange * timeScale;
     }
     
     public void FastForwardButtonPressed()
     {
-        timeScale *= 10;
+        timeScale = Mathf.Min(MaximumTimeScale, timeScale * 10);
         OnTimeScaleSet?.Invoke(timeScale);
     }
 
     public void RewindButtonPressed()
     {
-        timeScale = Mathf.Max(1, timeScale / 10);
+        timeScale = Mathf.Max(MinimumTimeScale, timeScale / 10);
         OnTimeScaleSet?.Invoke(timeScale);
     }
     
@@ -191,6 +191,7 @@ public class SatelliteManager : MonoBehaviour
         
         PlotTrajectory(_nominalPathPoints, _currentNominalTrajectoryRenderer, futureNominalTrajectory);
         PlotTrajectory(_offNominalPathPoints, _currentOffNominalTrajectoryRenderer, futureOffNominalTrajectory);
+        UpdateVelocityVector(_currentPointIndex);
         
         _isPlaying = true;
         
@@ -250,10 +251,10 @@ public class SatelliteManager : MonoBehaviour
         }
         
         UpdateTimeIntervalAndProgress();
-        _totalNominalDistance += UpdateGeneralSatellitePosition(_nominalPathPoints, nominalSatellitePosition);
-        _totalOffNominalDistance += UpdateGeneralSatellitePosition(_offNominalPathPoints, offNominalSatellitePosition);
-        SetSatelliteVisualToPosition();
+        _totalNominalDistance += UpdateGeneralSatellitePosition(_nominalPathPoints, nominalSatelliteTransform);
+        _totalOffNominalDistance += UpdateGeneralSatellitePosition(_offNominalPathPoints, offNominalSatelliteTransform);
         UpdateAfter();
+        SetSatelliteVisualToPosition();
     }
 
     private void SetSatelliteVisualToPosition()
@@ -261,12 +262,12 @@ public class SatelliteManager : MonoBehaviour
         switch (_currentState)
         {
             case SatelliteState.Nominal:
-                satellite.transform.position = nominalSatellitePosition.position;
-                satellite.transform.rotation = nominalSatellitePosition.rotation;
+                satellite.transform.position = nominalSatelliteTransform.position;
+                satellite.transform.rotation = nominalSatelliteTransform.rotation;
                 break;
             case SatelliteState.OffNominal:
-                satellite.transform.position = offNominalSatellitePosition.position;
-                satellite.transform.rotation = offNominalSatellitePosition.rotation;
+                satellite.transform.position = offNominalSatelliteTransform.position;
+                satellite.transform.rotation = offNominalSatelliteTransform.rotation;
                 break;
             case SatelliteState.Manual:
             case SatelliteState.Returning:
@@ -279,8 +280,18 @@ public class SatelliteManager : MonoBehaviour
     private float UpdateGeneralSatellitePosition(List<string[]> points, Transform satellitePosition)
     {
         var currentPoint = points[_currentPointIndex];
+        var currentVelocityVector = new Vector3(
+            float.Parse(currentPoint[4]),
+            float.Parse(currentPoint[5]),
+            float.Parse(currentPoint[6]));
+        
         var nextPoint = points[(_currentPointIndex + 1) % points.Count];
-
+        var nextVelocityVector = new Vector3(
+            float.Parse(nextPoint[4]),
+            float.Parse(nextPoint[5]),
+            float.Parse(nextPoint[6]));
+        
+        
         var currentPosition = new Vector3(
             float.Parse(currentPoint[1]) * trajectoryScale,
             float.Parse(currentPoint[2]) * trajectoryScale,
@@ -300,21 +311,16 @@ public class SatelliteManager : MonoBehaviour
 
         // Calculate satellite direction
         var direction = (nextPosition - currentPosition).normalized;
-        
-        const float rotationSpeed = 2.0f;
-        
         if (direction == Vector3.zero)
         {
             return netDistance;
         }
         
-        var targetRotation = Quaternion.LookRotation(direction);
-        targetRotation *= Quaternion.Euler(90.0f, 0.0f, 0.0f);
-        
+        // Interpolate rotation
         satellitePosition.rotation = Quaternion.Slerp(
-            satellitePosition.rotation,
-            targetRotation, 
-            rotationSpeed * Time.deltaTime
+            Quaternion.LookRotation(currentVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f),
+            Quaternion.LookRotation(nextVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
+            _progress
         );
 
         return netDistance;
@@ -342,36 +348,42 @@ public class SatelliteManager : MonoBehaviour
         CalculateDistances();
         
         UpdateTrajectory(
+            nominalSatelliteTransform,
             _currentNominalTrajectoryRenderer,
             futureNominalTrajectory,
             false,
             true);
         UpdateTrajectory(
+            offNominalSatelliteTransform,
             _currentOffNominalTrajectoryRenderer,
             futureOffNominalTrajectory,
             false,
             true);
         
         // Move to the next point when progress is complete
-        if (_progress < 1.0f)
+        if (_progress is < 1.0f and > -1.0f)
         {
             return;
         }
 
         _previousPointIndex = _currentPointIndex;
+        
         // The simulation is reset.
         _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalPathPoints.Count;
+        
         // The progress is reset.
         _progress %= 1;
-
+        
         OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
         
         UpdateTrajectory(
+            nominalSatelliteTransform,
             _currentNominalTrajectoryRenderer,
             futureNominalTrajectory,
             true,
             false);
         UpdateTrajectory(
+            offNominalSatelliteTransform,
             _currentOffNominalTrajectoryRenderer,
             futureOffNominalTrajectory,
             true,
@@ -380,12 +392,12 @@ public class SatelliteManager : MonoBehaviour
         UpdateVelocityVector(_currentPointIndex);
     }
 
-    private void UpdateTrajectory(LineRenderer current, LineRenderer future, bool indexUpdated, bool positionUpdated)
+    private void UpdateTrajectory(Transform satelliteTransform, LineRenderer current, LineRenderer future, bool indexUpdated, bool positionUpdated)
     {
         if (positionUpdated)
         {
-            future.SetPosition(0, satellite.transform.position);
-            current.SetPosition(current.positionCount - 1, satellite.transform.position);
+            future.SetPosition(0, satelliteTransform.position);
+            current.SetPosition(current.positionCount - 1, satelliteTransform.position);
         }
 
         if (!indexUpdated)
@@ -517,29 +529,48 @@ public class SatelliteManager : MonoBehaviour
         }
         
         _currentNominalTrajectoryRenderer = stage.nominalLineRenderer;
-        _currentNominalTrajectoryRenderer.SetPosition(0, nominalSatellitePosition.position);
+        _currentNominalTrajectoryRenderer.SetPosition(0, nominalSatelliteTransform.position);
 
         _currentOffNominalTrajectoryRenderer = stage.offnominalLineRenderer;
-        _currentOffNominalTrajectoryRenderer.SetPosition(0, offNominalSatellitePosition.position);
+        _currentOffNominalTrajectoryRenderer.SetPosition(0, offNominalSatelliteTransform.position);
         
         // trigger animation here if it is correct stage
     }
     
     private void UpdateVelocityVector(int currentIndex)
     {
-        // A Vector3 variable is created to store and compute information about the current velocity vector.
-        var vector = new Vector3(
-            float.Parse(_nominalPathPoints[currentIndex][4]),
-            float.Parse(_nominalPathPoints[currentIndex][5]),
-            float.Parse(_nominalPathPoints[currentIndex][6]));
+        Vector3 currentVelocityVector;
+        Vector3 nextVelocityVector;
+        try
+        {
+            // A Vector3 variable is created to store and compute information about the current velocity vector.
+            currentVelocityVector = new Vector3(
+                float.Parse(_nominalPathPoints[currentIndex][4]),
+                float.Parse(_nominalPathPoints[currentIndex][5]),
+                float.Parse(_nominalPathPoints[currentIndex][6]));
+            nextVelocityVector = new Vector3(
+                float.Parse(_nominalPathPoints[currentIndex + 1][4]),
+                float.Parse(_nominalPathPoints[currentIndex + 1][5]),
+                float.Parse(_nominalPathPoints[currentIndex + 1][6]));
+        } 
+        catch (FormatException e)
+        {
+            Debug.LogWarning($"Incorrect data format provided at line {currentIndex}: {e}");
+            return;
+        }
+
+        velocityVector.transform.position = satellite.transform.position - satellite.transform.forward;
+        // velocityVector.transform.rotation = Quaternion.Slerp(
+        //     Quaternion.LookRotation(currentVelocityVector),
+        //     Quaternion.LookRotation(nextVelocityVector), 
+        //     _progress
+        // );
+
+        var magnitude = Mathf.Lerp(currentVelocityVector.magnitude, nextVelocityVector.magnitude, _progress);
+        velocityVector.transform.GetChild(0).localScale = new Vector3(1.0f, 1.0f, magnitude);
+        velocityVector.transform.GetChild(1).localPosition = new Vector3(0.0f, 0.0f, magnitude + 1);
         
-        velocityVector.transform.SetPositionAndRotation(
-            satellite.transform.position - satellite.transform.forward,
-            Quaternion.LookRotation(vector));
-        velocityVector.transform.GetChild(0).localScale = new Vector3(1.0f, 1.0f, vector.magnitude);
-        velocityVector.transform.GetChild(1).localPosition = new Vector3(0.0f, 0.0f, vector.magnitude + 1);
-        
-        var bracketIndex = vector.magnitude switch
+        var bracketIndex = magnitude switch
         {
             >= HighThreshold => 0,
             >= MediumThreshold => 1,
@@ -679,19 +710,17 @@ public class SatelliteManager : MonoBehaviour
         return closestIndex;
     }
 
-    private void UpdateModel()
+    private void UpdateModel(int cutsceneIndex)
     {
-        switch (_estimatedElapsedTime)
+        switch (cutsceneIndex)
         {
-            case < FirstModelEndTime:
-                DisplayModel(0);
+            case <= 3:
+                DisplayModel(cutsceneIndex + 1);
                 return;
-            case < SecondModelEndTime:
-                DisplayModel(1);
-                return;
+
             default:
-                DisplayModel(2);
-                break;
+                DisplayModel(4);
+                return;
         }
     }
     

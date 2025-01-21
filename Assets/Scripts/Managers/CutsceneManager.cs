@@ -27,8 +27,10 @@ public class CutsceneManager : MonoBehaviour
     private int _cutscenesPlayed = 0;
     private CutsceneState _state = CutsceneState.NotPlaying;
 
-    public static event Action OnCutsceneStart;
-    public static event Action OnCutsceneEnd;
+    public static event Action<int> OnCutsceneStart;
+    public static event Action OnCutsceneEnd; // unused
+
+    private bool playCutscenes = true;
     
     private void OnEnable()
     {
@@ -40,6 +42,11 @@ public class CutsceneManager : MonoBehaviour
     {
         SatelliteManager.OnUpdateTime -= StartCutsceneTransition;
         videoPlayer.loopPointReached -= EndCutsceneTransition;
+    }
+
+    public void TogglePlayCutscenes(bool value)
+    {
+        playCutscenes = value;
     }
     
     private void StartCutsceneTransition(float currentTimeInMinutes)
@@ -56,6 +63,15 @@ public class CutsceneManager : MonoBehaviour
         
         if (currentTimeInMinutes < cutsceneSimulationTimes[_cutscenesPlayed])
         {
+            return;
+        }
+
+        if (!playCutscenes)
+        {
+            OnCutsceneStart?.Invoke(_cutscenesPlayed);
+            OnCutsceneEnd?.Invoke();
+            _cutscenesPlayed++;
+
             return;
         }
         
@@ -78,7 +94,7 @@ public class CutsceneManager : MonoBehaviour
         videoPlayer.Play();
         cutsceneImage.gameObject.SetActive(true);
         
-        OnCutsceneStart?.Invoke();
+        OnCutsceneStart?.Invoke(_cutscenesPlayed);
     }
     
     private void EndCutsceneTransition(VideoPlayer video)

@@ -34,6 +34,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI secondCounter;
     [Header("Time Elapsed Bar")]
     [SerializeField] private GameObject timeElapsedBar;
+    [Header("Time Scale")]
+    [SerializeField] private TextMeshProUGUI timeScaleIndicator;
     
     [Header("Coordinates")]
     [SerializeField] private TextMeshProUGUI xCoordinate;
@@ -62,6 +64,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private float inputInactivityTime;
     [SerializeField, Range(0, 1f)] private float minimumUIVisibility;
     
+    // Timeline controls
+    private Transform _bar;
+    private float _barXMargin;
+    
     private bool _isAntennaColored = true;
     private bool _isAntennaPrioritized = true;
     
@@ -81,7 +87,7 @@ public class UIManager : MonoBehaviour
     public static event Action<SatelliteManager.SatelliteState> OnCurrentPathChanged;
 
     private List<string[]> _linkBudgetData;
-    private List<string[]> _offnominalLinkBudgetData;
+    private List<string[]> _offNominalLinkBudgetData;
     private List<string[]> _thrustData;
     private SatelliteManager.SatelliteState _satelliteState;
     
@@ -98,6 +104,12 @@ public class UIManager : MonoBehaviour
         instance = this;
     }
 
+    private void Start()
+    {
+        _bar = timeElapsedBar.transform.GetChild(0);
+        _barXMargin = _bar.GetComponent<HorizontalLayoutGroup>().padding.horizontal;
+    }
+
     private void Update()
     {
         HandleUIVisibility();
@@ -112,6 +124,7 @@ public class UIManager : MonoBehaviour
         SatelliteManager.OnCurrentIndexUpdated += UpdateThrust;
         SatelliteManager.OnStageFired += ShowNotification;
         SatelliteManager.OnSatelliteStateUpdated += UpdateSatelliteState;
+        SatelliteManager.OnTimeScaleSet += SetTimeScaleIndicator;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
         DataManager.OnMissionStageUpdated += SetBumpOffCourseButtonActive;
@@ -204,18 +217,16 @@ public class UIManager : MonoBehaviour
         const int minutesPerDay = 1440;
         const int minutesPerHour = 60;
         const int secondsPerMinute = 60;
-
-        // So the simulation starts at 8 minutes instead of 0
-        const float startTimeMinutesOffset = 8.236480545f;
-        float minutesLeft = timeInMinutes + startTimeMinutesOffset;
-
-        int days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
+        
+        var minutesLeft = timeInMinutes;
+        
+        var days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
         minutesLeft %= minutesPerDay;
-        int hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
+        var hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
         minutesLeft %= minutesPerHour;
-        int minutes = Mathf.FloorToInt(minutesLeft);
+        var minutes = Mathf.FloorToInt(minutesLeft);
         minutesLeft -= minutes;
-        int seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
+        var seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
 
         SetTimeCounter(days, hours, minutes, seconds);
         SetTimeElapsedBar(timeInMinutes);
@@ -232,34 +243,26 @@ public class UIManager : MonoBehaviour
     
     private void SetTimeElapsedBar(float timeInMinutes)
     {
-        var bar = timeElapsedBar.transform.GetChild(0);
-        var barWidth = ((RectTransform)bar.transform).sizeDelta.x;
-        var barXMargin = bar.GetComponent<HorizontalLayoutGroup>().padding.horizontal;
-        var barContentWidth = barWidth - barXMargin;
+        var barWidth = ((RectTransform)_bar.transform).sizeDelta.x;
+        var barContentWidth = barWidth - _barXMargin;
         
-        var stageIndex = (int) DataManager.instance.currentMissionStage.stageType - 1;
+        var stageIndex = (int) DataManager.Instance.currentMissionStage.stageType - 1;
         
-        var stageSection = bar.transform.GetChild(stageIndex);
+        var stageSection = _bar.transform.GetChild(stageIndex);
         var stageSectionTransform = (RectTransform)stageSection;
         var stageSectionWidth = timeInMinutes / 12983.16998f * barContentWidth 
-                                - stageSectionTransform.anchoredPosition.x + barXMargin / 2.0f;
+                                - stageSectionTransform.anchoredPosition.x + _barXMargin / 2.0f;
         
         stageSectionTransform.sizeDelta = new Vector2(stageSectionWidth, stageSectionTransform.sizeDelta.y);
     }
     
     /// <summary>
-    /// This function will be deprecated before the application is sent to production.
+    /// Updates the time scale indicator
     /// </summary>
-    /// <param name="changeInDays"></param>
-    /// <param name="changeInHours"></param>
-    /// <param name="changeInMinutes"></param>
-    /// <param name="changeInSeconds"></param>
-    public void IncrementTime(int changeInDays, int changeInHours, int changeInMinutes, int changeInSeconds)
+    /// <param name="timeScale">Current simulation time scale</param>
+    private void SetTimeScaleIndicator(float timeScale)
     {
-        dayCounter.text = (int.Parse(dayCounter.text) - changeInDays).ToString();
-        hourCounter.text = (int.Parse(hourCounter.text) - changeInHours).ToString();
-        minuteCounter.text = (int.Parse(minuteCounter.text) - changeInMinutes).ToString();
-        secondCounter.text = (int.Parse(secondCounter.text) - changeInSeconds).ToString();
+        timeScaleIndicator.text = Mathf.Approximately(timeScale, 1.0f) ? "" : $"{timeScale:F0}x";
     }
     
     #endregion
@@ -424,7 +427,7 @@ public class UIManager : MonoBehaviour
                     antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out var speed)
                         ? speed : float.MinValue,
                 PriorityWeight = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
-                                  == DataManager.instance.currentPrioritizedAntenna ? 1.0f : 0.0f,
+                                  == DataManager.Instance.currentPrioritizedAntenna ? 1.0f : 0.0f,
                 Name = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text,
             })
             .OrderByDescending(item => item.PriorityWeight)
@@ -459,7 +462,7 @@ public class UIManager : MonoBehaviour
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
         SetBumpOffCourseButtonActive(dataLoadedEventArgs.MissionStage);
         _linkBudgetData = dataLoadedEventArgs.LinkBudgetData;
-        _offnominalLinkBudgetData = dataLoadedEventArgs.OffnominalLinkBudgetData;
+        _offNominalLinkBudgetData = dataLoadedEventArgs.OffnominalLinkBudgetData;
         _thrustData = dataLoadedEventArgs.ThrustData;
     }
 

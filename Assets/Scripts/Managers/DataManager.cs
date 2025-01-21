@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
-    public static DataManager instance { get; private set; }
+    public static DataManager Instance { get; private set; }
         
     [Header("Data Files")]
     [SerializeField] private TextAsset nominalTrajectoryDataFile;
@@ -45,13 +45,13 @@ public class DataManager : MonoBehaviour
     #region Event Functions
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        instance = this;
+        Instance = this;
     }
     
     private void Start()
@@ -105,6 +105,7 @@ public class DataManager : MonoBehaviour
     {
         var dataValues = CsvReader.ReadCsvFile(dataFile);
         dataValues.RemoveAt(0); // The first row of headers is removed.
+        dataValues.RemoveAt(0); // The first row of data (time=0) is removed.
         return dataValues;
     }
 
