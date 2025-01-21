@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public static UIManager instance { get; private set; }
+    public static UIManager Instance { get; private set; }
     
     [SerializeField] private CanvasGroup canvasGroup;
     
@@ -95,13 +95,13 @@ public class UIManager : MonoBehaviour
     
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
 
-        instance = this;
+        Instance = this;
     }
 
     private void Start()
