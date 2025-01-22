@@ -1,12 +1,19 @@
 # Credits
-YoungWonks Team Hydrogen certifies that this project is our own work, and all content in this project has not been previously been submitted for any assessed qualification. We certify that the use of assets and software from other sources has been properly and fully acknowledged in the solution's credits.
+YoungWonks Team Hydrogen certifies that this project is our own work, and all content in this project has not previously been submitted for any assessed qualification. We certify that the use of assets and software from other sources has been properly and fully acknowledged in this document.
+
+## Acknowledgements
+Team Hydrogen would like to thank the following members of our founding organization YoungWonks for their unwavering support and encouragement throughout the development of our application.
+- Suchin Ravi, for organizing this team, providing mentorship in machine learning, and guiding the trajectory of our project.
+- Leonel Cruz, for his assistance in the UI/UX design, 3-D modeling, and animation.
+- Shivendra Singh, for his assistance in 3-D modeling and animation.
+- Jayson Harriott, for kickstarting our project and performing required formal procedures.
 
 ## Software
 Blender. (2025). _Blender_ (Version 4.2.6 LTS) [Software]. Blender.Org. https://www.blender.org/download/lts/4-2/
 
 JetBrains. (2024). _Rider_ (Version 2024.3.3) [Software]. JetBrains.Com. https://www.jetbrains.com/rider/download/
 
-Microsoft. (2022). _Visual Studio_ (Version 2022) [Software]. Microsoft.Com. https://visualstudio.microsoft.com/downloads/
+Microsoft. (2025). _Visual Studio 2022_ (Version 17.12.4) [Software]. Microsoft.Com. https://visualstudio.microsoft.com/downloads/
 
 Python Software Foundation. (2024). _Python_ (Version 3.13.1) [Software]. Python.Org. https://www.python.org/downloads/
 

@@ -47,6 +47,7 @@ public class DataManager : MonoBehaviour
     public static event Action<MissionStage> OnMissionStageUpdated;
     
     #region Event Functions
+    
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -94,6 +95,7 @@ public class DataManager : MonoBehaviour
         SpacecraftManager.OnSpacecraftStateUpdated -= UpdateSpacecraftState;
         UIManager.OnPrioritizationChanged -= SetPriorityAlgorithm;
     }
+    
     #endregion
     
     private void UpdateDataManager(int index)
@@ -107,7 +109,7 @@ public class DataManager : MonoBehaviour
     /// </summary>
     /// <param name="dataFile">The raw data file (CSV only)</param>
     /// <returns>The processed data file</returns>
-    private List<string[]> ReadDataFile(TextAsset dataFile)
+    private static List<string[]> ReadDataFile(TextAsset dataFile)
     {
         var dataValues = CsvReader.ReadCsvFile(dataFile);
         dataValues.RemoveAt(0); // The first row of headers is removed.

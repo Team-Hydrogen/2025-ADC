@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -488,7 +487,6 @@ public class UIManager : MonoBehaviour
     
     #endregion
     
-    
     private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
@@ -499,6 +497,7 @@ public class UIManager : MonoBehaviour
     }
 
     #region Mission Stage
+    
     private void UpdateMissionStage(MissionStage stage)
     {
         missionStageText.text = stage.name;

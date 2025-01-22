@@ -7,6 +7,8 @@ public class IntelligenceManager : MonoBehaviour
 {
     public static IntelligenceManager Instance { get; private set; }
     
+    private List<string[]> _thrustData;
+    
     
     #region Event Functions
     
@@ -23,13 +25,11 @@ public class IntelligenceManager : MonoBehaviour
     
     #endregion
     
-    
-    #region Bump Off Course
+    #region Thrust
     
     #endregion
     
-    
-    #region Thrust
+    #region Bump Off Course
     
     #endregion
 }
