@@ -6813,6 +6813,7 @@ MonoBehaviour:
   - {r: 1, g: 0.7569, b: 0, a: 1}
   - {r: 0.9373, g: 0.2588, b: 0.2588, a: 1}
   disabledAntennaBackgroundColor: {r: 0.84313726, g: 0.8509804, b: 0.9098039, a: 1}
+  prioritizationMethod: {fileID: 954798790}
   timeCounter: {fileID: 936616242}
   dayCounter: {fileID: 608296515}
   hourCounter: {fileID: 1915694870}
@@ -13112,7 +13113,19 @@ MonoBehaviour:
       m_Color: {r: 0.8627451, g: 0.8627451, b: 0.8627451, a: 1}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: ToggleAntennaPrioritization
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!114 &954798791
 MonoBehaviour:
@@ -13134,7 +13147,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: c98fa6e780ca8ec4399f4871ebc21c8c, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1

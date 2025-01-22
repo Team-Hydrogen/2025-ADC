@@ -6,7 +6,8 @@ using UnityEngine;
 public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
-        
+    
+    // Inspector
     [Header("Data Files")]
     [SerializeField] private TextAsset nominalTrajectoryDataFile;
     [SerializeField] private TextAsset offNominalTrajectoryDataFile;
@@ -25,22 +26,25 @@ public class DataManager : MonoBehaviour
     [SerializeField] private Color endGizmosLineColor;
     [SerializeField, Range(1f, 100f)] private int gizmosLevelOfDetail;
     
-    public static event Action<DataLoadedEventArgs> OnDataLoaded;
-    public static event Action<MissionStage> OnMissionStageUpdated;
+    // State management
+    private SpacecraftManager.SpacecraftState _spacecraftState;
+    public MissionStage CurrentMissionStage { get; private set; }
+    public LinkBudgetAlgorithm PriorityAlgorithm { get; private set; }
     
+    // Data
     private List<string[]> _nominalTrajectoryDataValues;
     private List<string[]> _offNominalTrajectoryDataValues;
     private List<string[]> _antennaAvailabilityDataValues;
     private List<string[]> _thrustDataValues;
-    public List<string[]> _linkBudgetDataValues { get; private set; }
-    public List<string[]> _offnominalLinkBudgetDataValues { get; private set; }
+    public List<string[]> NominalLinkBudgetDataValues { get; private set; }
+    public List<string[]> OffNominalLinkBudgetDataValues { get; private set; }
     
-    public string currentPrioritizedAntenna { get; private set; }
+    public string CurrentPrioritizedAntenna { get; private set; }
     private List<Vector3> _positionVectorsForGizmos;
-
-    public MissionStage currentMissionStage { get; private set; }
-
-    private SpacecraftManager.SpacecraftState _spacecraftState;
+    
+    // Actions
+    public static event Action<DataLoadedEventArgs> OnDataLoaded;
+    public static event Action<MissionStage> OnMissionStageUpdated;
     
     #region Event Functions
     private void Awake()
@@ -56,13 +60,13 @@ public class DataManager : MonoBehaviour
     
     private void Start()
     {
-        currentMissionStage = stages[0];
+        CurrentMissionStage = stages[0];
         
         _nominalTrajectoryDataValues = ReadDataFile(nominalTrajectoryDataFile);
         _offNominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
         _antennaAvailabilityDataValues = ReadDataFile(antennaAvailabilityDataFile);
-        _linkBudgetDataValues = ReadDataFile(linkBudgetDataFile);
-        _offnominalLinkBudgetDataValues = ReadDataFile(offnominalLinkBudgetDataFile);
+        NominalLinkBudgetDataValues = ReadDataFile(linkBudgetDataFile);
+        OffNominalLinkBudgetDataValues = ReadDataFile(offnominalLinkBudgetDataFile);
         _thrustDataValues = ReadDataFile(thrustDataFile);
         
         OnDataLoaded?.Invoke(
@@ -70,8 +74,8 @@ public class DataManager : MonoBehaviour
                 _nominalTrajectoryDataValues, 
                 _offNominalTrajectoryDataValues, 
                 _antennaAvailabilityDataValues,
-                _linkBudgetDataValues,
-                _offnominalLinkBudgetDataValues,
+                NominalLinkBudgetDataValues,
+                OffNominalLinkBudgetDataValues,
                 _thrustDataValues,
                 stages[0]) // First stage should start right after simulation begins
             );
@@ -81,19 +85,21 @@ public class DataManager : MonoBehaviour
     {
         SpacecraftManager.OnCurrentIndexUpdated += UpdateDataManager;
         SpacecraftManager.OnSpacecraftStateUpdated += UpdateSpacecraftState;
+        UIManager.OnPrioritizationChanged += SetPriorityAlgorithm;
     }
     
     private void OnDisable()
     {
         SpacecraftManager.OnCurrentIndexUpdated -= UpdateDataManager;
         SpacecraftManager.OnSpacecraftStateUpdated -= UpdateSpacecraftState;
+        UIManager.OnPrioritizationChanged -= SetPriorityAlgorithm;
     }
     #endregion
     
     private void UpdateDataManager(int index)
     {
         UpdateMissionStage(index);
-        currentPrioritizedAntenna = GetHighestPriorityAntenna(index);
+        CurrentPrioritizedAntenna = GetHighestPriorityAntenna(index);
     }
     
     /// <summary>
@@ -112,6 +118,11 @@ public class DataManager : MonoBehaviour
     private void UpdateSpacecraftState(SpacecraftManager.SpacecraftState state)
     {
         _spacecraftState = state;
+    }
+
+    private void SetPriorityAlgorithm(int algorithmIndex)
+    {
+        PriorityAlgorithm = (LinkBudgetAlgorithm)algorithmIndex;
     }
 
     /// <summary>
@@ -162,12 +173,12 @@ public class DataManager : MonoBehaviour
     {
         var index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
         
-        if (index == -1 || stages[index].Equals(currentMissionStage))
+        if (index == -1 || stages[index].Equals(CurrentMissionStage))
         {
             return;
         }
         
-        currentMissionStage = stages[index];
+        CurrentMissionStage = stages[index];
         OnMissionStageUpdated?.Invoke(stages[index]);
     }
     
@@ -237,4 +248,12 @@ public class DataManager : MonoBehaviour
         _positionVectorsForGizmos = trajectoryPoints.ToList();
     }
     #endregion
+    
+    public enum LinkBudgetAlgorithm
+    {
+        None,
+        Signal,
+        Switch,
+        Asset
+    }
 }

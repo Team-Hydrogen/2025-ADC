@@ -7,6 +7,7 @@ public class SpacecraftManager : MonoBehaviour
 {
     public static SpacecraftManager Instance { get; private set; }
     
+    // Available in Inspector
     [Header("Settings")]
     [SerializeField] private float trajectoryScale;
     
@@ -29,6 +30,7 @@ public class SpacecraftManager : MonoBehaviour
     [Header("Time Scale")]
     [SerializeField] private float timeScale;
     
+    // Private variables
     private SpacecraftState _currentState = SpacecraftState.Nominal;
 
     private const float MinimumTimeScale = 1.0f;

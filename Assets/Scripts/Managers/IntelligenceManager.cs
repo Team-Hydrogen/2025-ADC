@@ -5,20 +5,20 @@ using UnityEngine;
 
 public class IntelligenceManager : MonoBehaviour
 {
-    public static IntelligenceManager instance { get; private set; }
+    public static IntelligenceManager Instance { get; private set; }
     
     
     #region Event Functions
     
     private void Awake()
     {
-        if (instance != null && instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
         
-        instance = this;
+        Instance = this;
     }
     
     #endregion
