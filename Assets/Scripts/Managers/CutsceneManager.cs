@@ -7,7 +7,7 @@ using UnityEngine.Video;
 
 public class CutsceneManager : MonoBehaviour
 {
-    public static SatelliteManager instance { get; private set; }
+    public static SpacecraftManager instance { get; private set; }
     
     private static readonly int FadeToCutscene = Animator.StringToHash("StartCutscene");
     private static readonly int FadeToSimulation = Animator.StringToHash("StopCutscene");
@@ -34,13 +34,13 @@ public class CutsceneManager : MonoBehaviour
     
     private void OnEnable()
     {
-        SatelliteManager.OnUpdateTime += StartCutsceneTransition;
+        SpacecraftManager.OnUpdateTime += StartCutsceneTransition;
         videoPlayer.loopPointReached += EndCutsceneTransition;
     }
     
     private void OnDisable()
     {
-        SatelliteManager.OnUpdateTime -= StartCutsceneTransition;
+        SpacecraftManager.OnUpdateTime -= StartCutsceneTransition;
         videoPlayer.loopPointReached -= EndCutsceneTransition;
     }
 

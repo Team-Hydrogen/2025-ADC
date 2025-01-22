@@ -733,12 +733,6 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!1 &33029664 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7088708598304600203, guid: b52849ed1c749424ab5e4de3d6c2337f,
-    type: 3}
-  m_PrefabInstance: {fileID: 1684219205}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &37052582
 GameObject:
   m_ObjectHideFlags: 0
@@ -5980,7 +5974,7 @@ GameObject:
   m_Component:
   - component: {fileID: 485032613}
   m_Layer: 0
-  m_Name: Nominal Satellite Position
+  m_Name: Nominal Spacecraft Position
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6153,7 +6147,7 @@ GameObject:
   - component: {fileID: 508490933}
   - component: {fileID: 508490931}
   m_Layer: 0
-  m_Name: Satellite Camera
+  m_Name: Spacecraft Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7056,7 +7050,7 @@ GameObject:
   - component: {fileID: 534708853}
   - component: {fileID: 534708854}
   m_Layer: 0
-  m_Name: Satellite Manager
+  m_Name: Spacecraft Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7090,10 +7084,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   trajectoryScale: 0.01
-  satellite: {fileID: 33029664}
-  velocityVector: {fileID: 1758129117}
-  nominalSatelliteTransform: {fileID: 485032613}
-  offNominalSatelliteTransform: {fileID: 1549028642}
+  spacecraft: {fileID: 1684219206}
+  velocityVector: {fileID: 1758129118}
+  nominalSpacecraftTransform: {fileID: 485032613}
+  offNominalSpacecraftTransform: {fileID: 1549028642}
   earth: {fileID: 1228062427}
   moon: {fileID: 1207261695}
   futureNominalTrajectory: {fileID: 943471396}
@@ -14715,7 +14709,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f15e5f76a5d88649aadc9758e93ac92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  earthPosition: {fileID: 2095082124}
 --- !u!1 &1059948101
 GameObject:
   m_ObjectHideFlags: 0
@@ -20673,7 +20666,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1549028642}
   m_Layer: 0
-  m_Name: Offnominal Satellite Position
+  m_Name: Offnominal Spacecraft Position
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -22919,6 +22912,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 3440147194504449822, guid: b52849ed1c749424ab5e4de3d6c2337f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3486162696627652013, guid: b52849ed1c749424ab5e4de3d6c2337f,
         type: 3}
       propertyPath: m_Layer
@@ -23039,6 +23037,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 4701271713142446895, guid: b52849ed1c749424ab5e4de3d6c2337f,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4805274732031546704, guid: b52849ed1c749424ab5e4de3d6c2337f,
         type: 3}
       propertyPath: m_Layer
@@ -23104,6 +23107,12 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 8
       objectReference: {fileID: 0}
+    - target: {fileID: 6304086955928844635, guid: b52849ed1c749424ab5e4de3d6c2337f,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 2534964839176971238, guid: 9d2ce0576904ca441a764f0acbd67b4c,
+        type: 3}
     - target: {fileID: 6360008115094555622, guid: b52849ed1c749424ab5e4de3d6c2337f,
         type: 3}
       propertyPath: m_Layer
@@ -24222,9 +24231,9 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1756589121}
   m_CullTransparentMesh: 1
---- !u!1 &1758129117 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5548525391167617999, guid: b52849ed1c749424ab5e4de3d6c2337f,
+--- !u!4 &1758129118 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6703545627320244336, guid: b52849ed1c749424ab5e4de3d6c2337f,
     type: 3}
   m_PrefabInstance: {fileID: 1684219205}
   m_PrefabAsset: {fileID: 0}

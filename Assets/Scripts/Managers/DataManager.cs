@@ -40,7 +40,7 @@ public class DataManager : MonoBehaviour
 
     public MissionStage currentMissionStage { get; private set; }
 
-    private SatelliteManager.SatelliteState _satelliteState;
+    private SpacecraftManager.SpacecraftState _spacecraftState;
     
     #region Event Functions
     private void Awake()
@@ -79,14 +79,14 @@ public class DataManager : MonoBehaviour
     
     private void OnEnable()
     {
-        SatelliteManager.OnCurrentIndexUpdated += UpdateDataManager;
-        SatelliteManager.OnSatelliteStateUpdated += UpdateSatelliteState;
+        SpacecraftManager.OnCurrentIndexUpdated += UpdateDataManager;
+        SpacecraftManager.OnSpacecraftStateUpdated += UpdateSpacecraftState;
     }
     
     private void OnDisable()
     {
-        SatelliteManager.OnCurrentIndexUpdated -= UpdateDataManager;
-        SatelliteManager.OnSatelliteStateUpdated -= UpdateSatelliteState;
+        SpacecraftManager.OnCurrentIndexUpdated -= UpdateDataManager;
+        SpacecraftManager.OnSpacecraftStateUpdated -= UpdateSpacecraftState;
     }
     #endregion
     
@@ -109,9 +109,9 @@ public class DataManager : MonoBehaviour
         return dataValues;
     }
 
-    private void UpdateSatelliteState(SatelliteManager.SatelliteState state)
+    private void UpdateSpacecraftState(SpacecraftManager.SpacecraftState state)
     {
-        _satelliteState = state;
+        _spacecraftState = state;
     }
 
     /// <summary>
@@ -121,37 +121,37 @@ public class DataManager : MonoBehaviour
     /// <returns>The name of the highest priority antenna</returns>
     private string GetHighestPriorityAntenna(int index)
     {
-        var currentSatelliteName = _satelliteState == SatelliteManager.SatelliteState.Nominal
+        var currentSpacecraftName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
             ? _antennaAvailabilityDataValues[index][1]
             : _offNominalTrajectoryDataValues[index][1];
         
         if (index <= 0)
         {
-            return currentSatelliteName;
+            return currentSpacecraftName;
         }
         
-        var previousSatelliteName = _satelliteState == SatelliteManager.SatelliteState.Nominal
+        var previousSpacecraftName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
             ? _antennaAvailabilityDataValues[index - 1][1]
             : _offNominalTrajectoryDataValues[index - 1][1];
 
-        if (previousSatelliteName == currentSatelliteName)
+        if (previousSpacecraftName == currentSpacecraftName)
         {
-            return previousSatelliteName;
+            return previousSpacecraftName;
         }
         
         for (var futureIndex = 1; futureIndex <= 20; futureIndex++)
         {
-            var futureSatelliteName =_satelliteState == SatelliteManager.SatelliteState.Nominal
+            var futureSpacecraftName =_spacecraftState == SpacecraftManager.SpacecraftState.Nominal
                 ? _antennaAvailabilityDataValues[index + futureIndex][1]
                 : _offNominalTrajectoryDataValues[index + futureIndex][1];
-            if (currentSatelliteName != futureSatelliteName)
+            if (currentSpacecraftName != futureSpacecraftName)
             {
-                return previousSatelliteName;
+                return previousSpacecraftName;
             }
             futureIndex++;
         }
         
-        return currentSatelliteName;
+        return currentSpacecraftName;
     }
     
     /// <summary>

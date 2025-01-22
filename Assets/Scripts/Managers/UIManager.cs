@@ -84,12 +84,12 @@ public class UIManager : MonoBehaviour
     private readonly List<string> _disabledAntennas = new();
     
     public static event Action OnBumpOffCoursePressed;
-    public static event Action<SatelliteManager.SatelliteState> OnCurrentPathChanged;
+    public static event Action<SpacecraftManager.SpacecraftState> OnCurrentPathChanged;
 
     private List<string[]> _linkBudgetData;
     private List<string[]> _offNominalLinkBudgetData;
     private List<string[]> _thrustData;
-    private SatelliteManager.SatelliteState _satelliteState;
+    private SpacecraftManager.SpacecraftState _spacecraftState;
     
     #region Event Functions
     
@@ -117,14 +117,14 @@ public class UIManager : MonoBehaviour
     
     private void OnEnable()
     {
-        SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
-        SatelliteManager.OnDistanceCalculated += UpdateDistances;
-        SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
-        SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
-        SatelliteManager.OnCurrentIndexUpdated += UpdateThrust;
-        SatelliteManager.OnStageFired += ShowNotification;
-        SatelliteManager.OnSatelliteStateUpdated += UpdateSatelliteState;
-        SatelliteManager.OnTimeScaleSet += SetTimeScaleIndicator;
+        SpacecraftManager.OnUpdateTime += UpdateTimeFromMinutes;
+        SpacecraftManager.OnDistanceCalculated += UpdateDistances;
+        SpacecraftManager.OnUpdateCoordinates += UpdateCoordinatesText;
+        SpacecraftManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
+        SpacecraftManager.OnCurrentIndexUpdated += UpdateThrust;
+        SpacecraftManager.OnStageFired += ShowNotification;
+        SpacecraftManager.OnSpacecraftStateUpdated += UpdateSpacecraftState;
+        SpacecraftManager.OnTimeScaleSet += SetTimeScaleIndicator;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
         DataManager.OnMissionStageUpdated += SetBumpOffCourseButtonActive;
@@ -132,13 +132,13 @@ public class UIManager : MonoBehaviour
     
     private void OnDisable()
     {
-        SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
-        SatelliteManager.OnDistanceCalculated -= UpdateDistances;
-        SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
-        SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
-        SatelliteManager.OnCurrentIndexUpdated -= UpdateThrust;
-        SatelliteManager.OnStageFired -= ShowNotification;
-        SatelliteManager.OnSatelliteStateUpdated -= UpdateSatelliteState;
+        SpacecraftManager.OnUpdateTime -= UpdateTimeFromMinutes;
+        SpacecraftManager.OnDistanceCalculated -= UpdateDistances;
+        SpacecraftManager.OnUpdateCoordinates -= UpdateCoordinatesText;
+        SpacecraftManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
+        SpacecraftManager.OnCurrentIndexUpdated -= UpdateThrust;
+        SpacecraftManager.OnStageFired -= ShowNotification;
+        SpacecraftManager.OnSpacecraftStateUpdated -= UpdateSpacecraftState;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
         DataManager.OnMissionStageUpdated -= SetBumpOffCourseButtonActive;
@@ -482,7 +482,7 @@ public class UIManager : MonoBehaviour
         Vector3 thrust = new Vector3(float.Parse(_thrustData[index][23]), float.Parse(_thrustData[index][24]), float.Parse(_thrustData[index][25]));
         float magnitude = thrust.magnitude;
 
-        if (_satelliteState == SatelliteManager.SatelliteState.OffNominal)
+        if (_spacecraftState == SpacecraftManager.SpacecraftState.OffNominal)
         {
             thrustText.text = $"{magnitude:f3} N";
         }
@@ -490,12 +490,12 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
-    private void UpdateSatelliteState(SatelliteManager.SatelliteState state)
+    private void UpdateSpacecraftState(SpacecraftManager.SpacecraftState state)
     {
-        _satelliteState = state;
+        _spacecraftState = state;
         
-        thrustSection.SetActive(_satelliteState == SatelliteManager.SatelliteState.OffNominal);
-        if (_satelliteState != SatelliteManager.SatelliteState.OffNominal)
+        thrustSection.SetActive(_spacecraftState == SpacecraftManager.SpacecraftState.OffNominal);
+        if (_spacecraftState != SpacecraftManager.SpacecraftState.OffNominal)
         {
             thrustText.text = "";
         }
@@ -560,12 +560,12 @@ public class UIManager : MonoBehaviour
     
     public void NominalTogglePressed()
     {
-        OnCurrentPathChanged?.Invoke(SatelliteManager.SatelliteState.Nominal);
+        OnCurrentPathChanged?.Invoke(SpacecraftManager.SpacecraftState.Nominal);
     }
 
     public void OffnominalTogglePressed()
     {
-        OnCurrentPathChanged?.Invoke(SatelliteManager.SatelliteState.OffNominal);
+        OnCurrentPathChanged?.Invoke(SpacecraftManager.SpacecraftState.OffNominal);
     }
     
     private enum UnitSystem {
