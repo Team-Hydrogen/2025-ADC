@@ -150,7 +150,13 @@ public class DataManager : MonoBehaviour
             return previousSpacecraftName;
         }
         
-        for (var futureIndex = 1; futureIndex <= 20; futureIndex++)
+        int maximumFutureIndex = 20;
+        if (PriorityAlgorithm == LinkBudgetAlgorithm.Asset)
+        {
+            maximumFutureIndex = 60;
+        }
+        
+        for (var futureIndex = 1; futureIndex <= maximumFutureIndex; futureIndex++)
         {
             var futureSpacecraftName =_spacecraftState == SpacecraftManager.SpacecraftState.Nominal
                 ? _antennaAvailabilityDataValues[index + futureIndex][1]

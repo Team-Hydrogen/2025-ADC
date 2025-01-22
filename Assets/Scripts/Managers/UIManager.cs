@@ -359,8 +359,9 @@ public class UIManager : MonoBehaviour
     private void UpdateAntennasFromData(int currentIndex)
     {
         var currentLinkBudget = new float[antennaNames.Count];
-        
-        var currentLinkBudgetValues = _nominalLinkBudgetData[currentIndex][18..22];
+
+        var temp = _nominalLinkBudgetData;
+        var currentLinkBudgetValues = temp[currentIndex][18..22];
         
         for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
         {
@@ -449,10 +450,8 @@ public class UIManager : MonoBehaviour
                     .Select(item => item.Label)
                     .ToList();
                 break;
-            // Switch: Looks ahead by 60 data values.
-            // Asset: Looks ahead by 20 data values.
-            case DataManager.LinkBudgetAlgorithm.Switch:
-            case DataManager.LinkBudgetAlgorithm.Asset:
+            case DataManager.LinkBudgetAlgorithm.Switch: // Switch: Looks ahead by 60 data values.
+            case DataManager.LinkBudgetAlgorithm.Asset: // Asset: Looks ahead by 20 data values.
                 sortedAntennaLabels = selectedAntennaLabels
                     .OrderByDescending(item => item.PriorityWeight)
                     .ThenByDescending(item => item.ConnectionSpeed)

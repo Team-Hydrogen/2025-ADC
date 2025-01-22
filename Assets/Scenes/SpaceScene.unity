@@ -13095,7 +13095,7 @@ MonoBehaviour:
   m_Placeholder: {fileID: 0}
   m_ItemText: {fileID: 1733390125}
   m_ItemImage: {fileID: 0}
-  m_Value: 0
+  m_Value: 3
   m_MultiSelect: 0
   m_Options:
     m_Options:
