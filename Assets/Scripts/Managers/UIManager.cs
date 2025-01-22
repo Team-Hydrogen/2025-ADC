@@ -156,12 +156,12 @@ public class UIManager : MonoBehaviour
     
     public void PlayButtonPressed()
     {
-        Time.timeScale = 1f;
+        Time.timeScale = 1.0f;
     }
 
     public void PauseButtonPressed()
     {
-        Time.timeScale = 0f;
+        Time.timeScale = 0.0f;
     }
     
     public void RestartButtonPressed()
