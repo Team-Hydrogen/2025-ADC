@@ -17,12 +17,12 @@ public class MoveSun : MonoBehaviour
 
     private void OnEnable()
     {
-        SatelliteManager.OnTimeScaleSet += UpdateRotationSpeed;
+        SpacecraftManager.OnTimeScaleSet += UpdateRotationSpeed;
     }
 
     private void OnDisable()
     {
-        SatelliteManager.OnTimeScaleSet -= UpdateRotationSpeed;
+        SpacecraftManager.OnTimeScaleSet -= UpdateRotationSpeed;
     }
 
     private void Update()

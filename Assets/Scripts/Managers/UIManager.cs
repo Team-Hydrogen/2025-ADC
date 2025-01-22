@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -25,6 +26,8 @@ public class UIManager : MonoBehaviour
         new Color(0.9373f, 0.2588f, 0.2588f),
     };
     [SerializeField] private Color disabledAntennaBackgroundColor = new(0.8431f, 0.8510f, 0.9098f);
+    
+    [SerializeField] private TMP_Dropdown prioritizationMethod;
     
     [Header("Time Counter")]
     [SerializeField] private GameObject timeCounter;
@@ -69,8 +72,8 @@ public class UIManager : MonoBehaviour
     private float _barXMargin;
     
     private bool _isAntennaColored = true;
-    private bool _isAntennaPrioritized = true;
     
+    // UI inactivity
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0.0f;
     private bool _isFadingOut = false;
@@ -84,12 +87,13 @@ public class UIManager : MonoBehaviour
     private readonly List<string> _disabledAntennas = new();
     
     public static event Action OnBumpOffCoursePressed;
-    public static event Action<SatelliteManager.SatelliteState> OnCurrentPathChanged;
+    public static event Action<SpacecraftManager.SpacecraftState> OnCurrentPathChanged;
+    public static event Action<int> OnPrioritizationChanged;
 
-    private List<string[]> _linkBudgetData;
+    private List<string[]> _nominalLinkBudgetData;
     private List<string[]> _offNominalLinkBudgetData;
     private List<string[]> _thrustData;
-    private SatelliteManager.SatelliteState _satelliteState;
+    private SpacecraftManager.SpacecraftState _spacecraftState;
     
     #region Event Functions
     
@@ -108,6 +112,8 @@ public class UIManager : MonoBehaviour
     {
         _bar = timeElapsedBar.transform.GetChild(0);
         _barXMargin = _bar.GetComponent<HorizontalLayoutGroup>().padding.horizontal;
+        
+        OnPrioritizationChanged?.Invoke(prioritizationMethod.value);
     }
 
     private void Update()
@@ -117,14 +123,14 @@ public class UIManager : MonoBehaviour
     
     private void OnEnable()
     {
-        SatelliteManager.OnUpdateTime += UpdateTimeFromMinutes;
-        SatelliteManager.OnDistanceCalculated += UpdateDistances;
-        SatelliteManager.OnUpdateCoordinates += UpdateCoordinatesText;
-        SatelliteManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
-        SatelliteManager.OnCurrentIndexUpdated += UpdateThrust;
-        SatelliteManager.OnStageFired += ShowNotification;
-        SatelliteManager.OnSatelliteStateUpdated += UpdateSatelliteState;
-        SatelliteManager.OnTimeScaleSet += SetTimeScaleIndicator;
+        SpacecraftManager.OnUpdateTime += UpdateTimeFromMinutes;
+        SpacecraftManager.OnDistanceCalculated += UpdateDistances;
+        SpacecraftManager.OnUpdateCoordinates += UpdateCoordinatesText;
+        SpacecraftManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
+        SpacecraftManager.OnCurrentIndexUpdated += UpdateThrust;
+        SpacecraftManager.OnStageFired += ShowNotification;
+        SpacecraftManager.OnSpacecraftStateUpdated += UpdateSpacecraftState;
+        SpacecraftManager.OnTimeScaleSet += SetTimeScaleIndicator;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
         DataManager.OnMissionStageUpdated += SetBumpOffCourseButtonActive;
@@ -132,13 +138,13 @@ public class UIManager : MonoBehaviour
     
     private void OnDisable()
     {
-        SatelliteManager.OnUpdateTime -= UpdateTimeFromMinutes;
-        SatelliteManager.OnDistanceCalculated -= UpdateDistances;
-        SatelliteManager.OnUpdateCoordinates -= UpdateCoordinatesText;
-        SatelliteManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
-        SatelliteManager.OnCurrentIndexUpdated -= UpdateThrust;
-        SatelliteManager.OnStageFired -= ShowNotification;
-        SatelliteManager.OnSatelliteStateUpdated -= UpdateSatelliteState;
+        SpacecraftManager.OnUpdateTime -= UpdateTimeFromMinutes;
+        SpacecraftManager.OnDistanceCalculated -= UpdateDistances;
+        SpacecraftManager.OnUpdateCoordinates -= UpdateCoordinatesText;
+        SpacecraftManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
+        SpacecraftManager.OnCurrentIndexUpdated -= UpdateThrust;
+        SpacecraftManager.OnStageFired -= ShowNotification;
+        SpacecraftManager.OnSpacecraftStateUpdated -= UpdateSpacecraftState;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
         DataManager.OnMissionStageUpdated -= SetBumpOffCourseButtonActive;
@@ -246,7 +252,7 @@ public class UIManager : MonoBehaviour
         var barWidth = ((RectTransform)_bar.transform).sizeDelta.x;
         var barContentWidth = barWidth - _barXMargin;
         
-        var stageIndex = (int) DataManager.Instance.currentMissionStage.stageType - 1;
+        var stageIndex = (int) DataManager.Instance.CurrentMissionStage.stageType - 1;
         
         var stageSection = _bar.transform.GetChild(stageIndex);
         var stageSectionTransform = (RectTransform)stageSection;
@@ -344,34 +350,35 @@ public class UIManager : MonoBehaviour
     {
         _isAntennaColored = isAntennaColored;
     }
-    
-    public void ToggleAntennaPrioritization(bool isAntennaPrioritized)
+
+    public void ToggleAntennaPrioritization(int selectedIndex)
     {
-        _isAntennaPrioritized = isAntennaPrioritized;
+        OnPrioritizationChanged?.Invoke(prioritizationMethod.value);
     }
-    
+
     private void UpdateAntennasFromData(int currentIndex)
     {
-        var currentLinkBudget = new float[antennaNames.Count];
+        float[] currentLinkBudget = new float[antennaNames.Count];
+
+        List<string[]> linkBudgetData = 
+            _spacecraftState == SpacecraftManager.SpacecraftState.Nominal ? _nominalLinkBudgetData : _offNominalLinkBudgetData;
+        string[] currentLinkBudgetValues = linkBudgetData[currentIndex][18..22];
         
-        var currentLinkBudgetValues = _linkBudgetData[currentIndex][18..22];
-        for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
+        for (int antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
         {
-            var antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
+            float antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
             currentLinkBudget[antennaIndex] = antennaLinkBudgetValue > MaximumConnectionSpeed
                 ? MaximumConnectionSpeed : antennaLinkBudgetValue;
         }
         
         // Updates each antenna with the latest link budget value.
-        for (var antennaIndex = 0; antennaIndex < antennaNames.Count; antennaIndex++)
+        for (int antennaIndex = 0; antennaIndex < antennaNames.Count; antennaIndex++)
         {
             UpdateAntenna(antennaNames[antennaIndex], currentLinkBudget[antennaIndex]);
         }
         
-        if (_isAntennaPrioritized)
-        {
-            PrioritizeAntennas();
-        }
+        PrioritizeAntennas();
+        
         if (_isAntennaColored)
         {
             ColorAntennas();
@@ -381,12 +388,12 @@ public class UIManager : MonoBehaviour
     private void UpdateAntenna(string antennaName, float connectionSpeed = 0.0f)
     {
         // Gets the index of the antenna name and maps it to its text object.
-        var antennaIndex = antennaNames.IndexOf(antennaName);
-        var antennaLabel = antennaLabelObjects[antennaIndex];
-        var antennaBackground = antennaLabel.GetComponentInChildren<UnityEngine.UI.Image>();
+        int antennaIndex = antennaNames.IndexOf(antennaName);
+        Transform antennaLabel = antennaLabelObjects[antennaIndex];
+        Image antennaBackground = antennaLabel.GetComponentInChildren<Image>();
         
         // The connection speed and units text is fetched and updated.
-        var antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
+        TextMeshProUGUI[] antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
         var connectionSpeedText = antennaTexts[1];
         var unitsText = antennaTexts[2];
         
@@ -418,27 +425,52 @@ public class UIManager : MonoBehaviour
             var antennaLabel = antennasGrid.GetChild(index);
             antennaLabels[index] = antennaLabel;
         }
-        
-        var sortedLabels = antennaLabels
+
+        var selectedAntennaLabels = antennaLabels
             .Select(antennaLabel => new
             {
                 Label = antennaLabel,
                 ConnectionSpeed = float.TryParse(
                     antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out var speed)
-                        ? speed : float.MinValue,
+                    ? speed
+                    : float.MinValue,
                 PriorityWeight = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
-                                  == DataManager.Instance.currentPrioritizedAntenna ? 1.0f : 0.0f,
+                                 == DataManager.Instance.CurrentPrioritizedAntenna
+                    ? 1.0f
+                    : 0.0f,
                 Name = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text,
-            })
-            .OrderByDescending(item => item.PriorityWeight)
-            .ThenByDescending(item => item.ConnectionSpeed)
-            .ThenBy(item => item.Name)
-            .Select(item => item.Label)
-            .ToList();
-        
-        foreach (var label in sortedLabels)
+            });
+
+        List<Transform> sortedAntennaLabels;
+        switch (DataManager.Instance.PriorityAlgorithm)
         {
-            label.SetSiblingIndex(sortedLabels.IndexOf(label));
+            case DataManager.LinkBudgetAlgorithm.Signal:
+                sortedAntennaLabels = selectedAntennaLabels
+                    .OrderByDescending(item => item.ConnectionSpeed)
+                    .ThenBy(item => item.Name)
+                    .Select(item => item.Label)
+                    .ToList();
+                break;
+            case DataManager.LinkBudgetAlgorithm.Switch: // Switch: Looks ahead by 60 data values.
+            case DataManager.LinkBudgetAlgorithm.Asset: // Asset: Looks ahead by 20 data values.
+                sortedAntennaLabels = selectedAntennaLabels
+                    .OrderByDescending(item => item.PriorityWeight)
+                    .ThenByDescending(item => item.ConnectionSpeed)
+                    .ThenBy(item => item.Name)
+                    .Select(item => item.Label)
+                    .ToList();
+                break;
+            case DataManager.LinkBudgetAlgorithm.None:
+            default:
+                sortedAntennaLabels = selectedAntennaLabels.OrderBy(item => item.Name)
+                    .Select(item => item.Label)
+                    .ToList();
+                break;
+        }
+        
+        foreach (var label in sortedAntennaLabels)
+        {
+            label.SetSiblingIndex(sortedAntennaLabels.IndexOf(label));
         }
     }
 
@@ -461,8 +493,8 @@ public class UIManager : MonoBehaviour
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
         SetBumpOffCourseButtonActive(dataLoadedEventArgs.MissionStage);
-        _linkBudgetData = dataLoadedEventArgs.LinkBudgetData;
-        _offNominalLinkBudgetData = dataLoadedEventArgs.OffnominalLinkBudgetData;
+        _nominalLinkBudgetData = dataLoadedEventArgs.NominalLinkBudget;
+        _offNominalLinkBudgetData = dataLoadedEventArgs.OffNominalLinkBudget;
         _thrustData = dataLoadedEventArgs.ThrustData;
     }
 
@@ -482,7 +514,7 @@ public class UIManager : MonoBehaviour
         Vector3 thrust = new Vector3(float.Parse(_thrustData[index][23]), float.Parse(_thrustData[index][24]), float.Parse(_thrustData[index][25]));
         float magnitude = thrust.magnitude;
 
-        if (_satelliteState == SatelliteManager.SatelliteState.OffNominal)
+        if (_spacecraftState == SpacecraftManager.SpacecraftState.OffNominal)
         {
             thrustText.text = $"{magnitude:f3} N";
         }
@@ -490,12 +522,12 @@ public class UIManager : MonoBehaviour
 
     #endregion
 
-    private void UpdateSatelliteState(SatelliteManager.SatelliteState state)
+    private void UpdateSpacecraftState(SpacecraftManager.SpacecraftState state)
     {
-        _satelliteState = state;
+        _spacecraftState = state;
         
-        thrustSection.SetActive(_satelliteState == SatelliteManager.SatelliteState.OffNominal);
-        if (_satelliteState != SatelliteManager.SatelliteState.OffNominal)
+        thrustSection.SetActive(_spacecraftState == SpacecraftManager.SpacecraftState.OffNominal);
+        if (_spacecraftState != SpacecraftManager.SpacecraftState.OffNominal)
         {
             thrustText.text = "";
         }
@@ -560,12 +592,12 @@ public class UIManager : MonoBehaviour
     
     public void NominalTogglePressed()
     {
-        OnCurrentPathChanged?.Invoke(SatelliteManager.SatelliteState.Nominal);
+        OnCurrentPathChanged?.Invoke(SpacecraftManager.SpacecraftState.Nominal);
     }
 
     public void OffnominalTogglePressed()
     {
-        OnCurrentPathChanged?.Invoke(SatelliteManager.SatelliteState.OffNominal);
+        OnCurrentPathChanged?.Invoke(SpacecraftManager.SpacecraftState.OffNominal);
     }
     
     private enum UnitSystem {

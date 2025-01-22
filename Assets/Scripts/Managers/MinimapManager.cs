@@ -34,14 +34,14 @@ public class MinimapManager : MonoBehaviour
     {
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += OnMissionStageUpdated;
-        SatelliteManager.OnCurrentIndexUpdated += UpdateMinimapTrajectory;
+        SpacecraftManager.OnCurrentIndexUpdated += UpdateMinimapTrajectory;
     }
 
     private void OnDisable()
     {
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= OnMissionStageUpdated;
-        SatelliteManager.OnCurrentIndexUpdated -= UpdateMinimapTrajectory;
+        SpacecraftManager.OnCurrentIndexUpdated -= UpdateMinimapTrajectory;
     }
     
     private void OnDataLoaded(DataLoadedEventArgs data)

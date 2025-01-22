@@ -26,7 +26,7 @@ public class CameraManager : MonoBehaviour
         CinemachineCore.GetInputAxis = GetAxisCustom;
     }
     
-    private void Update()
+    private void LateUpdate()
     {
         Zoom();
     }
