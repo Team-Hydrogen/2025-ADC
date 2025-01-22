@@ -22,8 +22,8 @@ In the 2025 NASA App Development Challenge, high school teams have 10 weeks to c
 
 ## Technical Specifications
 - Blender (4.2.6 LTS)
+- Rider (2024.3.3)
 - Unity Editor (6000.0.34f1 LTS)
-- JetBrains Rider (2024.3.3)
 - Visual Studio 2022 (17.12.4)
 
 ## Acknowledgements

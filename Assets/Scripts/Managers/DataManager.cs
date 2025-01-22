@@ -2,18 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
     
     // Inspector
-    [Header("Data Files")]
+    [Header("Trajectory")]
     [SerializeField] private TextAsset nominalTrajectoryDataFile;
     [SerializeField] private TextAsset offNominalTrajectoryDataFile;
+    
+    [Header("Link Budget")]
     [SerializeField] private TextAsset antennaAvailabilityDataFile;
-    [SerializeField] private TextAsset linkBudgetDataFile;
-    [SerializeField] private TextAsset offnominalLinkBudgetDataFile;
+    [SerializeField] private TextAsset nominalLinkBudgetDataFile;
+    [SerializeField] private TextAsset offNominalLinkBudgetDataFile;
+    
+    [Header("Intelligence")]
     [SerializeField] private TextAsset thrustDataFile;
     
     [Header("Mission Stages")]
@@ -46,6 +51,7 @@ public class DataManager : MonoBehaviour
     public static event Action<DataLoadedEventArgs> OnDataLoaded;
     public static event Action<MissionStage> OnMissionStageUpdated;
     
+    
     #region Event Functions
     
     private void Awake()
@@ -66,8 +72,8 @@ public class DataManager : MonoBehaviour
         _nominalTrajectoryDataValues = ReadDataFile(nominalTrajectoryDataFile);
         _offNominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
         _antennaAvailabilityDataValues = ReadDataFile(antennaAvailabilityDataFile);
-        NominalLinkBudgetDataValues = ReadDataFile(linkBudgetDataFile);
-        OffNominalLinkBudgetDataValues = ReadDataFile(offnominalLinkBudgetDataFile);
+        NominalLinkBudgetDataValues = ReadDataFile(nominalLinkBudgetDataFile);
+        OffNominalLinkBudgetDataValues = ReadDataFile(offNominalLinkBudgetDataFile);
         _thrustDataValues = ReadDataFile(thrustDataFile);
         
         OnDataLoaded?.Invoke(

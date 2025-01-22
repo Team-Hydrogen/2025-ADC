@@ -8023,8 +8023,9 @@ MonoBehaviour:
     type: 3}
   antennaAvailabilityDataFile: {fileID: 4900000, guid: 1bb61a9b8e4624950a4905b8f07e9c39,
     type: 3}
-  linkBudgetDataFile: {fileID: 4900000, guid: 2c55724a3c75a47628e62b10a9105383, type: 3}
-  offnominalLinkBudgetDataFile: {fileID: 4900000, guid: b3d474d9f6c6543bc9c5c4d31e3bfc61,
+  nominalLinkBudgetDataFile: {fileID: 4900000, guid: 2c55724a3c75a47628e62b10a9105383,
+    type: 3}
+  offNominalLinkBudgetDataFile: {fileID: 4900000, guid: b3d474d9f6c6543bc9c5c4d31e3bfc61,
     type: 3}
   thrustDataFile: {fileID: 4900000, guid: 85e3da5d81a5ca24db4af0fc37b92c41, type: 3}
   stages:
@@ -15206,6 +15207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f15e5f76a5d88649aadc9758e93ac92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  earthPosition: {fileID: 0}
 --- !u!1 &1059948101
 GameObject:
   m_ObjectHideFlags: 0

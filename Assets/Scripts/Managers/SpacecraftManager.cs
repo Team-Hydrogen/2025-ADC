@@ -100,6 +100,7 @@ public class SpacecraftManager : MonoBehaviour
     
     #endregion
     
+    
     #region Event Functions
     
     private void Awake()
@@ -164,7 +165,7 @@ public class SpacecraftManager : MonoBehaviour
     {
         _progress = SkipTimeChange * timeScale;
     }
-
+    
     public void BackwardButtonPressed()
     {
         _progress = -SkipTimeChange * timeScale;
