@@ -30,7 +30,7 @@ public class CutsceneManager : MonoBehaviour
     public static event Action<int> OnCutsceneStart;
     public static event Action OnCutsceneEnd; // unused
 
-    private bool playCutscenes = true;
+    private bool _playCutscenes = true;
     
     private void OnEnable()
     {
@@ -46,7 +46,7 @@ public class CutsceneManager : MonoBehaviour
 
     public void TogglePlayCutscenes(bool value)
     {
-        playCutscenes = value;
+        _playCutscenes = value;
     }
     
     private void StartCutsceneTransition(float currentTimeInMinutes)
@@ -66,7 +66,7 @@ public class CutsceneManager : MonoBehaviour
             return;
         }
 
-        if (!playCutscenes)
+        if (!_playCutscenes)
         {
             OnCutsceneStart?.Invoke(_cutscenesPlayed);
             OnCutsceneEnd?.Invoke();
