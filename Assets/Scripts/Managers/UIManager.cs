@@ -358,20 +358,21 @@ public class UIManager : MonoBehaviour
 
     private void UpdateAntennasFromData(int currentIndex)
     {
-        var currentLinkBudget = new float[antennaNames.Count];
+        float[] currentLinkBudget = new float[antennaNames.Count];
 
-        var temp = _nominalLinkBudgetData;
-        var currentLinkBudgetValues = temp[currentIndex][18..22];
+        List<string[]> linkBudgetData = 
+            _spacecraftState == SpacecraftManager.SpacecraftState.Nominal ? _nominalLinkBudgetData : _offNominalLinkBudgetData;
+        string[] currentLinkBudgetValues = linkBudgetData[currentIndex][18..22];
         
-        for (var antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
+        for (int antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
         {
-            var antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
+            float antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
             currentLinkBudget[antennaIndex] = antennaLinkBudgetValue > MaximumConnectionSpeed
                 ? MaximumConnectionSpeed : antennaLinkBudgetValue;
         }
         
         // Updates each antenna with the latest link budget value.
-        for (var antennaIndex = 0; antennaIndex < antennaNames.Count; antennaIndex++)
+        for (int antennaIndex = 0; antennaIndex < antennaNames.Count; antennaIndex++)
         {
             UpdateAntenna(antennaNames[antennaIndex], currentLinkBudget[antennaIndex]);
         }
@@ -387,12 +388,12 @@ public class UIManager : MonoBehaviour
     private void UpdateAntenna(string antennaName, float connectionSpeed = 0.0f)
     {
         // Gets the index of the antenna name and maps it to its text object.
-        var antennaIndex = antennaNames.IndexOf(antennaName);
-        var antennaLabel = antennaLabelObjects[antennaIndex];
-        var antennaBackground = antennaLabel.GetComponentInChildren<Image>();
+        int antennaIndex = antennaNames.IndexOf(antennaName);
+        Transform antennaLabel = antennaLabelObjects[antennaIndex];
+        Image antennaBackground = antennaLabel.GetComponentInChildren<Image>();
         
         // The connection speed and units text is fetched and updated.
-        var antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
+        TextMeshProUGUI[] antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
         var connectionSpeedText = antennaTexts[1];
         var unitsText = antennaTexts[2];
         
