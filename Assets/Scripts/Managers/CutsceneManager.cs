@@ -7,7 +7,7 @@ using UnityEngine.Video;
 
 public class CutsceneManager : MonoBehaviour
 {
-    public static SpacecraftManager instance { get; private set; }
+    public static SpacecraftManager Instance { get; private set; }
     
     private static readonly int FadeToCutscene = Animator.StringToHash("StartCutscene");
     private static readonly int FadeToSimulation = Animator.StringToHash("StopCutscene");
