@@ -745,7 +745,7 @@ public class SpacecraftManager : MonoBehaviour
         
         return closestIndex;
     }
-
+    
     public int[] GetIndexBoundsFromTime(float elapsedTime)
     {
         var closestIndex = GetClosestIndexFromTime(elapsedTime);
@@ -783,7 +783,7 @@ public class SpacecraftManager : MonoBehaviour
             Mathf.Lerp(lowerPositionZ, upperPositionZ, interpolationRatio)
         );
     }
-
+    
     public Vector3 GetNominalPositionFromTime(float elapsedTime)
     {
         return GetPositionFromTime(_nominalPathPoints, elapsedTime);
