@@ -8,8 +8,10 @@ public class HttpManager : MonoBehaviour
 {
     public static HttpManager Instance { get; private set; }
     
-    private const string BumpOffCourseApiUri = "https://two025-adc-data.onrender.com/trajectory";
+    private const string BumpOffCourseApiUri = "https://4f74-2601-18c-500-fbb-71d5-99c5-e87d-c422.ngrok-free.app/trajectory";
     private const string BumpOffCourseApiContentType = "application/json";
+
+    public static event Action<string> OnPathCalculated;
     
     
     #region Event Functions
@@ -74,7 +76,7 @@ public class HttpManager : MonoBehaviour
         StartCoroutine(PingBumpOffCourseApi(postData));
     }
     
-    private static IEnumerator PingBumpOffCourseApi(string postData)
+    private IEnumerator PingBumpOffCourseApi(string postData)
     {
         var webRequest = UnityWebRequest.Post(
             BumpOffCourseApiUri,
@@ -90,11 +92,10 @@ public class HttpManager : MonoBehaviour
             {
                 Debug.LogError(webRequest.error);
                 Debug.LogError(webRequest.result);
-                Debug.LogError(webRequest.downloadHandler.text);
             }
             else
             {
-                Debug.Log(webRequest.downloadHandler.text);
+                OnPathCalculated?.Invoke(webRequest.downloadHandler.text);
             }
         }
     }

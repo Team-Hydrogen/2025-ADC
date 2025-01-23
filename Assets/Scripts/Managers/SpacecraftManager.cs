@@ -24,6 +24,7 @@ public class SpacecraftManager : MonoBehaviour
     [Header("Future Trajectories")]
     [SerializeField] private LineRenderer futureNominalTrajectory;
     [SerializeField] private LineRenderer futureOffNominalTrajectory;
+    [SerializeField] private LineRenderer futureMergeTrajectory;
     
     [Header("Celestial Bodies")]
     [SerializeField] private GameObject earth;
@@ -50,8 +51,11 @@ public class SpacecraftManager : MonoBehaviour
     
     private List<string[]> _nominalPathPoints;
     private List<string[]> _offNominalPathPoints;
+    private List<string[]> _mergePathPoints;
+    
     private LineRenderer _currentNominalTrajectoryRenderer;
     private LineRenderer _currentOffNominalTrajectoryRenderer;
+    private LineRenderer _currentMergeTrajectoryRenderer;
     
     // The second stage is the same as the service module.
     private const int SecondStageFireIndex = 120;
@@ -146,6 +150,7 @@ public class SpacecraftManager : MonoBehaviour
         CutsceneManager.OnCutsceneStart += UpdateModel;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += OnMissionStageUpdated;
+        HttpManager.OnPathCalculated += OnPathCalculated;
         UIManager.OnCurrentPathChanged += OnChangedCurrentPath;
     }
     
@@ -154,6 +159,7 @@ public class SpacecraftManager : MonoBehaviour
         CutsceneManager.OnCutsceneStart -= UpdateModel;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= OnMissionStageUpdated;
+        HttpManager.OnPathCalculated -= OnPathCalculated;
         UIManager.OnCurrentPathChanged -= OnChangedCurrentPath;
     }
     
@@ -766,6 +772,16 @@ public class SpacecraftManager : MonoBehaviour
         return GetPositionFromTime(_offNominalPathPoints, elapsedTime);
     }
     
+    private void OnPathCalculated(string data)
+    {
+        _mergePathPoints = CsvReader.TextToData(data);
+        _mergePathPoints.RemoveAt(0);
+        
+        PlotTrajectory(_mergePathPoints, _currentMergeTrajectoryRenderer, futureMergeTrajectory);
+        
+        _currentState = SpacecraftState.Merging;
+    }
+    
     
     # region Models
     
@@ -789,6 +805,7 @@ public class SpacecraftManager : MonoBehaviour
     {
         Nominal,
         OffNominal,
+        Merging,
         Manual,
         Returning,
     }

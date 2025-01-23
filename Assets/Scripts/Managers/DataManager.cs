@@ -39,7 +39,7 @@ public class DataManager : MonoBehaviour
     public MissionStage CurrentMissionStage { get; private set; }
     public LinkBudgetAlgorithm PriorityAlgorithm { get; private set; }
     
-    // Data
+    // Given data
     private List<string[]> _nominalTrajectoryDataValues;
     private List<string[]> _offNominalTrajectoryDataValues;
     private List<string[]> _antennaAvailabilityDataValues;
