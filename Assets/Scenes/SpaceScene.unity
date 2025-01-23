@@ -7526,6 +7526,7 @@ MonoBehaviour:
   velocityVector: {fileID: 129352371}
   <NominalSpacecraftTransform>k__BackingField: {fileID: 485032613}
   <OffNominalSpacecraftTransform>k__BackingField: {fileID: 1549028642}
+  currentMergeTrajectoryRenderer: {fileID: 799728575}
   futureNominalTrajectory: {fileID: 943471396}
   futureOffNominalTrajectory: {fileID: 1270632034}
   futureMergeTrajectory: {fileID: 1344772546}

@@ -21,6 +21,9 @@ public class SpacecraftManager : MonoBehaviour
     [field: SerializeField] public Transform NominalSpacecraftTransform { get; private set; }
     [field: SerializeField] public Transform OffNominalSpacecraftTransform { get; private set; }
     
+    [Header("Current Trajectories")]
+    [SerializeField] private LineRenderer currentMergeTrajectoryRenderer;
+    
     [Header("Future Trajectories")]
     [SerializeField] private LineRenderer futureNominalTrajectory;
     [SerializeField] private LineRenderer futureOffNominalTrajectory;
@@ -55,7 +58,6 @@ public class SpacecraftManager : MonoBehaviour
     
     private LineRenderer _currentNominalTrajectoryRenderer;
     private LineRenderer _currentOffNominalTrajectoryRenderer;
-    private LineRenderer _currentMergeTrajectoryRenderer;
     
     // The second stage is the same as the service module.
     private const int SecondStageFireIndex = 120;
@@ -777,7 +779,7 @@ public class SpacecraftManager : MonoBehaviour
         _mergePathPoints = CsvReader.TextToData(data);
         _mergePathPoints.RemoveAt(0);
         
-        PlotTrajectory(_mergePathPoints, _currentMergeTrajectoryRenderer, futureMergeTrajectory);
+        PlotTrajectory(_mergePathPoints, currentMergeTrajectoryRenderer, futureMergeTrajectory);
         
         _currentState = SpacecraftState.Merging;
     }
