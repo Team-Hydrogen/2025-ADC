@@ -44,7 +44,7 @@ public class SpacecraftManager : MonoBehaviour
     private const int SkipTimeChange = 10;
     
     private float _progress = 0.0f;
-    public float EstimatedElapsedTime { get; private set; }
+    private float _estimatedElapsedTime;
     private float _totalNominalDistance = 0.0f;
     private float _totalOffNominalDistance = 0.0f;
     
@@ -340,9 +340,9 @@ public class SpacecraftManager : MonoBehaviour
         
         _progress += Time.deltaTime / _timeInterval * timeScale;
         
-        EstimatedElapsedTime = currentTime + (nextTime - currentTime) * _progress;
+        _estimatedElapsedTime = currentTime + (nextTime - currentTime) * _progress;
         
-        OnUpdateTime?.Invoke(EstimatedElapsedTime);
+        OnUpdateTime?.Invoke(_estimatedElapsedTime);
     }
 
     private void UpdateAfter()
@@ -632,7 +632,7 @@ public class SpacecraftManager : MonoBehaviour
         
         // The future path is predicted.
         var futureExpectedPositionIndex = GetClosestIndexFromTime(
-            EstimatedElapsedTime + MaximumManualControlTime);
+            _estimatedElapsedTime + MaximumManualControlTime);
         var futureExpectedPosition = new Vector3(
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][1]),
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][2]),
@@ -729,8 +729,7 @@ public class SpacecraftManager : MonoBehaviour
         
         return indexBounds;
     }
-
-
+    
     private Vector3 GetPositionFromTime(List<string[]> pathPoints, float elapsedTime)
     {
         var indexBounds = GetIndexBoundsFromTime(elapsedTime);
