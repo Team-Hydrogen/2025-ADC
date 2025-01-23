@@ -264,11 +264,11 @@ public class SpacecraftManager : MonoBehaviour
         
         UpdateTimeIntervalAndProgress();
         
-        _totalNominalDistance += UpdateGeneralSpacecraftPosition(_nominalPathPoints, NominalSpacecraftTransform);
-        _totalOffNominalDistance += UpdateGeneralSpacecraftPosition(_offNominalPathPoints, OffNominalSpacecraftTransform);
+        _totalNominalDistance += UpdateSpacecraftPositionOnPath(_nominalPathPoints, NominalSpacecraftTransform);
+        _totalOffNominalDistance += UpdateSpacecraftPositionOnPath(_offNominalPathPoints, OffNominalSpacecraftTransform);
         if (_currentState == SpacecraftState.Merging)
         {
-            UpdateGeneralSpacecraftPosition(_mergePathPoints, MergeSpacecraftTransform);
+            UpdateSpacecraftPositionOnPath(_mergePathPoints, MergeSpacecraftTransform);
         }
         
         UpdateAfter();
@@ -299,7 +299,7 @@ public class SpacecraftManager : MonoBehaviour
         }
     }
 
-    private float UpdateGeneralSpacecraftPosition(List<string[]> points, Transform spacecraftPosition)
+    private float UpdateSpacecraftPositionOnPath(List<string[]> points, Transform spacecraftPosition)
     {
         var currentPoint = points[_currentPointIndex];
         var currentVelocityVector = new Vector3(
@@ -363,7 +363,7 @@ public class SpacecraftManager : MonoBehaviour
         
         OnUpdateTime?.Invoke(_estimatedElapsedTime);
     }
-
+    
     private void UpdateAfter()
     {
         OnUpdateCoordinates?.Invoke(spacecraft.position / trajectoryScale);
@@ -422,7 +422,7 @@ public class SpacecraftManager : MonoBehaviour
         
         UpdateVelocityVector(_currentPointIndex);
     }
-
+    
     private void UpdateTrajectory(Transform spacecraftTransform, LineRenderer current, LineRenderer future, bool indexUpdated, bool positionUpdated)
     {
         if (positionUpdated)

@@ -8,9 +8,9 @@ public class HttpManager : MonoBehaviour
 {
     public static HttpManager Instance { get; private set; }
     
-    private const string BumpOffCourseApiUri = "https://4f74-2601-18c-500-fbb-71d5-99c5-e87d-c422.ngrok-free.app/trajectory";
+    private const string BumpOffCourseApiUri = "https://b7cb-2601-18c-500-fbb-a2e-7395-3c14-9932.ngrok-free.app/trajectory";
     private const string BumpOffCourseApiContentType = "application/json";
-
+    
     public static event Action<string> OnPathCalculated;
     
     
