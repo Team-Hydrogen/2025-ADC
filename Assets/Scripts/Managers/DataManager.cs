@@ -13,8 +13,11 @@ public class DataManager : MonoBehaviour
     [SerializeField] private TextAsset nominalTrajectoryDataFile;
     [SerializeField] private TextAsset offNominalTrajectoryDataFile;
     
+    [Header("Antenna Availability")]
+    [SerializeField] private TextAsset nominalAntennaAvailabilityDataFile;
+    [SerializeField] private TextAsset offNominalAntennaAvailabilityDataFile;
+    
     [Header("Link Budget")]
-    [SerializeField] private TextAsset antennaAvailabilityDataFile;
     [SerializeField] private TextAsset nominalLinkBudgetDataFile;
     [SerializeField] private TextAsset offNominalLinkBudgetDataFile;
     
@@ -41,8 +44,8 @@ public class DataManager : MonoBehaviour
     private List<string[]> _offNominalTrajectoryDataValues;
     private List<string[]> _antennaAvailabilityDataValues;
     private List<string[]> _thrustDataValues;
-    public List<string[]> NominalLinkBudgetDataValues { get; private set; }
-    public List<string[]> OffNominalLinkBudgetDataValues { get; private set; }
+    private List<string[]> _nominalLinkBudgetDataValues;
+    private List<string[]> _offNominalLinkBudgetDataValues;
     
     public string CurrentPrioritizedAntenna { get; private set; }
     private List<Vector3> _positionVectorsForGizmos;
@@ -71,9 +74,9 @@ public class DataManager : MonoBehaviour
         
         _nominalTrajectoryDataValues = ReadDataFile(nominalTrajectoryDataFile);
         _offNominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
-        _antennaAvailabilityDataValues = ReadDataFile(antennaAvailabilityDataFile);
-        NominalLinkBudgetDataValues = ReadDataFile(nominalLinkBudgetDataFile);
-        OffNominalLinkBudgetDataValues = ReadDataFile(offNominalLinkBudgetDataFile);
+        _antennaAvailabilityDataValues = ReadDataFile(nominalAntennaAvailabilityDataFile);
+        _nominalLinkBudgetDataValues = ReadDataFile(nominalLinkBudgetDataFile);
+        _offNominalLinkBudgetDataValues = ReadDataFile(offNominalLinkBudgetDataFile);
         _thrustDataValues = ReadDataFile(thrustDataFile);
         
         OnDataLoaded?.Invoke(
@@ -81,8 +84,8 @@ public class DataManager : MonoBehaviour
                 _nominalTrajectoryDataValues, 
                 _offNominalTrajectoryDataValues, 
                 _antennaAvailabilityDataValues,
-                NominalLinkBudgetDataValues,
-                OffNominalLinkBudgetDataValues,
+                _nominalLinkBudgetDataValues,
+                _offNominalLinkBudgetDataValues,
                 _thrustDataValues,
                 stages[0]) // First stage should start right after simulation begins
             );

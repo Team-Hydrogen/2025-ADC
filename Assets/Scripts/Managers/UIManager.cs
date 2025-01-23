@@ -132,7 +132,6 @@ public class UIManager : MonoBehaviour
         SpacecraftManager.OnTimeScaleSet += SetTimeScaleIndicator;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += UpdateMissionStage;
-        DataManager.OnMissionStageUpdated += SetBumpOffCourseButtonActive;
     }
     
     private void OnDisable()
@@ -146,7 +145,6 @@ public class UIManager : MonoBehaviour
         SpacecraftManager.OnSpacecraftStateUpdated -= UpdateSpacecraftState;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
-        DataManager.OnMissionStageUpdated -= SetBumpOffCourseButtonActive;
     }
     
     #endregion
@@ -198,12 +196,6 @@ public class UIManager : MonoBehaviour
     #endregion
     
     #region Machine Learning
-    
-    private void SetBumpOffCourseButtonActive(MissionStage missionStage)
-    {
-        bumpOffCourseButton.interactable = missionStage.stageType is MissionStage.StageTypes.TravellingToMoon 
-            or MissionStage.StageTypes.ReturningToEarth;
-    }
     
     public void BumpOffCourseButtonPressed()
     {
@@ -490,7 +482,6 @@ public class UIManager : MonoBehaviour
     private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
-        SetBumpOffCourseButtonActive(dataLoadedEventArgs.MissionStage);
         _nominalLinkBudgetData = dataLoadedEventArgs.NominalLinkBudget;
         _offNominalLinkBudgetData = dataLoadedEventArgs.OffNominalLinkBudget;
         _thrustData = dataLoadedEventArgs.ThrustData;
