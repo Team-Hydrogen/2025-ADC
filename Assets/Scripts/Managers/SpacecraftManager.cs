@@ -20,6 +20,7 @@ public class SpacecraftManager : MonoBehaviour
     [field: Header("Positions")]
     [field: SerializeField] public Transform NominalSpacecraftTransform { get; private set; }
     [field: SerializeField] public Transform OffNominalSpacecraftTransform { get; private set; }
+    [field: SerializeField] public Transform MergeSpacecraftTransform { get; private set; }
     
     [Header("Current Trajectories")]
     [SerializeField] private LineRenderer currentMergeTrajectoryRenderer;
@@ -280,6 +281,10 @@ public class SpacecraftManager : MonoBehaviour
                 spacecraft.position = OffNominalSpacecraftTransform.position;
                 spacecraft.rotation = OffNominalSpacecraftTransform.rotation;
                 break;
+            case SpacecraftState.Merging:
+                spacecraft.position = MergeSpacecraftTransform.position;
+                spacecraft.rotation = MergeSpacecraftTransform.rotation;
+                break;
             case SpacecraftState.Manual:
             case SpacecraftState.Returning:
                 break;
@@ -370,6 +375,15 @@ public class SpacecraftManager : MonoBehaviour
             futureOffNominalTrajectory,
             false,
             true);
+        // if (_currentState == SpacecraftState.Merging)
+        // {
+        //     UpdateTrajectory(
+        //         MergeSpacecraftTransform,
+        //         currentMergeTrajectoryRenderer,
+        //         futureMergeTrajectory,
+        //         false,
+        //         true);
+        // }
         
         // Move to the next point when progress is complete
         if (_progress is < 1.0f and > -1.0f)
@@ -399,6 +413,15 @@ public class SpacecraftManager : MonoBehaviour
             futureOffNominalTrajectory,
             true,
             false);
+        // if (_currentState == SpacecraftState.Merging)
+        // {
+        //     UpdateTrajectory(
+        //         MergeSpacecraftTransform,
+        //         currentMergeTrajectoryRenderer,
+        //         futureMergeTrajectory,
+        //         true,
+        //         false);
+        // }
         
         UpdateVelocityVector(_currentPointIndex);
     }

@@ -1010,6 +1010,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 37052582}
   m_CullTransparentMesh: 1
+--- !u!1 &42023200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 42023201}
+  m_Layer: 0
+  m_Name: Merge Spacecraft Position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &42023201
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 42023200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1539118347}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &47656935
 GameObject:
   m_ObjectHideFlags: 0
@@ -7526,6 +7557,7 @@ MonoBehaviour:
   velocityVector: {fileID: 129352371}
   <NominalSpacecraftTransform>k__BackingField: {fileID: 485032613}
   <OffNominalSpacecraftTransform>k__BackingField: {fileID: 1549028642}
+  <MergeSpacecraftTransform>k__BackingField: {fileID: 42023201}
   currentMergeTrajectoryRenderer: {fileID: 799728575}
   futureNominalTrajectory: {fileID: 943471396}
   futureOffNominalTrajectory: {fileID: 1270632034}
@@ -10622,8 +10654,7 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Positions:
-  - {x: 0, y: 0, z: 0}
+  m_Positions: []
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -19904,8 +19935,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.6392157, g: 0.61960787, b: 0.61960787, a: 1}
-      key1: {r: 0.6392157, g: 0.61960787, b: 0.61960787, a: 1}
+      key0: {r: 1, g: 0.6666667, b: 0.6666667, a: 1}
+      key1: {r: 1, g: 0.6666667, b: 0.6666667, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -21500,6 +21531,7 @@ Transform:
   - {fileID: 1684219206}
   - {fileID: 485032613}
   - {fileID: 1549028642}
+  - {fileID: 42023201}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1541724199
