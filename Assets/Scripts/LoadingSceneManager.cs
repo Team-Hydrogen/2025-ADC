@@ -3,9 +3,11 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class SplashLoadingMenu : MonoBehaviour
+public class LoadingSceneManager : MonoBehaviour
 {
     [SerializeField] Slider loadingBar;
+
+    public static int sceneToLoad = 1;
 
 
     private void Start()
@@ -17,7 +19,7 @@ public class SplashLoadingMenu : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(1);
 
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(1);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneToLoad);
 
         // Wait until the asynchronous scene fully loads
         while (!asyncLoad.isDone)

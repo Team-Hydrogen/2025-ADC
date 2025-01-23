@@ -169,6 +169,7 @@ public class UIManager : MonoBehaviour
 
     public void QuitButtonPressed()
     {
+        LoadingSceneManager.sceneToLoad = 1;
         SceneManager.LoadScene(0);
     }
     

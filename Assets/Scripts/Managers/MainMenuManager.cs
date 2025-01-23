@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 public class MainMenuManager : MonoBehaviour
 {
     [Header("Main Menu")]
+    [SerializeField] private RectTransform backgroundImage;
+    [SerializeField] private RectTransform blackScreen;
     [SerializeField] private RectTransform startSimulationButton;
     [SerializeField] private RectTransform missionInformationButton;
     [SerializeField] private RectTransform modelViewerButton;
@@ -12,15 +14,23 @@ public class MainMenuManager : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(MainMenuButtonIntroOffset(startSimulationButton, 1.5f));
-        StartCoroutine(MainMenuButtonIntroOffset(missionInformationButton, 2f));
-        StartCoroutine(MainMenuButtonIntroOffset(modelViewerButton, 2.5f));
-        StartCoroutine(MainMenuButtonIntroOffset(quitButton, 3f));
+        StartCoroutine(MainMenuUIIntro(backgroundImage, 0f));
+        StartCoroutine(MainMenuUIIntro(blackScreen, 1f));
+        StartCoroutine(MainMenuUIIntro(startSimulationButton, 1.5f));
+        StartCoroutine(MainMenuUIIntro(missionInformationButton, 2f));
+        StartCoroutine(MainMenuUIIntro(modelViewerButton, 2.5f));
+        StartCoroutine(MainMenuUIIntro(quitButton, 3f));
     }
 
     public void LoadMainScene()
     {
-        SceneManager.LoadScene(2);
+        StartCoroutine(MainMenuUIOutro(quitButton, 0f));
+        StartCoroutine(MainMenuUIOutro(modelViewerButton, 0f));
+        StartCoroutine(MainMenuUIOutro(missionInformationButton, 0f));
+        StartCoroutine(MainMenuUIOutro(startSimulationButton, 0f));
+        StartCoroutine(MainMenuUIOutro(backgroundImage, 0f));
+        StartCoroutine(MainMenuUIOutro(blackScreen, 0.2f));
+        StartCoroutine(SwitchToLoadingScene());
     }
 
     public void QuitApplication()
@@ -28,25 +38,29 @@ public class MainMenuManager : MonoBehaviour
         Application.Quit();
     }
 
-    private IEnumerator MainMenuButtonIntroOffset(RectTransform button, float waitTime)
+    private IEnumerator MainMenuUIIntro(RectTransform element, float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
 
-        button.GetComponent<Animator>().SetTrigger("Intro");
+        element.GetComponent<Animator>().SetTrigger("Intro");
 
         yield return null;
     }
 
-    //public IEnumerator LoadMainSceneAsync()
-    //{
-    //    yield return new WaitForSecondsRealtime(1);
+    private IEnumerator MainMenuUIOutro(RectTransform element, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
 
-    //    AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(2);
+        element.GetComponent<Animator>().SetTrigger("Outro");
 
-    //    // Wait until the asynchronous scene fully loads
-    //    while (!asyncLoad.isDone)
-    //    {
-    //        yield return null;
-    //    }
-    //}
+        yield return null;
+    }
+
+    private IEnumerator SwitchToLoadingScene()
+    {
+        yield return new WaitForSeconds(1f);
+
+        LoadingSceneManager.sceneToLoad = 2;
+        SceneManager.LoadScene(0);
+    }
 }
