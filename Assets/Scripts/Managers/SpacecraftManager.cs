@@ -433,28 +433,62 @@ public class SpacecraftManager : MonoBehaviour
     private float UpdateSpacecraftPositionOnPath(List<string[]> points, Transform spacecraftPosition)
     {
         var currentPoint = points[_currentPointIndex];
-        var currentVelocityVector = new Vector3(
-            float.Parse(currentPoint[4]),
-            float.Parse(currentPoint[5]),
-            float.Parse(currentPoint[6]));
+        Vector3 currentVelocityVector;
+        try
+        {
+            currentVelocityVector = new Vector3(
+                float.Parse(currentPoint[4]),
+                float.Parse(currentPoint[5]),
+                float.Parse(currentPoint[6])
+            );
+        }
+        catch (FormatException)
+        {
+            currentVelocityVector = Vector3.zero;
+        }
         
         var nextPoint = points[(_currentPointIndex + 1) % points.Count];
-        var nextVelocityVector = new Vector3(
-            float.Parse(nextPoint[4]),
-            float.Parse(nextPoint[5]),
-            float.Parse(nextPoint[6]));
+        Vector3 nextVelocityVector;
+        try
+        {
+            nextVelocityVector = new Vector3(
+                float.Parse(nextPoint[4]),
+                float.Parse(nextPoint[5]),
+                float.Parse(nextPoint[6])
+            );
+        }
+        catch (FormatException)
+        {
+            nextVelocityVector = Vector3.zero;
+        }
+
+        Vector3 currentPosition;
+        try
+        {
+            currentPosition = new Vector3(
+                float.Parse(currentPoint[1]) * trajectoryScale,
+                float.Parse(currentPoint[2]) * trajectoryScale,
+                float.Parse(currentPoint[3]) * trajectoryScale
+            );
+        }
+        catch (FormatException)
+        {
+            currentPosition = Vector3.zero;
+        }
         
-        
-        var currentPosition = new Vector3(
-            float.Parse(currentPoint[1]) * trajectoryScale,
-            float.Parse(currentPoint[2]) * trajectoryScale,
-            float.Parse(currentPoint[3]) * trajectoryScale
-        );
-        var nextPosition = new Vector3(
-            float.Parse(nextPoint[1]) * trajectoryScale,
-            float.Parse(nextPoint[2]) * trajectoryScale,
-            float.Parse(nextPoint[3]) * trajectoryScale
-        );
+        Vector3 nextPosition = Vector3.zero;
+        try
+        {
+            nextPosition = new Vector3(
+                float.Parse(nextPoint[1]) * trajectoryScale,
+                float.Parse(nextPoint[2]) * trajectoryScale,
+                float.Parse(nextPoint[3]) * trajectoryScale
+            );
+        }
+        catch (FormatException)
+        {
+            currentPosition = Vector3.zero;
+        }
 
         // Interpolate position
         var previousPosition = spacecraftPosition.position;
@@ -890,11 +924,11 @@ public class SpacecraftManager : MonoBehaviour
     {
         switch (cutsceneIndex)
         {
-            case < 2:
+            case < 3:
                 DisplayModel(0);
                 return;
-            case <= 5:
-                DisplayModel(cutsceneIndex - 1);
+            case <= 6:
+                DisplayModel(cutsceneIndex - 2);
                 return;
             default:
                 DisplayModel(4);

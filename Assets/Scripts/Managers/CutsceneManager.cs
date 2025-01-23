@@ -47,7 +47,7 @@ public class CutsceneManager : MonoBehaviour
 
     private void Start()
     {
-        StartCutsceneTransition(-2);
+        StartCutsceneTransition(-3);
     }
     
     private void OnEnable()
