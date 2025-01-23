@@ -263,8 +263,14 @@ public class SpacecraftManager : MonoBehaviour
         }
         
         UpdateTimeIntervalAndProgress();
+        
         _totalNominalDistance += UpdateGeneralSpacecraftPosition(_nominalPathPoints, NominalSpacecraftTransform);
         _totalOffNominalDistance += UpdateGeneralSpacecraftPosition(_offNominalPathPoints, OffNominalSpacecraftTransform);
+        if (_currentState == SpacecraftState.Merging)
+        {
+            UpdateGeneralSpacecraftPosition(_mergePathPoints, MergeSpacecraftTransform);
+        }
+        
         UpdateAfter();
         SetSpacecraftVisualToPosition();
     }
@@ -375,15 +381,15 @@ public class SpacecraftManager : MonoBehaviour
             futureOffNominalTrajectory,
             false,
             true);
-        // if (_currentState == SpacecraftState.Merging)
-        // {
-        //     UpdateTrajectory(
-        //         MergeSpacecraftTransform,
-        //         currentMergeTrajectoryRenderer,
-        //         futureMergeTrajectory,
-        //         false,
-        //         true);
-        // }
+        if (_currentState == SpacecraftState.Merging)
+        {
+            UpdateTrajectory(
+                MergeSpacecraftTransform,
+                currentMergeTrajectoryRenderer,
+                futureMergeTrajectory,
+                false,
+                true);
+        }
         
         // Move to the next point when progress is complete
         if (_progress is < 1.0f and > -1.0f)
@@ -413,15 +419,6 @@ public class SpacecraftManager : MonoBehaviour
             futureOffNominalTrajectory,
             true,
             false);
-        // if (_currentState == SpacecraftState.Merging)
-        // {
-        //     UpdateTrajectory(
-        //         MergeSpacecraftTransform,
-        //         currentMergeTrajectoryRenderer,
-        //         futureMergeTrajectory,
-        //         true,
-        //         false);
-        // }
         
         UpdateVelocityVector(_currentPointIndex);
     }
