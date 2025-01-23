@@ -20,10 +20,15 @@ public class SpacecraftManager : MonoBehaviour
     [field: Header("Positions")]
     [field: SerializeField] public Transform NominalSpacecraftTransform { get; private set; }
     [field: SerializeField] public Transform OffNominalSpacecraftTransform { get; private set; }
+    [field: SerializeField] public Transform MergeSpacecraftTransform { get; private set; }
+    
+    [Header("Current Trajectories")]
+    [SerializeField] private LineRenderer currentMergeTrajectoryRenderer;
     
     [Header("Future Trajectories")]
     [SerializeField] private LineRenderer futureNominalTrajectory;
     [SerializeField] private LineRenderer futureOffNominalTrajectory;
+    [SerializeField] private LineRenderer futureMergeTrajectory;
     
     [Header("Celestial Bodies")]
     [SerializeField] private GameObject earth;
@@ -44,12 +49,14 @@ public class SpacecraftManager : MonoBehaviour
     private const int SkipTimeChange = 10;
     
     private float _progress = 0.0f;
-    public float EstimatedElapsedTime { get; private set; }
+    private float _estimatedElapsedTime;
     private float _totalNominalDistance = 0.0f;
     private float _totalOffNominalDistance = 0.0f;
     
     private List<string[]> _nominalPathPoints;
     private List<string[]> _offNominalPathPoints;
+    private List<string[]> _mergePathPoints;
+    
     private LineRenderer _currentNominalTrajectoryRenderer;
     private LineRenderer _currentOffNominalTrajectoryRenderer;
     
@@ -146,6 +153,7 @@ public class SpacecraftManager : MonoBehaviour
         CutsceneManager.OnCutsceneStart += UpdateModel;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += OnMissionStageUpdated;
+        HttpManager.OnPathCalculated += OnPathCalculated;
         UIManager.OnCurrentPathChanged += OnChangedCurrentPath;
     }
     
@@ -154,6 +162,7 @@ public class SpacecraftManager : MonoBehaviour
         CutsceneManager.OnCutsceneStart -= UpdateModel;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= OnMissionStageUpdated;
+        HttpManager.OnPathCalculated -= OnPathCalculated;
         UIManager.OnCurrentPathChanged -= OnChangedCurrentPath;
     }
     
@@ -272,6 +281,10 @@ public class SpacecraftManager : MonoBehaviour
                 spacecraft.position = OffNominalSpacecraftTransform.position;
                 spacecraft.rotation = OffNominalSpacecraftTransform.rotation;
                 break;
+            case SpacecraftState.Merging:
+                spacecraft.position = MergeSpacecraftTransform.position;
+                spacecraft.rotation = MergeSpacecraftTransform.rotation;
+                break;
             case SpacecraftState.Manual:
             case SpacecraftState.Returning:
                 break;
@@ -340,9 +353,9 @@ public class SpacecraftManager : MonoBehaviour
         
         _progress += Time.deltaTime / _timeInterval * timeScale;
         
-        EstimatedElapsedTime = currentTime + (nextTime - currentTime) * _progress;
+        _estimatedElapsedTime = currentTime + (nextTime - currentTime) * _progress;
         
-        OnUpdateTime?.Invoke(EstimatedElapsedTime);
+        OnUpdateTime?.Invoke(_estimatedElapsedTime);
     }
 
     private void UpdateAfter()
@@ -362,6 +375,15 @@ public class SpacecraftManager : MonoBehaviour
             futureOffNominalTrajectory,
             false,
             true);
+        // if (_currentState == SpacecraftState.Merging)
+        // {
+        //     UpdateTrajectory(
+        //         MergeSpacecraftTransform,
+        //         currentMergeTrajectoryRenderer,
+        //         futureMergeTrajectory,
+        //         false,
+        //         true);
+        // }
         
         // Move to the next point when progress is complete
         if (_progress is < 1.0f and > -1.0f)
@@ -391,6 +413,15 @@ public class SpacecraftManager : MonoBehaviour
             futureOffNominalTrajectory,
             true,
             false);
+        // if (_currentState == SpacecraftState.Merging)
+        // {
+        //     UpdateTrajectory(
+        //         MergeSpacecraftTransform,
+        //         currentMergeTrajectoryRenderer,
+        //         futureMergeTrajectory,
+        //         true,
+        //         false);
+        // }
         
         UpdateVelocityVector(_currentPointIndex);
     }
@@ -632,7 +663,7 @@ public class SpacecraftManager : MonoBehaviour
         
         // The future path is predicted.
         var futureExpectedPositionIndex = GetClosestIndexFromTime(
-            EstimatedElapsedTime + MaximumManualControlTime);
+            _estimatedElapsedTime + MaximumManualControlTime);
         var futureExpectedPosition = new Vector3(
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][1]),
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][2]),
@@ -729,8 +760,7 @@ public class SpacecraftManager : MonoBehaviour
         
         return indexBounds;
     }
-
-
+    
     private Vector3 GetPositionFromTime(List<string[]> pathPoints, float elapsedTime)
     {
         var indexBounds = GetIndexBoundsFromTime(elapsedTime);
@@ -767,6 +797,16 @@ public class SpacecraftManager : MonoBehaviour
         return GetPositionFromTime(_offNominalPathPoints, elapsedTime);
     }
     
+    private void OnPathCalculated(string data)
+    {
+        _mergePathPoints = CsvReader.TextToData(data);
+        _mergePathPoints.RemoveAt(0);
+        
+        PlotTrajectory(_mergePathPoints, currentMergeTrajectoryRenderer, futureMergeTrajectory);
+        
+        _currentState = SpacecraftState.Merging;
+    }
+    
     
     # region Models
     
@@ -790,6 +830,7 @@ public class SpacecraftManager : MonoBehaviour
     {
         Nominal,
         OffNominal,
+        Merging,
         Manual,
         Returning,
     }

@@ -121,12 +121,11 @@ public class IntelligenceManager : MonoBehaviour
         return Vector3.Magnitude(GetTimeVector(dataIndex));
     }
 
-    private float CalculateFlightTime(int dataIndex)
+    private float CalculateFlightTime(Vector3 origin, Vector3 oppositePathPosition, Vector3 destination, float deltaTime)
     {
         // Creates a buffer time constant to avoid errors where the raw flight time is too little.
         const float bufferTime = 20.0f;
-
-        var deltaTime = CalculateDeltaTime(dataIndex);
+        
         var deltaTimeSquared = Mathf.Pow(deltaTime, 2);
         
         // Creates a vector where the starting endpoint is the chosen path's present position, and the ending endpoint
@@ -149,12 +148,20 @@ public class IntelligenceManager : MonoBehaviour
 
     private void OnBumpOffCourse()
     {
-        var origin = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
-        var destination = Vector3.zero;
-        var flightTime = CalculateFlightTime(_dataIndex);
-        var startTime = SpacecraftManager.Instance.EstimatedElapsedTime;
+        var deltaTime = CalculateDeltaTime(_dataIndex);
         
-        HttpManager.Instance.RequestBumpOffCourseApi(origin, destination, flightTime, startTime);
+        var origin = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
+        var oppositePathPosition = SpacecraftManager.Instance.NominalSpacecraftTransform.position;
+        var destination = SpacecraftManager.Instance.GetNominalPositionFromTime(_currentTime + deltaTime);
+        
+        var flightTime = CalculateFlightTime(origin, oppositePathPosition, destination, deltaTime);
+        
+        HttpManager.Instance.RequestBumpOffCourseApi(
+            origin, 
+            destination, 
+            flightTime,
+            _currentTime
+        );
     }
     
     #endregion
