@@ -631,7 +631,7 @@ public class SpacecraftManager : MonoBehaviour
         _lastManualSpacecraftIndex = _currentPointIndex;
         
         // The future path is predicted.
-        var futureExpectedPositionIndex = GetClosestDataPointIndexFromTime(
+        var futureExpectedPositionIndex = GetClosestIndexFromTime(
             EstimatedElapsedTime + MaximumManualControlTime);
         var futureExpectedPosition = new Vector3(
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][1]),
@@ -690,7 +690,7 @@ public class SpacecraftManager : MonoBehaviour
         }
     }
     
-    private int GetClosestDataPointIndexFromTime(float time)
+    private int GetClosestIndexFromTime(float time)
     {
         var closestIndex = 0;
         var closestTime = float.MaxValue;
@@ -714,11 +714,62 @@ public class SpacecraftManager : MonoBehaviour
     
             }
         }
-    
-        Debug.Log(_nominalPathPoints[closestIndex][0]);
+        
         return closestIndex;
     }
 
+    public int[] GetIndexBoundsFromTime(float elapsedTime)
+    {
+        var closestIndex = GetClosestIndexFromTime(elapsedTime);
+        var closestTime = float.Parse(_nominalPathPoints[closestIndex][0]);
+        
+        var indexBounds = new int[2];
+        indexBounds[0] = closestTime < elapsedTime ? closestIndex : closestIndex - 1;
+        indexBounds[1] = closestTime < elapsedTime ? closestIndex + 1 : closestIndex;
+        
+        return indexBounds;
+    }
+
+
+    private Vector3 GetPositionFromTime(List<string[]> pathPoints, float elapsedTime)
+    {
+        var indexBounds = GetIndexBoundsFromTime(elapsedTime);
+        var lowerIndex = indexBounds[0];
+        var upperIndex = indexBounds[1];
+        
+        var lowerTime = float.Parse(pathPoints[lowerIndex][0]);
+        var upperTime = float.Parse(pathPoints[upperIndex][0]);
+        
+        var interpolationRatio = Mathf.InverseLerp(lowerTime, upperTime, elapsedTime);
+
+        var lowerPositionX = float.Parse(pathPoints[lowerIndex][1]);
+        var lowerPositionY = float.Parse(pathPoints[lowerIndex][2]);
+        var lowerPositionZ = float.Parse(pathPoints[lowerIndex][3]);
+        
+        var upperPositionX = float.Parse(pathPoints[upperIndex][1]);
+        var upperPositionY = float.Parse(pathPoints[upperIndex][2]);
+        var upperPositionZ = float.Parse(pathPoints[upperIndex][3]);
+        
+        return new Vector3(
+            Mathf.Lerp(lowerPositionX, upperPositionX, interpolationRatio),
+            Mathf.Lerp(lowerPositionY, upperPositionY, interpolationRatio),
+            Mathf.Lerp(lowerPositionZ, upperPositionZ, interpolationRatio)
+        );
+    }
+
+    public Vector3 GetNominalPositionFromTime(float elapsedTime)
+    {
+        return GetPositionFromTime(_nominalPathPoints, elapsedTime);
+    }
+    
+    public Vector3 GetOffNominalPositionFromTime(float elapsedTime)
+    {
+        return GetPositionFromTime(_offNominalPathPoints, elapsedTime);
+    }
+    
+    
+    # region Models
+    
     private void UpdateModel(int cutsceneIndex)
     {
         switch (cutsceneIndex)
@@ -732,6 +783,8 @@ public class SpacecraftManager : MonoBehaviour
                 return;
         }
     }
+    
+    # endregion
     
     public enum SpacecraftState
     {

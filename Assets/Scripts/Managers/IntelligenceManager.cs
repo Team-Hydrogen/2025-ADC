@@ -9,6 +9,7 @@ public class IntelligenceManager : MonoBehaviour
     
     private List<string[]> _thrustData;
     private int _dataIndex;
+    private float _currentTime;
     
     
     #region Event Functions
@@ -28,6 +29,7 @@ public class IntelligenceManager : MonoBehaviour
     {
         DataManager.OnDataLoaded += LoadThrustData;
         SpacecraftManager.OnCurrentIndexUpdated += SetDataIndex;
+        SpacecraftManager.OnUpdateTime += SetCurrentTime;
         UIManager.OnBumpOffCoursePressed += OnBumpOffCourse;
     }
 
@@ -35,6 +37,7 @@ public class IntelligenceManager : MonoBehaviour
     {
         DataManager.OnDataLoaded -= LoadThrustData;
         SpacecraftManager.OnCurrentIndexUpdated -= SetDataIndex;
+        SpacecraftManager.OnUpdateTime -= SetCurrentTime;
         UIManager.OnBumpOffCoursePressed -= OnBumpOffCourse;
     }
     
@@ -43,6 +46,11 @@ public class IntelligenceManager : MonoBehaviour
     
     # region Getters and Setters
 
+    private void SetCurrentTime(float time)
+    {
+        _currentTime = time;
+    }
+    
     private void SetDataIndex(int index)
     {
         _dataIndex = index;
@@ -117,6 +125,9 @@ public class IntelligenceManager : MonoBehaviour
     {
         // Creates a buffer time constant to avoid errors where the raw flight time is too little.
         const float bufferTime = 20.0f;
+
+        var deltaTime = CalculateDeltaTime(dataIndex);
+        var deltaTimeSquared = Mathf.Pow(deltaTime, 2);
         
         // Creates a vector where the starting endpoint is the chosen path's present position, and the ending endpoint
         // is the opposite path's present position.
@@ -124,12 +135,12 @@ public class IntelligenceManager : MonoBehaviour
                           - SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
         // Creates a vector where the starting endpoint is the opposite path's present position, and the ending endpoint
         // is the opposite path's future position.
-        var toFuturePosition = Vector3.zero 
+        var toFuturePosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_currentTime + deltaTime) 
                                - SpacecraftManager.Instance.NominalSpacecraftTransform.position;
         
         var thetaInDegrees = Vector3.Angle(toOtherPath, toFuturePosition);
         var thetaInRadians = thetaInDegrees * Mathf.Deg2Rad;
-        var deltaTimeSquared = Mathf.Pow(CalculateDeltaTime(dataIndex), 2);
+        
         var rawFlightTime = Mathf.Sqrt(2 * deltaTimeSquared * (1 + Mathf.Cos(thetaInRadians)));
         
         // Returns the raw flight time with the additional buffer time.
@@ -139,7 +150,7 @@ public class IntelligenceManager : MonoBehaviour
     private void OnBumpOffCourse()
     {
         var origin = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
-        var destination = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
+        var destination = Vector3.zero;
         var flightTime = CalculateFlightTime(_dataIndex);
         var startTime = SpacecraftManager.Instance.EstimatedElapsedTime;
         
