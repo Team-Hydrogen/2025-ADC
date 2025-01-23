@@ -268,7 +268,7 @@ public class SpacecraftManager : MonoBehaviour
         _totalOffNominalDistance += UpdateSpacecraftPositionOnPath(_offNominalPathPoints, OffNominalSpacecraftTransform);
         if (_currentState == SpacecraftState.Merging)
         {
-            UpdateSpacecraftPositionOnPath(_mergePathPoints, MergeSpacecraftTransform);
+            UpdateSpacecraftPositionOnPathFromTime(_estimatedElapsedTime, _mergePathPoints, MergeSpacecraftTransform);
         }
         
         UpdateAfter();
@@ -308,6 +308,59 @@ public class SpacecraftManager : MonoBehaviour
             float.Parse(currentPoint[6]));
         
         var nextPoint = points[(_currentPointIndex + 1) % points.Count];
+        var nextVelocityVector = new Vector3(
+            float.Parse(nextPoint[4]),
+            float.Parse(nextPoint[5]),
+            float.Parse(nextPoint[6]));
+        
+        
+        var currentPosition = new Vector3(
+            float.Parse(currentPoint[1]) * trajectoryScale,
+            float.Parse(currentPoint[2]) * trajectoryScale,
+            float.Parse(currentPoint[3]) * trajectoryScale
+        );
+        var nextPosition = new Vector3(
+            float.Parse(nextPoint[1]) * trajectoryScale,
+            float.Parse(nextPoint[2]) * trajectoryScale,
+            float.Parse(nextPoint[3]) * trajectoryScale
+        );
+
+        // Interpolate position
+        var previousPosition = spacecraftPosition.position;
+        spacecraftPosition.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
+
+        var netDistance = Vector3.Distance(previousPosition, spacecraftPosition.position) / trajectoryScale;
+
+        // Calculate spacecraft direction
+        var direction = (nextPosition - currentPosition).normalized;
+        if (direction == Vector3.zero)
+        {
+            return netDistance;
+        }
+        
+        // Interpolate rotation
+        spacecraftPosition.rotation = Quaternion.Slerp(
+            Quaternion.LookRotation(currentVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f),
+            Quaternion.LookRotation(nextVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
+            _progress
+        );
+
+        return netDistance;
+    }
+    
+    private float UpdateSpacecraftPositionOnPathFromTime(float elapsedTime, List<string[]> points, Transform spacecraftPosition)
+    {
+        int[] indexBounds = GetIndexBoundsFromTime(elapsedTime, points);
+        int lowerIndex = indexBounds[0];
+        int upperIndex = indexBounds[1];
+        
+        var currentPoint = points[lowerIndex];
+        var currentVelocityVector = new Vector3(
+            float.Parse(currentPoint[4]),
+            float.Parse(currentPoint[5]),
+            float.Parse(currentPoint[6]));
+        
+        var nextPoint = points[upperIndex % points.Count];
         var nextVelocityVector = new Vector3(
             float.Parse(nextPoint[4]),
             float.Parse(nextPoint[5]),
@@ -633,8 +686,8 @@ public class SpacecraftManager : MonoBehaviour
         OnDistanceCalculated?.Invoke(
             new DistanceTravelledEventArgs(distanceTravelledToSend, distanceToEarth, distanceToMoon));
     }
-    
-    public void DisplayModel(int displayedModelIndex)
+
+    private void DisplayModel(int displayedModelIndex)
     {
         Transform rocketParts = spacecraft.GetChild(0);
         for (int modelIndex = 0; modelIndex < rocketParts.childCount; modelIndex++)
@@ -660,7 +713,7 @@ public class SpacecraftManager : MonoBehaviour
         
         // The future path is predicted.
         var futureExpectedPositionIndex = GetClosestIndexFromTime(
-            _estimatedElapsedTime + MaximumManualControlTime);
+            _estimatedElapsedTime + MaximumManualControlTime, _nominalPathPoints);
         var futureExpectedPosition = new Vector3(
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][1]),
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][2]),
@@ -718,16 +771,16 @@ public class SpacecraftManager : MonoBehaviour
         }
     }
     
-    private int GetClosestIndexFromTime(float time)
+    private int GetClosestIndexFromTime(float time, List<string[]> pathPoints)
     {
         var closestIndex = 0;
         var closestTime = float.MaxValue;
     
-        for (var i = 0; i < _nominalPathPoints.Count; i++)
+        for (var i = 0; i < pathPoints.Count; i++)
         {
             try
             {
-                var timeDistance = Mathf.Abs(float.Parse(_nominalPathPoints[i][0]) - time);
+                var timeDistance = Mathf.Abs(float.Parse(pathPoints[i][0]) - time);
     
                 if (timeDistance >= closestTime)
                 {
@@ -746,10 +799,13 @@ public class SpacecraftManager : MonoBehaviour
         return closestIndex;
     }
     
-    public int[] GetIndexBoundsFromTime(float elapsedTime)
+    private int[] GetIndexBoundsFromTime(float elapsedTime, List<string[]> pathPoints)
     {
-        var closestIndex = GetClosestIndexFromTime(elapsedTime);
-        var closestTime = float.Parse(_nominalPathPoints[closestIndex][0]);
+        var closestIndex = GetClosestIndexFromTime(elapsedTime, pathPoints);
+        
+        Debug.Log($"The closest index is {closestIndex} of {pathPoints.Count} at time of {elapsedTime}.");
+        
+        var closestTime = float.Parse(pathPoints[closestIndex][0]);
         
         var indexBounds = new int[2];
         indexBounds[0] = closestTime < elapsedTime ? closestIndex : closestIndex - 1;
@@ -760,7 +816,7 @@ public class SpacecraftManager : MonoBehaviour
     
     private Vector3 GetPositionFromTime(List<string[]> pathPoints, float elapsedTime)
     {
-        var indexBounds = GetIndexBoundsFromTime(elapsedTime);
+        var indexBounds = GetIndexBoundsFromTime(elapsedTime, _nominalPathPoints);
         var lowerIndex = indexBounds[0];
         var upperIndex = indexBounds[1];
         
