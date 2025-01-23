@@ -25,10 +25,10 @@ public class MainMenuManager : MonoBehaviour
     public void LoadMainScene()
     {
         StartCoroutine(MainMenuUIOutro(quitButton, 0f));
-        StartCoroutine(MainMenuUIOutro(modelViewerButton, 0f));
-        StartCoroutine(MainMenuUIOutro(missionInformationButton, 0f));
-        StartCoroutine(MainMenuUIOutro(startSimulationButton, 0f));
-        StartCoroutine(MainMenuUIOutro(backgroundImage, 0f));
+        StartCoroutine(MainMenuUIOutro(modelViewerButton, 0.05f));
+        StartCoroutine(MainMenuUIOutro(missionInformationButton, 0.1f));
+        StartCoroutine(MainMenuUIOutro(startSimulationButton, 0.15f));
+        StartCoroutine(MainMenuUIOutro(backgroundImage, 0.2f));
         StartCoroutine(MainMenuUIOutro(blackScreen, 0.2f));
         StartCoroutine(SwitchToLoadingScene());
     }
@@ -52,6 +52,7 @@ public class MainMenuManager : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
 
         element.GetComponent<Animator>().SetTrigger("Outro");
+        element.GetComponent<Animator>().SetBool("CanChangeStates", false);
 
         yield return null;
     }
