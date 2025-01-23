@@ -14,18 +14,20 @@ public class SpacecraftManager : MonoBehaviour
     [Header("Spacecraft")]
     [SerializeField] private Transform spacecraft;
     [SerializeField] private Transform velocityVector;
-    [SerializeField] private Transform nominalSpacecraftTransform;
-    [SerializeField] private Transform offNominalSpacecraftTransform;
+    
+    // NOTE TO OTHER DEVELOPERS
+    // Please keep the `field:` prefix. It is needed to show these specific variables in the inspector.
+    [field: Header("Positions")]
+    [field: SerializeField] public Transform NominalSpacecraftTransform { get; private set; }
+    [field: SerializeField] public Transform OffNominalSpacecraftTransform { get; private set; }
+    
+    [Header("Future Trajectories")]
+    [SerializeField] private LineRenderer futureNominalTrajectory;
+    [SerializeField] private LineRenderer futureOffNominalTrajectory;
     
     [Header("Celestial Bodies")]
     [SerializeField] private GameObject earth;
     [SerializeField] private GameObject moon;
-    
-    [Header("Nominal Trajectory")]
-    [SerializeField] private LineRenderer futureNominalTrajectory;
-    
-    [Header("Off Nominal Trajectory")]
-    [SerializeField] private LineRenderer futureOffNominalTrajectory;
     
     [Header("Time Scale")]
     [SerializeField] private float timeScale;
@@ -42,7 +44,7 @@ public class SpacecraftManager : MonoBehaviour
     private const int SkipTimeChange = 10;
     
     private float _progress = 0.0f;
-    private float _estimatedElapsedTime;
+    public float EstimatedElapsedTime { get; private set; }
     private float _totalNominalDistance = 0.0f;
     private float _totalOffNominalDistance = 0.0f;
     
@@ -144,7 +146,6 @@ public class SpacecraftManager : MonoBehaviour
         CutsceneManager.OnCutsceneStart += UpdateModel;
         DataManager.OnDataLoaded += OnDataLoaded;
         DataManager.OnMissionStageUpdated += OnMissionStageUpdated;
-        UIManager.OnBumpOffCoursePressed += OnBumpOffCourse;
         UIManager.OnCurrentPathChanged += OnChangedCurrentPath;
     }
     
@@ -153,7 +154,6 @@ public class SpacecraftManager : MonoBehaviour
         CutsceneManager.OnCutsceneStart -= UpdateModel;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= OnMissionStageUpdated;
-        UIManager.OnBumpOffCoursePressed -= OnBumpOffCourse;
         UIManager.OnCurrentPathChanged -= OnChangedCurrentPath;
     }
     
@@ -254,8 +254,8 @@ public class SpacecraftManager : MonoBehaviour
         }
         
         UpdateTimeIntervalAndProgress();
-        _totalNominalDistance += UpdateGeneralSpacecraftPosition(_nominalPathPoints, nominalSpacecraftTransform);
-        _totalOffNominalDistance += UpdateGeneralSpacecraftPosition(_offNominalPathPoints, offNominalSpacecraftTransform);
+        _totalNominalDistance += UpdateGeneralSpacecraftPosition(_nominalPathPoints, NominalSpacecraftTransform);
+        _totalOffNominalDistance += UpdateGeneralSpacecraftPosition(_offNominalPathPoints, OffNominalSpacecraftTransform);
         UpdateAfter();
         SetSpacecraftVisualToPosition();
     }
@@ -265,12 +265,12 @@ public class SpacecraftManager : MonoBehaviour
         switch (_currentState)
         {
             case SpacecraftState.Nominal:
-                spacecraft.position = nominalSpacecraftTransform.position;
-                spacecraft.rotation = nominalSpacecraftTransform.rotation;
+                spacecraft.position = NominalSpacecraftTransform.position;
+                spacecraft.rotation = NominalSpacecraftTransform.rotation;
                 break;
             case SpacecraftState.OffNominal:
-                spacecraft.position = offNominalSpacecraftTransform.position;
-                spacecraft.rotation = offNominalSpacecraftTransform.rotation;
+                spacecraft.position = OffNominalSpacecraftTransform.position;
+                spacecraft.rotation = OffNominalSpacecraftTransform.rotation;
                 break;
             case SpacecraftState.Manual:
             case SpacecraftState.Returning:
@@ -340,9 +340,9 @@ public class SpacecraftManager : MonoBehaviour
         
         _progress += Time.deltaTime / _timeInterval * timeScale;
         
-        _estimatedElapsedTime = currentTime + (nextTime - currentTime) * _progress;
+        EstimatedElapsedTime = currentTime + (nextTime - currentTime) * _progress;
         
-        OnUpdateTime?.Invoke(_estimatedElapsedTime);
+        OnUpdateTime?.Invoke(EstimatedElapsedTime);
     }
 
     private void UpdateAfter()
@@ -351,13 +351,13 @@ public class SpacecraftManager : MonoBehaviour
         CalculateDistances();
         
         UpdateTrajectory(
-            nominalSpacecraftTransform,
+            NominalSpacecraftTransform,
             _currentNominalTrajectoryRenderer,
             futureNominalTrajectory,
             false,
             true);
         UpdateTrajectory(
-            offNominalSpacecraftTransform,
+            OffNominalSpacecraftTransform,
             _currentOffNominalTrajectoryRenderer,
             futureOffNominalTrajectory,
             false,
@@ -380,13 +380,13 @@ public class SpacecraftManager : MonoBehaviour
         OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
         
         UpdateTrajectory(
-            nominalSpacecraftTransform,
+            NominalSpacecraftTransform,
             _currentNominalTrajectoryRenderer,
             futureNominalTrajectory,
             true,
             false);
         UpdateTrajectory(
-            offNominalSpacecraftTransform,
+            OffNominalSpacecraftTransform,
             _currentOffNominalTrajectoryRenderer,
             futureOffNominalTrajectory,
             true,
@@ -532,10 +532,10 @@ public class SpacecraftManager : MonoBehaviour
         }
         
         _currentNominalTrajectoryRenderer = stage.nominalLineRenderer;
-        _currentNominalTrajectoryRenderer.SetPosition(0, nominalSpacecraftTransform.position);
+        _currentNominalTrajectoryRenderer.SetPosition(0, NominalSpacecraftTransform.position);
 
         _currentOffNominalTrajectoryRenderer = stage.offnominalLineRenderer;
-        _currentOffNominalTrajectoryRenderer.SetPosition(0, offNominalSpacecraftTransform.position);
+        _currentOffNominalTrajectoryRenderer.SetPosition(0, OffNominalSpacecraftTransform.position);
         
         // trigger animation here if it is correct stage
     }
@@ -632,7 +632,7 @@ public class SpacecraftManager : MonoBehaviour
         
         // The future path is predicted.
         var futureExpectedPositionIndex = GetClosestDataPointIndexFromTime(
-            _estimatedElapsedTime + MaximumManualControlTime);
+            EstimatedElapsedTime + MaximumManualControlTime);
         var futureExpectedPosition = new Vector3(
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][1]),
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][2]),
