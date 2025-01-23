@@ -434,6 +434,7 @@ Transform:
   - {fileID: 1164105694}
   - {fileID: 1123067764}
   - {fileID: 573645243}
+  - {fileID: 1803617427}
   - {fileID: 1104766443}
   - {fileID: 534708853}
   - {fileID: 512236117}
@@ -7445,12 +7446,12 @@ MonoBehaviour:
   trajectoryScale: 0.01
   spacecraft: {fileID: 1684219206}
   velocityVector: {fileID: 129352371}
-  nominalSpacecraftTransform: {fileID: 485032613}
-  offNominalSpacecraftTransform: {fileID: 1549028642}
-  earth: {fileID: 34631889}
-  moon: {fileID: 1325657793}
+  <NominalSpacecraftTransform>k__BackingField: {fileID: 485032613}
+  <OffNominalSpacecraftTransform>k__BackingField: {fileID: 1549028642}
   futureNominalTrajectory: {fileID: 943471396}
   futureOffNominalTrajectory: {fileID: 1270632034}
+  earth: {fileID: 34631889}
+  moon: {fileID: 1325657793}
   timeScale: 1
 --- !u!1 &542944903
 GameObject:
@@ -25375,6 +25376,50 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &1803617426
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1803617427}
+  - component: {fileID: 1803617428}
+  m_Layer: 0
+  m_Name: Intelligence Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1803617427
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1803617426}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 17614485}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1803617428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1803617426}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 238cbe608bcf41deb96b3ddcd242e0c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1809582268
 GameObject:
   m_ObjectHideFlags: 0
