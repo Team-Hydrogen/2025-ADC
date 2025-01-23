@@ -16719,6 +16719,7 @@ MonoBehaviour:
   animator: {fileID: 975478469}
   fadeImage: {fileID: 975478465}
   cutscenes:
+  - {fileID: 32900000, guid: d2300bbb609f14bb2a68dd354d7f24d0, type: 3}
   - {fileID: 32900000, guid: 66a356e5f745843e0914d5b40cdafaf8, type: 3}
   - {fileID: 32900000, guid: 3d4c51507b1bb40d9ba5333c5000a70e, type: 3}
   - {fileID: 32900000, guid: 09b8e14543dab4cafbbeb36762894d10, type: 3}
@@ -16728,7 +16729,8 @@ MonoBehaviour:
   - {fileID: 32900000, guid: c0fc066b0e7fb4f73b27f85f640f05c9, type: 3}
   - {fileID: 32900000, guid: 0193d3c1f25e74972a4fbfa3f7922ffa, type: 3}
   cutsceneSimulationTimes:
-  - 9
+  - -2
+  - -1
   - 10.58648
   - 13.51148
   - 16.436481

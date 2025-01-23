@@ -169,9 +169,19 @@ public class DataManager : MonoBehaviour
         
         for (var futureIndex = 1; futureIndex <= maximumFutureIndex; futureIndex++)
         {
-            var futureSpacecraftName =_spacecraftState == SpacecraftManager.SpacecraftState.Nominal
-                ? _antennaAvailabilityDataValues[index + futureIndex][1]
-                : _offNominalTrajectoryDataValues[index + futureIndex][1];
+            string futureSpacecraftName;
+
+            try
+            {
+                futureSpacecraftName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
+                    ? _antennaAvailabilityDataValues[index + futureIndex][1]
+                    : _offNominalTrajectoryDataValues[index + futureIndex][1];
+            }
+            catch (IndexOutOfRangeException)
+            {
+                continue;
+            }
+            
             if (currentSpacecraftName != futureSpacecraftName)
             {
                 return previousSpacecraftName;
