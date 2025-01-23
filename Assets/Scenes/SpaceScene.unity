@@ -16524,7 +16524,7 @@ MonoBehaviour:
   - {fileID: 32900000, guid: c0fc066b0e7fb4f73b27f85f640f05c9, type: 3}
   - {fileID: 32900000, guid: 0193d3c1f25e74972a4fbfa3f7922ffa, type: 3}
   cutsceneSimulationTimes:
-  - 8.25
+  - 9
   - 10.58648
   - 13.51148
   - 16.436481

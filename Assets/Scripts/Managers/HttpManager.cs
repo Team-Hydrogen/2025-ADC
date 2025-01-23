@@ -42,27 +42,43 @@ public class HttpManager : MonoBehaviour
     
     # region Request Functions
 
+    private class BumpOffCourseRequest
+    {
+        public float[] origin;
+        public float[] destination;
+        public float flightTime;
+        public float startTime;
+
+        public BumpOffCourseRequest(float[] o, float[] d, float ft, float st)
+        {
+            origin = o;
+            destination = d;
+            flightTime = ft;
+            startTime = st;
+        }
+    }
+
     public void RequestBumpOffCourseApi(Vector3 origin, Vector3 destination, float flightTime, float startTime)
     {
         float[] originPostData = { origin.x, origin.y, origin.z };
         float[] destinationPostData = { destination.x, destination.y, destination.z };
-        
-        Dictionary<string, dynamic> postData = new() 
-        {
-            {"origin", originPostData},
-            {"destination", destinationPostData},
-            {"flightTime", flightTime},
-            {"startTime", startTime},
-        };
+
+        var apiRequest = new BumpOffCourseRequest(
+            originPostData, 
+            destinationPostData, 
+            flightTime, 
+            startTime
+        );
+        var postData = JsonUtility.ToJson(apiRequest);
         
         StartCoroutine(PingBumpOffCourseApi(postData));
     }
     
-    private static IEnumerator PingBumpOffCourseApi(Dictionary<string, dynamic> postData)
+    private static IEnumerator PingBumpOffCourseApi(string postData)
     {
         var webRequest = UnityWebRequest.Post(
             BumpOffCourseApiUri,
-            postData.ToString(),
+            postData,
             BumpOffCourseApiContentType
         );
         
@@ -73,6 +89,8 @@ public class HttpManager : MonoBehaviour
             if (webRequest.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError(webRequest.error);
+                Debug.LogError(webRequest.result);
+                Debug.LogError(webRequest.downloadHandler.text);
             }
             else
             {
