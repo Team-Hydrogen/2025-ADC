@@ -28,4 +28,26 @@ public static class CsvReader
         
         return csvData;
     }
+    
+    public static List<string[]> TextToData(string fileContent)
+    {
+        //var streamReader = new StreamReader(filePath);
+        string[] contentLines = fileContent.Split('\n');
+
+        List<string[]> csvData = new List<string[]>();
+
+        foreach (string line in contentLines)
+        {
+            csvData.Add(line.Split(Delimiter));
+        }
+        
+        //while (csvRow != null)
+        //{
+        //    var csvRowValues = csvRow.Split(Delimiter);
+        //    csvData.Add(csvRowValues);
+        //    csvRow = streamReader.ReadLine();
+        //}
+        
+        return csvData;
+    }
 }

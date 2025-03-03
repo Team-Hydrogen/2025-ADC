@@ -21,10 +21,10 @@ In the 2025 NASA App Development Challenge, high school teams have 10 weeks to c
 - [Vignesha Jayakumar](https://github.com/vigcode123)[^4]: Data Specialist, AI Developer
 
 ## Technical Specifications
-- Blender (4.2 LTS)
-- Unity Editor (2022.3.53f1 LTS)
-- JetBrains Rider (2024.3)
-- Visual Studio (17.7.6)
+- Blender (4.2.6 LTS)
+- Rider (2024.3.3)
+- Unity Editor (6000.0.34f1 LTS)
+- Visual Studio 2022 (17.12.4)
 
 ## Acknowledgements
 Team Hydrogen would like to thank the following members of our founding organization YoungWonks for their unwavering support and encouragement throughout the development of our application.

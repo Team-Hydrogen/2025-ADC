@@ -1,4 +1,0 @@
-Earth Texture - https://visibleearth.nasa.gov/collection/1484/blue-marble?page=2
-Earth City Lights Texture - https://visibleearth.nasa.gov/images/55167/earths-city-lights
-Misc. Planet Textures - https://www.solarsystemscope.com/
-Cubemap generator for planet textures - https://logins.github.io/graphics/2022/09/26/CubemapGenerationWithOpenCV.html

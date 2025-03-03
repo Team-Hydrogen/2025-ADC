@@ -7,7 +7,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField, Header("Orbital Follow")]
     private CinemachineOrbitalFollow orbitalFollow;
     
-    [Header("Camera Zoom Settings")]
+    [Header("Camera Zoom")]
     [SerializeField, Range(0.0f, 15.0f)]
     private float zoomSpeed = 5.0f;
     [SerializeField, Range(0.0f, 25.0f)]
@@ -23,14 +23,17 @@ public class CameraManager : MonoBehaviour
         {
             orbitalFollow = GetComponent<CinemachineOrbitalFollow>();
         }
-        CinemachineCore.GetInputAxis = GetAxisCustom;
+        CinemachineCore.GetInputAxis = GetCustomInputAxis;
     }
     
-    private void Update()
+    private void LateUpdate()
     {
         Zoom();
     }
-
+    
+    /// <summary>
+    /// Enables a Cinemachine camera to zoom in and out using the mouse wheel.
+    /// </summary>
     private void Zoom()
     {
         var netScrollSpeed = -zoomSpeed * Input.GetAxis("Mouse ScrollWheel");
@@ -55,28 +58,20 @@ public class CameraManager : MonoBehaviour
         orbitalFollow.Orbits.Bottom.Height = -newCameraRadius;
     }
     
-    public float GetAxisCustom(string axisName)
+    /// <summary>
+    /// Implements a custom input scheme for camera panning.
+    /// </summary>
+    /// <param name="axisName">The name of the handled axis</param>
+    /// <returns>Input magnitude of handled axis</returns>
+    private static float GetCustomInputAxis(string axisName)
     {
-        if (axisName == "Mouse X")
+        return axisName switch
         {
-            if (Input.GetMouseButton(1))
-            {
-                return Input.GetAxis("Mouse X");
-            }
-
-            return 0;
-        }
-
-        if (axisName == "Mouse Y")
-        {
-            if (Input.GetMouseButton(1))
-            {
-                return Input.GetAxis("Mouse Y");
-            }
-
-            return 0;
-        }
-
-        return Input.GetAxis(axisName);
+            "Mouse X" when Input.GetMouseButton(1) => Input.GetAxis("Mouse X"),
+            "Mouse X" => 0,
+            "Mouse Y" when Input.GetMouseButton(1) => -Input.GetAxis("Mouse Y"),
+            "Mouse Y" => 0,
+            _ => Input.GetAxis(axisName)
+        };
     }
 }

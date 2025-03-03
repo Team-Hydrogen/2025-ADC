@@ -6,24 +6,24 @@ public class DataLoadedEventArgs : EventArgs
     public List<string[]> NominalTrajectoryData { get; }
     public List<string[]> OffNominalTrajectoryData { get; }
     public List<string[]> AntennaAvailabilityData { get; }
-    public List<string[]> LinkBudgetData { get; }
-    public List<string[]> OffnominalLinkBudgetData { get; }
+    public List<string[]> NominalLinkBudget { get; }
+    public List<string[]> OffNominalLinkBudget { get; }
     public List<string[]> ThrustData { get; }
     public MissionStage MissionStage { get; }
 
     public DataLoadedEventArgs(List<string[]> nominalTrajectoryData,
         List<string[]> offNominalTrajectoryData,
         List<string[]> antennaAvailability,
-        List<string[]> linkBudgetData,
-        List<string[]> offnominalLinkBudgetData,
+        List<string[]> nominalLinkBudget,
+        List<string[]> offNominalLinkBudget,
         List<string[]> thrustData, 
         MissionStage missionStage)
     {
         NominalTrajectoryData = nominalTrajectoryData;
         OffNominalTrajectoryData = offNominalTrajectoryData;
         AntennaAvailabilityData = antennaAvailability;
-        LinkBudgetData = linkBudgetData;
-        OffnominalLinkBudgetData = offnominalLinkBudgetData;
+        NominalLinkBudget = nominalLinkBudget;
+        OffNominalLinkBudget = offNominalLinkBudget;
         ThrustData = thrustData;
         MissionStage = missionStage;
     }

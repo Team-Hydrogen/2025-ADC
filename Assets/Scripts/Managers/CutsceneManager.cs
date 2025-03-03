@@ -7,7 +7,7 @@ using UnityEngine.Video;
 
 public class CutsceneManager : MonoBehaviour
 {
-    public static SatelliteManager instance { get; private set; }
+    public static SpacecraftManager Instance { get; private set; }
     
     private static readonly int FadeToCutscene = Animator.StringToHash("StartCutscene");
     private static readonly int FadeToSimulation = Animator.StringToHash("StopCutscene");
@@ -27,19 +27,26 @@ public class CutsceneManager : MonoBehaviour
     private int _cutscenesPlayed = 0;
     private CutsceneState _state = CutsceneState.NotPlaying;
 
-    public static event Action OnCutsceneStart;
-    public static event Action OnCutsceneEnd;
+    public static event Action<int> OnCutsceneStart;
+    public static event Action OnCutsceneEnd; // unused
+
+    private bool _playCutscenes = true;
     
     private void OnEnable()
     {
-        SatelliteManager.OnUpdateTime += StartCutsceneTransition;
+        SpacecraftManager.OnUpdateTime += StartCutsceneTransition;
         videoPlayer.loopPointReached += EndCutsceneTransition;
     }
     
     private void OnDisable()
     {
-        SatelliteManager.OnUpdateTime -= StartCutsceneTransition;
+        SpacecraftManager.OnUpdateTime -= StartCutsceneTransition;
         videoPlayer.loopPointReached -= EndCutsceneTransition;
+    }
+
+    public void TogglePlayCutscenes(bool value)
+    {
+        _playCutscenes = value;
     }
     
     private void StartCutsceneTransition(float currentTimeInMinutes)
@@ -56,6 +63,15 @@ public class CutsceneManager : MonoBehaviour
         
         if (currentTimeInMinutes < cutsceneSimulationTimes[_cutscenesPlayed])
         {
+            return;
+        }
+
+        if (!_playCutscenes)
+        {
+            OnCutsceneStart?.Invoke(_cutscenesPlayed);
+            OnCutsceneEnd?.Invoke();
+            _cutscenesPlayed++;
+
             return;
         }
         
@@ -78,7 +94,7 @@ public class CutsceneManager : MonoBehaviour
         videoPlayer.Play();
         cutsceneImage.gameObject.SetActive(true);
         
-        OnCutsceneStart?.Invoke();
+        OnCutsceneStart?.Invoke(_cutscenesPlayed);
     }
     
     private void EndCutsceneTransition(VideoPlayer video)
