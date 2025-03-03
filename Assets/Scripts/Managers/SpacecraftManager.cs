@@ -213,7 +213,7 @@ public class SpacecraftManager : MonoBehaviour
     #region Plot Trajectories
     
     /// <summary>
-    /// Visualizes a trajectory
+    /// Converts trajectory data into a visualization
     /// </summary>
     /// <param name="points">A list of three-dimensional points</param>
     /// <param name="past">A line to represent the past path</param>
@@ -250,179 +250,14 @@ public class SpacecraftManager : MonoBehaviour
         future.SetPositions(futurePoints);
     }
     
-    #endregion
-
     /// <summary>
-    /// Updates the position of the Orion capsule
+    /// Updates a trajectory
     /// </summary>
-    private void UpdateSpacecraftPosition()
-    {
-        if (_currentState is SpacecraftState.Manual or SpacecraftState.Returning)
-        {
-            return;
-        }
-        
-        UpdateTimeIntervalAndProgress();
-        
-        _totalNominalDistance += UpdateSpacecraftPositionOnPath(_nominalPathPoints, NominalSpacecraftTransform);
-        _totalOffNominalDistance += UpdateSpacecraftPositionOnPath(_offNominalPathPoints, OffNominalSpacecraftTransform);
-        if (_currentState == SpacecraftState.Merging)
-        {
-            UpdateSpacecraftPositionOnPath(_mergePathPoints, MergeSpacecraftTransform);
-        }
-        
-        UpdateAfter();
-        SetSpacecraftVisualToPosition();
-    }
-
-    private void SetSpacecraftVisualToPosition()
-    {
-        switch (_currentState)
-        {
-            case SpacecraftState.Nominal:
-                spacecraft.position = NominalSpacecraftTransform.position;
-                spacecraft.rotation = NominalSpacecraftTransform.rotation;
-                break;
-            case SpacecraftState.OffNominal:
-                spacecraft.position = OffNominalSpacecraftTransform.position;
-                spacecraft.rotation = OffNominalSpacecraftTransform.rotation;
-                break;
-            case SpacecraftState.Merging:
-                spacecraft.position = MergeSpacecraftTransform.position;
-                spacecraft.rotation = MergeSpacecraftTransform.rotation;
-                break;
-            case SpacecraftState.Manual:
-            case SpacecraftState.Returning:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
-
-    private float UpdateSpacecraftPositionOnPath(List<string[]> points, Transform spacecraftPosition)
-    {
-        var currentPoint = points[_currentPointIndex];
-        var currentVelocityVector = new Vector3(
-            float.Parse(currentPoint[4]),
-            float.Parse(currentPoint[5]),
-            float.Parse(currentPoint[6]));
-        
-        var nextPoint = points[(_currentPointIndex + 1) % points.Count];
-        var nextVelocityVector = new Vector3(
-            float.Parse(nextPoint[4]),
-            float.Parse(nextPoint[5]),
-            float.Parse(nextPoint[6]));
-        
-        
-        var currentPosition = new Vector3(
-            float.Parse(currentPoint[1]) * trajectoryScale,
-            float.Parse(currentPoint[2]) * trajectoryScale,
-            float.Parse(currentPoint[3]) * trajectoryScale
-        );
-        var nextPosition = new Vector3(
-            float.Parse(nextPoint[1]) * trajectoryScale,
-            float.Parse(nextPoint[2]) * trajectoryScale,
-            float.Parse(nextPoint[3]) * trajectoryScale
-        );
-
-        // Interpolate position
-        var previousPosition = spacecraftPosition.position;
-        spacecraftPosition.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
-
-        var netDistance = Vector3.Distance(previousPosition, spacecraftPosition.position) / trajectoryScale;
-
-        // Calculate spacecraft direction
-        var direction = (nextPosition - currentPosition).normalized;
-        if (direction == Vector3.zero)
-        {
-            return netDistance;
-        }
-        
-        // Interpolate rotation
-        spacecraftPosition.rotation = Quaternion.Slerp(
-            Quaternion.LookRotation(currentVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f),
-            Quaternion.LookRotation(nextVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
-            _progress
-        );
-
-        return netDistance;
-    }
-    
-    private void UpdateTimeIntervalAndProgress()
-    {
-        var currentPoint = _offNominalPathPoints[_currentPointIndex];
-        var nextPoint = _offNominalPathPoints[(_currentPointIndex + 1) % _offNominalPathPoints.Count];
-        
-        var currentTime = float.Parse(currentPoint[0]);
-        var nextTime = float.Parse(nextPoint[0]);
-        _timeInterval = (nextTime - currentTime) * 60.0f;
-        
-        _progress += Time.deltaTime / _timeInterval * timeScale;
-        
-        _estimatedElapsedTime = currentTime + (nextTime - currentTime) * _progress;
-        
-        OnUpdateTime?.Invoke(_estimatedElapsedTime);
-    }
-    
-    private void UpdateAfter()
-    {
-        OnUpdateCoordinates?.Invoke(spacecraft.position / trajectoryScale);
-        CalculateDistances();
-        
-        UpdateTrajectory(
-            NominalSpacecraftTransform,
-            _currentNominalTrajectoryRenderer,
-            futureNominalTrajectory,
-            false,
-            true);
-        UpdateTrajectory(
-            OffNominalSpacecraftTransform,
-            _currentOffNominalTrajectoryRenderer,
-            futureOffNominalTrajectory,
-            false,
-            true);
-        if (_currentState == SpacecraftState.Merging)
-        {
-            UpdateTrajectory(
-                MergeSpacecraftTransform,
-                currentMergeTrajectoryRenderer,
-                futureMergeTrajectory,
-                false,
-                true);
-        }
-        
-        // Move to the next point when progress is complete
-        if (_progress is < 1.0f and > -1.0f)
-        {
-            return;
-        }
-
-        _previousPointIndex = _currentPointIndex;
-        
-        // The simulation is reset.
-        _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalPathPoints.Count;
-        
-        // The progress is reset.
-        _progress %= 1;
-        
-        OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
-        
-        UpdateTrajectory(
-            NominalSpacecraftTransform,
-            _currentNominalTrajectoryRenderer,
-            futureNominalTrajectory,
-            true,
-            false);
-        UpdateTrajectory(
-            OffNominalSpacecraftTransform,
-            _currentOffNominalTrajectoryRenderer,
-            futureOffNominalTrajectory,
-            true,
-            false);
-        
-        UpdateVelocityVector(_currentPointIndex);
-    }
-    
+    /// <param name="spacecraftTransform"></param>
+    /// <param name="current"></param>
+    /// <param name="future"></param>
+    /// <param name="indexUpdated"></param>
+    /// <param name="positionUpdated"></param>
     private void UpdateTrajectory(Transform spacecraftTransform, LineRenderer current, LineRenderer future, bool indexUpdated, bool positionUpdated)
     {
         if (positionUpdated)
@@ -546,6 +381,283 @@ public class SpacecraftManager : MonoBehaviour
         }
     }
     
+    #endregion
+
+    /// <summary>
+    /// Updates the position of the Orion capsule
+    /// </summary>
+    private void UpdateSpacecraftPosition()
+    {
+        if (_currentState is SpacecraftState.Manual or SpacecraftState.Returning)
+        {
+            return;
+        }
+        
+        UpdateTimeIntervalAndProgress();
+        
+        _totalNominalDistance += UpdateSpacecraftPositionOnPath(_nominalPathPoints, NominalSpacecraftTransform);
+        _totalOffNominalDistance += UpdateSpacecraftPositionOnPath(_offNominalPathPoints, OffNominalSpacecraftTransform);
+        if (_currentState == SpacecraftState.Merging)
+        {
+            UpdateSpacecraftPositionOnPathFromTime(_estimatedElapsedTime, _mergePathPoints, MergeSpacecraftTransform);
+        }
+        
+        UpdateAfter();
+        SetSpacecraftVisualToPosition();
+    }
+
+    private void SetSpacecraftVisualToPosition()
+    {
+        switch (_currentState)
+        {
+            case SpacecraftState.Nominal:
+                spacecraft.position = NominalSpacecraftTransform.position;
+                spacecraft.rotation = NominalSpacecraftTransform.rotation;
+                break;
+            case SpacecraftState.OffNominal:
+                spacecraft.position = OffNominalSpacecraftTransform.position;
+                spacecraft.rotation = OffNominalSpacecraftTransform.rotation;
+                break;
+            case SpacecraftState.Merging:
+                spacecraft.position = MergeSpacecraftTransform.position;
+                spacecraft.rotation = MergeSpacecraftTransform.rotation;
+                break;
+            case SpacecraftState.Manual:
+            case SpacecraftState.Returning:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private float UpdateSpacecraftPositionOnPath(List<string[]> points, Transform spacecraftPosition)
+    {
+        var currentPoint = points[_currentPointIndex];
+        Vector3 currentVelocityVector;
+        try
+        {
+            currentVelocityVector = new Vector3(
+                float.Parse(currentPoint[4]),
+                float.Parse(currentPoint[5]),
+                float.Parse(currentPoint[6])
+            );
+        }
+        catch (FormatException)
+        {
+            currentVelocityVector = Vector3.zero;
+        }
+        
+        var nextPoint = points[(_currentPointIndex + 1) % points.Count];
+        Vector3 nextVelocityVector;
+        try
+        {
+            nextVelocityVector = new Vector3(
+                float.Parse(nextPoint[4]),
+                float.Parse(nextPoint[5]),
+                float.Parse(nextPoint[6])
+            );
+        }
+        catch (FormatException)
+        {
+            nextVelocityVector = Vector3.zero;
+        }
+
+        Vector3 currentPosition;
+        try
+        {
+            currentPosition = new Vector3(
+                float.Parse(currentPoint[1]) * trajectoryScale,
+                float.Parse(currentPoint[2]) * trajectoryScale,
+                float.Parse(currentPoint[3]) * trajectoryScale
+            );
+        }
+        catch (FormatException)
+        {
+            currentPosition = Vector3.zero;
+        }
+        
+        Vector3 nextPosition = Vector3.zero;
+        try
+        {
+            nextPosition = new Vector3(
+                float.Parse(nextPoint[1]) * trajectoryScale,
+                float.Parse(nextPoint[2]) * trajectoryScale,
+                float.Parse(nextPoint[3]) * trajectoryScale
+            );
+        }
+        catch (FormatException)
+        {
+            currentPosition = Vector3.zero;
+        }
+
+        // Interpolate position
+        var previousPosition = spacecraftPosition.position;
+        spacecraftPosition.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
+
+        var netDistance = Vector3.Distance(previousPosition, spacecraftPosition.position) / trajectoryScale;
+
+        // Calculate spacecraft direction
+        var direction = (nextPosition - currentPosition).normalized;
+        if (direction == Vector3.zero)
+        {
+            return netDistance;
+        }
+        
+        // Interpolate rotation
+        spacecraftPosition.rotation = Quaternion.Slerp(
+            Quaternion.LookRotation(currentVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f),
+            Quaternion.LookRotation(nextVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
+            _progress
+        );
+
+        return netDistance;
+    }
+    
+    private float UpdateSpacecraftPositionOnPathFromTime(float elapsedTime, List<string[]> points, Transform spacecraftPosition)
+    {
+        int[] indexBounds = GetIndexBoundsFromTime(elapsedTime, points);
+        int lowerIndex = indexBounds[0];
+        int upperIndex = indexBounds[1];
+        
+        Debug.Log($"Index bounds [{lowerIndex}, {upperIndex}] / {points.Count} @ {elapsedTime}");
+        
+        var currentPoint = points[lowerIndex];
+        var currentVelocityVector = new Vector3(
+            float.Parse(currentPoint[4]),
+            float.Parse(currentPoint[5]),
+            float.Parse(currentPoint[6]));
+        
+        var nextPoint = points[upperIndex % points.Count];
+        var nextVelocityVector = new Vector3(
+            float.Parse(nextPoint[4]),
+            float.Parse(nextPoint[5]),
+            float.Parse(nextPoint[6]));
+        
+        
+        var currentPosition = new Vector3(
+            float.Parse(currentPoint[1]) * trajectoryScale,
+            float.Parse(currentPoint[2]) * trajectoryScale,
+            float.Parse(currentPoint[3]) * trajectoryScale
+        );
+        var nextPosition = new Vector3(
+            float.Parse(nextPoint[1]) * trajectoryScale,
+            float.Parse(nextPoint[2]) * trajectoryScale,
+            float.Parse(nextPoint[3]) * trajectoryScale
+        );
+
+        // Interpolate position
+        var previousPosition = spacecraftPosition.position;
+        spacecraftPosition.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
+
+        var netDistance = Vector3.Distance(previousPosition, spacecraftPosition.position) / trajectoryScale;
+
+        // Calculate spacecraft direction
+        var direction = (nextPosition - currentPosition).normalized;
+        if (direction == Vector3.zero)
+        {
+            return netDistance;
+        }
+        
+        // Interpolate rotation
+        spacecraftPosition.rotation = Quaternion.Slerp(
+            Quaternion.LookRotation(currentVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f),
+            Quaternion.LookRotation(nextVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
+            _progress
+        );
+
+        return netDistance;
+    }
+    
+    private void UpdateTimeIntervalAndProgress()
+    {
+        var currentPoint = _offNominalPathPoints[_currentPointIndex];
+        var nextPoint = _offNominalPathPoints[(_currentPointIndex + 1) % _offNominalPathPoints.Count];
+        
+        var currentTime = float.Parse(currentPoint[0]);
+        var nextTime = float.Parse(nextPoint[0]);
+        _timeInterval = (nextTime - currentTime) * 60.0f;
+        
+        _progress += Time.deltaTime / _timeInterval * timeScale;
+        
+        _estimatedElapsedTime = currentTime + (nextTime - currentTime) * _progress;
+        
+        OnUpdateTime?.Invoke(_estimatedElapsedTime);
+    }
+    
+    private void UpdateAfter()
+    {
+        OnUpdateCoordinates?.Invoke(spacecraft.position / trajectoryScale);
+        CalculateDistances();
+        
+        UpdateTrajectory(
+            NominalSpacecraftTransform,
+            _currentNominalTrajectoryRenderer,
+            futureNominalTrajectory,
+            false,
+            true
+        );
+        UpdateTrajectory(
+            OffNominalSpacecraftTransform,
+            _currentOffNominalTrajectoryRenderer,
+            futureOffNominalTrajectory,
+            false,
+            true
+        );
+        if (_currentState == SpacecraftState.Merging)
+        {
+            UpdateTrajectory(
+                MergeSpacecraftTransform,
+                currentMergeTrajectoryRenderer,
+                futureMergeTrajectory,
+                false,
+                true
+            );
+        }
+        
+        // Move to the next point when progress is complete
+        if (_progress is < 1.0f and > -1.0f)
+        {
+            return;
+        }
+
+        _previousPointIndex = _currentPointIndex;
+        
+        // The simulation is reset.
+        _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalPathPoints.Count;
+        
+        // The progress is reset.
+        _progress %= 1;
+        
+        OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
+        
+        UpdateTrajectory(
+            NominalSpacecraftTransform,
+            _currentNominalTrajectoryRenderer,
+            futureNominalTrajectory,
+            true,
+            false
+        );
+        UpdateTrajectory(
+            OffNominalSpacecraftTransform,
+            _currentOffNominalTrajectoryRenderer,
+            futureOffNominalTrajectory,
+            true,
+            false
+        );
+        if (_currentState == SpacecraftState.Merging)
+        {
+            UpdateTrajectory(
+                MergeSpacecraftTransform,
+                currentMergeTrajectoryRenderer,
+                futureMergeTrajectory,
+                true,
+                false
+            );
+        }
+        
+        UpdateVelocityVector(_currentPointIndex);
+    }
+    
     private void OnChangedCurrentPath(SpacecraftState state)
     {
         _currentState = state;
@@ -633,8 +745,8 @@ public class SpacecraftManager : MonoBehaviour
         OnDistanceCalculated?.Invoke(
             new DistanceTravelledEventArgs(distanceTravelledToSend, distanceToEarth, distanceToMoon));
     }
-    
-    public void DisplayModel(int displayedModelIndex)
+
+    private void DisplayModel(int displayedModelIndex)
     {
         Transform rocketParts = spacecraft.GetChild(0);
         for (int modelIndex = 0; modelIndex < rocketParts.childCount; modelIndex++)
@@ -660,7 +772,7 @@ public class SpacecraftManager : MonoBehaviour
         
         // The future path is predicted.
         var futureExpectedPositionIndex = GetClosestIndexFromTime(
-            _estimatedElapsedTime + MaximumManualControlTime);
+            _estimatedElapsedTime + MaximumManualControlTime, _nominalPathPoints);
         var futureExpectedPosition = new Vector3(
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][1]),
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][2]),
@@ -718,16 +830,16 @@ public class SpacecraftManager : MonoBehaviour
         }
     }
     
-    private int GetClosestIndexFromTime(float time)
+    private int GetClosestIndexFromTime(float time, List<string[]> pathPoints)
     {
         var closestIndex = 0;
         var closestTime = float.MaxValue;
     
-        for (var i = 0; i < _nominalPathPoints.Count; i++)
+        for (var i = 0; i < pathPoints.Count; i++)
         {
             try
             {
-                var timeDistance = Mathf.Abs(float.Parse(_nominalPathPoints[i][0]) - time);
+                var timeDistance = Mathf.Abs(float.Parse(pathPoints[i][0]) - time);
     
                 if (timeDistance >= closestTime)
                 {
@@ -745,11 +857,12 @@ public class SpacecraftManager : MonoBehaviour
         
         return closestIndex;
     }
-
-    public int[] GetIndexBoundsFromTime(float elapsedTime)
+    
+    private int[] GetIndexBoundsFromTime(float elapsedTime, List<string[]> pathPoints)
     {
-        var closestIndex = GetClosestIndexFromTime(elapsedTime);
-        var closestTime = float.Parse(_nominalPathPoints[closestIndex][0]);
+        var closestIndex = GetClosestIndexFromTime(elapsedTime, pathPoints);
+        
+        var closestTime = float.Parse(pathPoints[closestIndex][0]);
         
         var indexBounds = new int[2];
         indexBounds[0] = closestTime < elapsedTime ? closestIndex : closestIndex - 1;
@@ -760,7 +873,7 @@ public class SpacecraftManager : MonoBehaviour
     
     private Vector3 GetPositionFromTime(List<string[]> pathPoints, float elapsedTime)
     {
-        var indexBounds = GetIndexBoundsFromTime(elapsedTime);
+        var indexBounds = GetIndexBoundsFromTime(elapsedTime, _nominalPathPoints);
         var lowerIndex = indexBounds[0];
         var upperIndex = indexBounds[1];
         
@@ -783,7 +896,7 @@ public class SpacecraftManager : MonoBehaviour
             Mathf.Lerp(lowerPositionZ, upperPositionZ, interpolationRatio)
         );
     }
-
+    
     public Vector3 GetNominalPositionFromTime(float elapsedTime)
     {
         return GetPositionFromTime(_nominalPathPoints, elapsedTime);
@@ -811,10 +924,12 @@ public class SpacecraftManager : MonoBehaviour
     {
         switch (cutsceneIndex)
         {
-            case <= 3:
-                DisplayModel(cutsceneIndex + 1);
+            case < 3:
+                DisplayModel(0);
                 return;
-
+            case <= 6:
+                DisplayModel(cutsceneIndex - 2);
+                return;
             default:
                 DisplayModel(4);
                 return;
