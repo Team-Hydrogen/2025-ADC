@@ -122,7 +122,7 @@ public class DataManager : MonoBehaviour
     {
         var dataValues = CsvReader.ReadCsvFile(dataFile);
         dataValues.RemoveAt(0); // The first row of headers is removed.
-        dataValues.RemoveAt(0); // The first row of data (time=0) is removed.
+        //dataValues.RemoveAt(0); // The first row of data (time=0) is removed.
         return dataValues;
     }
 
