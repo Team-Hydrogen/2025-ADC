@@ -51,10 +51,12 @@ public class UIManager : MonoBehaviour
     
     [Header("Mission Stage")]
     [SerializeField] private TextMeshProUGUI missionStageText;
-    
+
     [Header("Notification")]
-    [SerializeField] private GameObject notification;
-    [SerializeField] private TextMeshProUGUI notificationText;
+    //[SerializeField] private GameObject notification;
+    //[SerializeField] private TextMeshProUGUI notificationText;
+    [SerializeField] private Transform notificationParent;
+    [SerializeField] private GameObject notificationPrefab;
     
     [Header("Machine Learning")]
     [SerializeField] private Button bumpOffCourseButton;
@@ -113,6 +115,8 @@ public class UIManager : MonoBehaviour
         _barXMargin = _bar.GetComponent<HorizontalLayoutGroup>().padding.horizontal;
         
         OnPrioritizationChanged?.Invoke(prioritizationMethod.value);
+
+        ShowNotification("testing notification", Notification.NotificationType.Dismissable);
     }
 
     private void Update()
@@ -127,7 +131,7 @@ public class UIManager : MonoBehaviour
         SpacecraftManager.OnUpdateCoordinates += UpdateCoordinatesText;
         SpacecraftManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
         SpacecraftManager.OnCurrentIndexUpdated += UpdateThrust;
-        SpacecraftManager.OnStageFired += ShowNotification;
+        SpacecraftManager.OnStageFired += ShowStageFiredNotification;
         SpacecraftManager.OnSpacecraftStateUpdated += UpdateSpacecraftState;
         SpacecraftManager.OnTimeScaleSet += SetTimeScaleIndicator;
         DataManager.OnDataLoaded += OnDataLoaded;
@@ -141,7 +145,7 @@ public class UIManager : MonoBehaviour
         SpacecraftManager.OnUpdateCoordinates -= UpdateCoordinatesText;
         SpacecraftManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
         SpacecraftManager.OnCurrentIndexUpdated -= UpdateThrust;
-        SpacecraftManager.OnStageFired -= ShowNotification;
+        SpacecraftManager.OnStageFired -= ShowStageFiredNotification;
         SpacecraftManager.OnSpacecraftStateUpdated -= UpdateSpacecraftState;
         DataManager.OnDataLoaded -= OnDataLoaded;
         DataManager.OnMissionStageUpdated -= UpdateMissionStage;
@@ -527,10 +531,20 @@ public class UIManager : MonoBehaviour
     
     #region Notifications
 
-    private void ShowNotification(string text)
+    private void ShowStageFiredNotification(string text)
     {
-        notification.SetActive(true);
-        notificationText.text = text;
+        ShowNotification(text, Notification.NotificationType.Dismissable);
+    }
+
+    private void ShowNotification(string text, Notification.NotificationType notificationType, Action? onYesButtonPressedCallback = null)
+    {
+        //notification.SetActive(true);
+        //notificationText.text = text;
+        GameObject notification = Instantiate(notificationPrefab, notificationParent);
+        notification.GetComponent<Notification>().Setup(
+            text,
+            Notification.NotificationType.Dismissable
+        );
     }
     
     #endregion
