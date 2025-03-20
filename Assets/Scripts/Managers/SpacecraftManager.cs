@@ -270,16 +270,20 @@ public class SpacecraftManager : MonoBehaviour
         {
             return;
         }
-        
-        var indexChange = _currentPointIndex - _previousPointIndex;
+
+        var indexChange = _currentState == SpacecraftState.Merging
+            ? 1
+            : _currentPointIndex - _previousPointIndex;
         
         switch (indexChange)
         {
-            case > 0:
+            case > 0: // The spacecraft moves forward.
             {
+                // Get all points in the future trajectory
                 var futureTrajectoryPoints = new Vector3[future.positionCount];
                 future.GetPositions(futureTrajectoryPoints);
                 
+                // Extract points to push to the past trajectory
                 var pointsToMove = new Vector3[indexChange];
                 Array.Copy(
                     futureTrajectoryPoints,
@@ -325,14 +329,14 @@ public class SpacecraftManager : MonoBehaviour
                 future.SetPositions(newFutureTrajectoryPoints);
                 break;
             }
-            case < 0:
+            case < 0: // The spacecraft moves backwards.
             {
                 indexChange = -indexChange;
-
+                
                 // Get all points in the past trajectory
                 var pastTrajectoryPoints = new Vector3[current.positionCount];
                 current.GetPositions(pastTrajectoryPoints);
-
+                
                 // Extract points to move back to the future trajectory
                 var pointsToMove = new Vector3[indexChange];
                 Array.Copy(
@@ -341,7 +345,7 @@ public class SpacecraftManager : MonoBehaviour
                     pointsToMove,
                     0,
                     indexChange);
-
+                
                 // Add these points back to the future trajectory
                 var futureTrajectoryPoints = new Vector3[future.positionCount];
                 future.GetPositions(futureTrajectoryPoints);
@@ -518,8 +522,6 @@ public class SpacecraftManager : MonoBehaviour
         int[] indexBounds = GetIndexBoundsFromTime(elapsedTime, points);
         int lowerIndex = indexBounds[0];
         int upperIndex = indexBounds[1];
-        
-        Debug.Log($"Index bounds [{lowerIndex}, {upperIndex}] / {points.Count} @ {elapsedTime}");
         
         var currentPoint = points[lowerIndex];
         var currentVelocityVector = new Vector3(
@@ -909,6 +911,8 @@ public class SpacecraftManager : MonoBehaviour
     
     private void OnPathCalculated(string data)
     {
+        Debug.Log(data);
+        
         _mergePathPoints = CsvReader.TextToData(data);
         _mergePathPoints.RemoveAt(0);
         
