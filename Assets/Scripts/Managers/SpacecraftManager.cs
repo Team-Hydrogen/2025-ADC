@@ -31,8 +31,8 @@ public class SpacecraftManager : MonoBehaviour
     [SerializeField] private LineRenderer futureMergeTrajectory;
     
     [Header("Celestial Bodies")]
-    [SerializeField] private GameObject earth;
-    [SerializeField] private GameObject moon;
+    [SerializeField] private Transform earth;
+    [SerializeField] private Transform moon;
     
     [Header("Time Scale")]
     [SerializeField] private float timeScale;
@@ -738,9 +738,9 @@ public class SpacecraftManager : MonoBehaviour
     private void CalculateDistances()
     {
         float distanceToEarth = Vector3.Distance(
-            spacecraft.position, earth.transform.position) / trajectoryScale;
+            spacecraft.position, earth.position) / trajectoryScale;
         float distanceToMoon = Vector3.Distance(
-            spacecraft.position, moon.transform.position) / trajectoryScale;
+            spacecraft.position, moon.position) / trajectoryScale;
 
         float distanceTravelledToSend = _currentState == SpacecraftState.OffNominal ? _totalOffNominalDistance : _totalNominalDistance;
 
