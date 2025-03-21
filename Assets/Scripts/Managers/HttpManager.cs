@@ -8,7 +8,7 @@ public class HttpManager : MonoBehaviour
 {
     public static HttpManager Instance { get; private set; }
     
-    private const string BumpOffCourseApiUri = "https://b7cb-2601-18c-500-fbb-a2e-7395-3c14-9932.ngrok-free.app/trajectory";
+    private const string BumpOffCourseApiUri = "https://5ef6-2601-18c-500-fbb-18f2-2a3b-3c1e-d7bb.ngrok-free.app/trajectory";
     private const string BumpOffCourseApiContentType = "application/json";
     
     public static event Action<string> OnPathCalculated;
@@ -90,8 +90,9 @@ public class HttpManager : MonoBehaviour
 
             if (webRequest.result != UnityWebRequest.Result.Success)
             {
-                Debug.LogError(webRequest.error);
-                Debug.LogError(webRequest.result);
+                UIManager.Instance.ShowNotification($"Error: {webRequest.error}", Notification.NotificationType.Dismissable);
+                Debug.Log(webRequest.error);
+                Debug.Log(webRequest.result);
             }
             else
             {
