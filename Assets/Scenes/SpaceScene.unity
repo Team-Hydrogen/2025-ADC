@@ -810,12 +810,6 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!1 &34631889 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 147435142602920637, guid: 6ff407b5008f9d540bc3442c927026d1,
-    type: 3}
-  m_PrefabInstance: {fileID: 2095082123}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &37052582
 GameObject:
   m_ObjectHideFlags: 0
@@ -1775,12 +1769,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 135697657}
   m_CullTransparentMesh: 1
---- !u!1 &135701039 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 131132662837808010, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-    type: 3}
-  m_PrefabInstance: {fileID: 5649280817646709898}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &135701040 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
@@ -7469,9 +7457,11 @@ MonoBehaviour:
   <MergeSpacecraftTransform>k__BackingField: {fileID: 42023201}
   futureNominalTrajectory: {fileID: 943471396}
   futureOffNominalTrajectory: {fileID: 1270632034}
-  mergeTrajectoryPrefab: {fileID: 135701039}
-  earth: {fileID: 34631889}
-  moon: {fileID: 1325657793}
+  trajectoryParent: {fileID: 1679061964}
+  mergeTrajectoryPrefab: {fileID: 131132662837808010, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
+    type: 3}
+  earth: {fileID: 2095082124}
+  moon: {fileID: 555256270}
   timeScale: 1
 --- !u!1 &542944903
 GameObject:
@@ -19199,12 +19189,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 70, y: 0}
   m_Pivot: {x: 0, y: 0.5}
---- !u!1 &1325657793 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5314488137069964330, guid: d59bb9e6d298ed94f9b461dbbcddfcce,
-    type: 3}
-  m_PrefabInstance: {fileID: 555256269}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1353478431
 GameObject:
   m_ObjectHideFlags: 0

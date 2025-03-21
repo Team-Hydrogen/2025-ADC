@@ -95,9 +95,11 @@ public class UIManager : MonoBehaviour
     private List<string[]> _offNominalLinkBudgetData;
     private List<string[]> _thrustData;
     private SpacecraftManager.SpacecraftState _spacecraftState;
-    
+
+    private bool _showedStageFiredNotification = false;
+
     #region Event Functions
-    
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -116,7 +118,7 @@ public class UIManager : MonoBehaviour
         
         OnPrioritizationChanged?.Invoke(prioritizationMethod.value);
 
-        ShowNotification("testing notification", Notification.NotificationType.Dismissable);
+        //ShowNotification("testing notification", Notification.NotificationType.Dismissable);
     }
 
     private void Update()
@@ -168,6 +170,7 @@ public class UIManager : MonoBehaviour
     
     public void RestartButtonPressed()
     {
+        Time.timeScale = 1.0f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
@@ -533,10 +536,16 @@ public class UIManager : MonoBehaviour
 
     private void ShowStageFiredNotification(string text)
     {
+        if (_showedStageFiredNotification)
+        {
+            return;
+        }
+
         ShowNotification(text, Notification.NotificationType.Dismissable);
+        _showedStageFiredNotification = true;
     }
 
-    private void ShowNotification(string text, Notification.NotificationType notificationType, Action? onYesButtonPressedCallback = null)
+    public void ShowNotification(string text, Notification.NotificationType notificationType, Action? onYesButtonPressedCallback = null)
     {
         //notification.SetActive(true);
         //notificationText.text = text;
