@@ -6,6 +6,8 @@ using UnityEngine.Serialization;
 
 public class SpacecraftManager : MonoBehaviour
 {
+    #region References
+
     public static SpacecraftManager Instance { get; private set; }
     
     // Available in Inspector
@@ -38,7 +40,10 @@ public class SpacecraftManager : MonoBehaviour
     
     [Header("Time Scale")]
     [SerializeField] private float timeScale;
-    
+
+    #endregion
+
+    #region Private variables
     // Private variables
     private SpacecraftState _currentState = SpacecraftState.Nominal;
 
@@ -51,7 +56,7 @@ public class SpacecraftManager : MonoBehaviour
     private const int SkipTimeChange = 10;
     
     private float _progress = 0.0f;
-    private float _estimatedElapsedTime;
+    private float _elapsedTime;
     private float _totalNominalDistance = 0.0f;
     private float _totalOffNominalDistance = 0.0f;
     
@@ -94,9 +99,11 @@ public class SpacecraftManager : MonoBehaviour
     public static event Action<float> OnTimeScaleSet;
     public static event Action<string> OnStageFired;
     public static event Action<SpacecraftState> OnSpacecraftStateUpdated;
-    
-    #region Material Variables
-    
+
+    #endregion
+
+    #region Vector Material Variables
+
     private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
     private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
     private const float Intensity = 0.5f;
@@ -113,7 +120,6 @@ public class SpacecraftManager : MonoBehaviour
     };
     
     #endregion
-    
     
     #region Event Functions
     
@@ -139,7 +145,7 @@ public class SpacecraftManager : MonoBehaviour
     {
         if (_isPlaying)
         {
-            UpdateSpacecraftPosition();
+            UpdateSpacecraft();
             
             if (_currentState == SpacecraftState.Manual)
             {
@@ -215,7 +221,7 @@ public class SpacecraftManager : MonoBehaviour
         OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
     }
 
-    #region Plot Trajectories
+    #region Trajectory Plotting
     
     /// <summary>
     /// Converts trajectory data into a visualization
@@ -395,7 +401,7 @@ public class SpacecraftManager : MonoBehaviour
     /// <summary>
     /// Updates the position of the Orion capsule
     /// </summary>
-    private void UpdateSpacecraftPosition()
+    private void UpdateSpacecraft()
     {
         if (_currentState is SpacecraftState.Manual or SpacecraftState.Returning)
         {
@@ -408,10 +414,10 @@ public class SpacecraftManager : MonoBehaviour
         _totalOffNominalDistance += UpdateSpacecraftPositionOnPath(_offNominalPathPoints, OffNominalSpacecraftTransform);
         if (_currentState == SpacecraftState.Merging)
         {
-            UpdateSpacecraftPositionOnPathFromTime(_estimatedElapsedTime, _mergePathPoints, MergeSpacecraftTransform);
+            UpdateSpacecraftPositionOnPathFromTime(_elapsedTime, _mergePathPoints, MergeSpacecraftTransform);
         }
         
-        UpdateAfter();
+        UpdateSatelliteProgressAndTrajectories();
         SetSpacecraftVisualToPosition();
     }
 
@@ -586,12 +592,12 @@ public class SpacecraftManager : MonoBehaviour
         
         _progress += Time.deltaTime / _timeInterval * timeScale;
         
-        _estimatedElapsedTime = currentTime + (nextTime - currentTime) * _progress;
+        _elapsedTime = currentTime + (nextTime - currentTime) * _progress;
         
-        OnUpdateTime?.Invoke(_estimatedElapsedTime);
+        OnUpdateTime?.Invoke(_elapsedTime);
     }
     
-    private void UpdateAfter()
+    private void UpdateSatelliteProgressAndTrajectories()
     {
         OnUpdateCoordinates?.Invoke(spacecraft.position / trajectoryScale);
         CalculateDistances();
@@ -603,6 +609,7 @@ public class SpacecraftManager : MonoBehaviour
             false,
             true
         );
+
         UpdateTrajectory(
             OffNominalSpacecraftTransform,
             _currentOffNominalTrajectoryRenderer,
@@ -610,6 +617,7 @@ public class SpacecraftManager : MonoBehaviour
             false,
             true
         );
+
         if (_currentState == SpacecraftState.Merging)
         {
             UpdateTrajectory(
@@ -644,6 +652,7 @@ public class SpacecraftManager : MonoBehaviour
             true,
             false
         );
+
         UpdateTrajectory(
             OffNominalSpacecraftTransform,
             _currentOffNominalTrajectoryRenderer,
@@ -651,6 +660,7 @@ public class SpacecraftManager : MonoBehaviour
             true,
             false
         );
+
         if (_currentState == SpacecraftState.Merging)
         {
             UpdateTrajectory(
@@ -753,15 +763,8 @@ public class SpacecraftManager : MonoBehaviour
             new DistanceTravelledEventArgs(distanceTravelledToSend, distanceToEarth, distanceToMoon));
     }
 
-    private void DisplayModel(int displayedModelIndex)
-    {
-        Transform rocketParts = spacecraft.GetChild(0);
-        for (int modelIndex = 0; modelIndex < rocketParts.childCount; modelIndex++)
-        {
-            rocketParts.GetChild(modelIndex).gameObject.SetActive(modelIndex == displayedModelIndex);
-        }
-    }
-    
+    #region Bump Off Course
+
     private void OnBumpOffCourse()
     {
         _currentState = SpacecraftState.Manual;
@@ -779,7 +782,7 @@ public class SpacecraftManager : MonoBehaviour
         
         // The future path is predicted.
         var futureExpectedPositionIndex = GetClosestIndexFromTime(
-            _estimatedElapsedTime + MaximumManualControlTime, _nominalPathPoints);
+            _elapsedTime + MaximumManualControlTime, _nominalPathPoints);
         var futureExpectedPosition = new Vector3(
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][1]),
             float.Parse(_nominalPathPoints[futureExpectedPositionIndex][2]),
@@ -836,7 +839,11 @@ public class SpacecraftManager : MonoBehaviour
             spacecraft.position += speed * Time.deltaTime * _manualControlScheme[key];
         }
     }
-    
+
+    #endregion
+
+    #region Time Helper Functions
+
     private int GetClosestIndexFromTime(float time, List<string[]> pathPoints)
     {
         var closestIndex = 0;
@@ -913,7 +920,9 @@ public class SpacecraftManager : MonoBehaviour
     {
         return GetPositionFromTime(_offNominalPathPoints, elapsedTime);
     }
-    
+
+    #endregion
+
     private void OnPathCalculated(string data)
     {
         Debug.Log(data);
@@ -931,10 +940,17 @@ public class SpacecraftManager : MonoBehaviour
         
         _currentState = SpacecraftState.Merging;
     }
-    
-    
-    # region Models
-    
+
+    #region Spacecraft Model
+    private void DisplayModel(int displayedModelIndex)
+    {
+        Transform rocketParts = spacecraft.GetChild(0);
+        for (int modelIndex = 0; modelIndex < rocketParts.childCount; modelIndex++)
+        {
+            rocketParts.GetChild(modelIndex).gameObject.SetActive(modelIndex == displayedModelIndex);
+        }
+    }
+
     private void UpdateModel(int cutsceneIndex)
     {
         switch (cutsceneIndex)
@@ -950,9 +966,9 @@ public class SpacecraftManager : MonoBehaviour
                 return;
         }
     }
-    
-    # endregion
-    
+
+    #endregion
+
     public enum SpacecraftState
     {
         Nominal,
