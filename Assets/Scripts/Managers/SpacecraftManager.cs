@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class SpacecraftManager : MonoBehaviour
 {
@@ -22,13 +23,14 @@ public class SpacecraftManager : MonoBehaviour
     [field: SerializeField] public Transform OffNominalSpacecraftTransform { get; private set; }
     [field: SerializeField] public Transform MergeSpacecraftTransform { get; private set; }
     
-    [Header("Current Trajectories")]
-    [SerializeField] private LineRenderer currentMergeTrajectoryRenderer;
-    
     [Header("Future Trajectories")]
     [SerializeField] private LineRenderer futureNominalTrajectory;
     [SerializeField] private LineRenderer futureOffNominalTrajectory;
-    [SerializeField] private LineRenderer futureMergeTrajectory;
+
+    [FormerlySerializedAs("trajectoryClass")]
+    [Header("Merge Trajectory")]
+    [SerializeField] private Transform trajectoryParent;
+    [SerializeField] private GameObject mergeTrajectoryPrefab;
     
     [Header("Celestial Bodies")]
     [SerializeField] private GameObject earth;
@@ -59,6 +61,9 @@ public class SpacecraftManager : MonoBehaviour
     
     private LineRenderer _currentNominalTrajectoryRenderer;
     private LineRenderer _currentOffNominalTrajectoryRenderer;
+    
+    private LineRenderer _pastMergeTrajectoryRenderer;
+    private LineRenderer _futureMergeTrajectoryRenderer;
     
     // The second stage is the same as the service module.
     private const int SecondStageFireIndex = 120;
@@ -221,16 +226,16 @@ public class SpacecraftManager : MonoBehaviour
     private void PlotTrajectory(List<string[]> points, LineRenderer past, LineRenderer future)
     {
         // An array of three-dimensional points is constructed by processing the CSV file.
-        var numberOfPoints = points.Count;
-        var futurePoints = new Vector3[numberOfPoints];
+        int numberOfPoints = points.Count;
+        Vector3[] futurePoints = new Vector3[numberOfPoints];
         
-        for (var index = 0; index < numberOfPoints; index++)
+        for (int index = 0; index < numberOfPoints; index++)
         {
-            var point = points[index];
+            string[] point = points[index];
             
             try
             {
-                var pointAsVector = new Vector3(
+                Vector3 pointAsVector = new Vector3(
                     float.Parse(point[1]) * trajectoryScale,
                     float.Parse(point[2]) * trajectoryScale,
                     float.Parse(point[3]) * trajectoryScale);
@@ -609,8 +614,8 @@ public class SpacecraftManager : MonoBehaviour
         {
             UpdateTrajectory(
                 MergeSpacecraftTransform,
-                currentMergeTrajectoryRenderer,
-                futureMergeTrajectory,
+                _pastMergeTrajectoryRenderer,
+                _futureMergeTrajectoryRenderer,
                 false,
                 true
             );
@@ -650,8 +655,8 @@ public class SpacecraftManager : MonoBehaviour
         {
             UpdateTrajectory(
                 MergeSpacecraftTransform,
-                currentMergeTrajectoryRenderer,
-                futureMergeTrajectory,
+                _pastMergeTrajectoryRenderer,
+                _futureMergeTrajectoryRenderer,
                 true,
                 false
             );
@@ -916,7 +921,13 @@ public class SpacecraftManager : MonoBehaviour
         _mergePathPoints = CsvReader.TextToData(data);
         _mergePathPoints.RemoveAt(0);
         
-        PlotTrajectory(_mergePathPoints, currentMergeTrajectoryRenderer, futureMergeTrajectory);
+        GameObject mergeTrajectory = Instantiate(mergeTrajectoryPrefab, trajectoryParent);
+        LineRenderer[] mergeTrajectoryRenderers = mergeTrajectory.GetComponentsInChildren<LineRenderer>();
+
+        _pastMergeTrajectoryRenderer = mergeTrajectoryRenderers[0];
+        _futureMergeTrajectoryRenderer = mergeTrajectoryRenderers[1];
+        
+        PlotTrajectory(_mergePathPoints, _pastMergeTrajectoryRenderer, _futureMergeTrajectoryRenderer);
         
         _currentState = SpacecraftState.Merging;
     }
