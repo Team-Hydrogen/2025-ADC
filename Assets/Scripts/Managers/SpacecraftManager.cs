@@ -260,9 +260,11 @@ public class SpacecraftManager : MonoBehaviour
                 Debug.LogWarning($"No positional data exists on line {index}!");
             }
         }
+        
         // The past trajectory's first point is added.
         past.positionCount = 2;
         past.SetPosition(0, futurePoints[0]);
+        past.SetPosition(1, futurePoints[0]);
         // The processed points are pushed to the future trajectory.
         future.positionCount = numberOfPoints;
         future.SetPositions(futurePoints);
