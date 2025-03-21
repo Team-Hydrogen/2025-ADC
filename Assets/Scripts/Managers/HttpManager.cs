@@ -7,7 +7,6 @@ using UnityEngine.Networking;
 public class HttpManager : MonoBehaviour
 {
     public static HttpManager Instance { get; private set; }
-    
     private const string BumpOffCourseApiUri = "https://ce21-2601-18c-500-fbb-7f8c-2e76-f43d-413a.ngrok-free.app/trajectory";
     private const string BumpOffCourseApiContentType = "application/json";
     
