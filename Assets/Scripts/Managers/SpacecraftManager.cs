@@ -1001,6 +1001,7 @@ public class SpacecraftManager : MonoBehaviour
     }
 
     #region Spacecraft Model
+    
     private void DisplayModel(int displayedModelIndex)
     {
         Transform rocketParts = spacecraft.GetChild(0);
