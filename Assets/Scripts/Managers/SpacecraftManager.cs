@@ -28,8 +28,7 @@ public class SpacecraftManager : MonoBehaviour
     [Header("Future Trajectories")]
     [SerializeField] private LineRenderer futureNominalTrajectory;
     [SerializeField] private LineRenderer futureOffNominalTrajectory;
-
-    [FormerlySerializedAs("trajectoryClass")]
+    
     [Header("Merge Trajectory")]
     [SerializeField] private Transform trajectoryParent;
     [SerializeField] private GameObject mergeTrajectoryPrefab;
@@ -44,7 +43,7 @@ public class SpacecraftManager : MonoBehaviour
     #endregion
 
     #region Private Variables
-    
+    // Private variables
     private SpacecraftState _currentState = SpacecraftState.Nominal;
 
     private const float MinimumTimeScale = 1.0f;
