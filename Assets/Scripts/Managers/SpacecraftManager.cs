@@ -209,7 +209,7 @@ public class SpacecraftManager : MonoBehaviour
         _nominalPathPoints = data.NominalTrajectoryData;
         _offNominalPathPoints = data.OffNominalTrajectoryData;
         _currentNominalTrajectoryRenderer = data.MissionStage.nominalLineRenderer;
-        _currentOffNominalTrajectoryRenderer = data.MissionStage.offnominalLineRenderer;
+        _currentOffNominalTrajectoryRenderer = data.MissionStage.offNominalLineRenderer;
         
         PlotTrajectory(_nominalPathPoints, _currentNominalTrajectoryRenderer, futureNominalTrajectory);
         PlotTrajectory(_offNominalPathPoints, _currentOffNominalTrajectoryRenderer, futureOffNominalTrajectory);
@@ -283,9 +283,7 @@ public class SpacecraftManager : MonoBehaviour
             return;
         }
 
-        var indexChange = _currentState == SpacecraftState.Merging
-            ? 1
-            : _currentPointIndex - _previousPointIndex;
+        var indexChange = _currentPointIndex - _previousPointIndex;
         
         switch (indexChange)
         {
@@ -692,7 +690,7 @@ public class SpacecraftManager : MonoBehaviour
         _currentNominalTrajectoryRenderer = stage.nominalLineRenderer;
         _currentNominalTrajectoryRenderer.SetPosition(0, NominalSpacecraftTransform.position);
 
-        _currentOffNominalTrajectoryRenderer = stage.offnominalLineRenderer;
+        _currentOffNominalTrajectoryRenderer = stage.offNominalLineRenderer;
         _currentOffNominalTrajectoryRenderer.SetPosition(0, OffNominalSpacecraftTransform.position);
         
         // trigger animation here if it is correct stage
