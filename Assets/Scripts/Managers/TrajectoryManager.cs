@@ -1,15 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using UnityEngine;
-using Vector3 = UnityEngine.Vector3;
 
 /// <summary>
-/// This manager specializes in visualizing the trajectory. The trajectory manager accomplishes three critical tasks
-/// pertaining to any given trajectory.
-/// 1. Plotting
-/// 2. Splitting
-/// 3. Tracing
+/// This manager specializes in visualizing the trajectory.
 /// </summary>
 public class TrajectoryManager : MonoBehaviour
 {
