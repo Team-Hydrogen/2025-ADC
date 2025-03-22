@@ -59,8 +59,8 @@ public class TrajectoryManager : MonoBehaviour
     /// Visualizes provided trajectory data
     /// </summary>
     /// <param name="points">A list of three-dimensional points as strings</param>
-    /// <param name="past">A line renderer visualizing the past trajectory</param>
-    /// <param name="future">A line renderer visualizing the future trajectory</param>
+    /// <param name="past">The line renderer visualizing the past trajectory</param>
+    /// <param name="future">The line renderer visualizing the future trajectory</param>
     private void PlotTrajectory(List<string[]> points, LineRenderer past, LineRenderer future)
     {
         // An array of three-dimensional points is constructed by processing the CSV file.
@@ -102,7 +102,15 @@ public class TrajectoryManager : MonoBehaviour
         future.positionCount = numberOfPoints;
         future.SetPositions(futurePoints);
     }
-
+    
+    /// <summary>
+    /// Splits the trajectory into past and future halves based on a provided time
+    /// </summary>
+    /// <param name="currentTime">The provided simulation time</param>
+    /// <param name="data">The trajectory data</param>
+    /// <param name="past">The line renderer visualizing the past trajectory</param>
+    /// <param name="future">The line renderer visualizing the future trajectory</param>
+    /// <param name="errorLines">The number of trailing erroneous or null lines</param>
     private void SplitTrajectory(float currentTime, List<string[]> data, LineRenderer past, LineRenderer future, int errorLines=3)
     {
         // The number of data points is calculated ahead of time based on the number of erroneous lines.
@@ -110,19 +118,14 @@ public class TrajectoryManager : MonoBehaviour
         
         // The pivot index is the first index of the dataset where the time is ahead of the provided `currentTime`.
         int pivotIndex = 1;
-        float lowerTime = float.Parse(data[0][0]);
-        float upperTime = float.Parse(data[1][0]);
+        float lowerTime = float.Parse(data[pivotIndex - 1][0]);
+        float upperTime = float.Parse(data[pivotIndex][0]);
         
-        for (int dataIndex = 1; dataIndex < numberOfValidPoints; dataIndex++)
+        while (lowerTime >= currentTime && currentTime < upperTime && pivotIndex < numberOfValidPoints)
         {
-            lowerTime = float.Parse(data[dataIndex - 1][0]);
-            upperTime = float.Parse(data[dataIndex][0]);
-            
-            if (lowerTime >= currentTime && currentTime < upperTime)
-            {
-                pivotIndex = dataIndex;
-                break;
-            }
+            lowerTime = float.Parse(data[pivotIndex - 1][0]);
+            upperTime = float.Parse(data[pivotIndex][0]);
+            pivotIndex++;
         }
         
         // The interpolation ratio is found between the two times, which will later be applied to positions.
@@ -132,7 +135,7 @@ public class TrajectoryManager : MonoBehaviour
             Mathf.Lerp(float.Parse(data[pivotIndex - 1][1]), float.Parse(data[pivotIndex][1]), interpolationRatio),
             Mathf.Lerp(float.Parse(data[pivotIndex - 1][2]), float.Parse(data[pivotIndex][2]), interpolationRatio),
             Mathf.Lerp(float.Parse(data[pivotIndex - 1][3]), float.Parse(data[pivotIndex][3]), interpolationRatio)
-        );
+        ) * trajectoryScale;
         
         // The number of points in the past trajectory and future trajectory are calculated and set.
         past.positionCount = pivotIndex + 1;
@@ -151,7 +154,7 @@ public class TrajectoryManager : MonoBehaviour
                 float.Parse(data[dataIndex][1]),
                 float.Parse(data[dataIndex][2]),
                 float.Parse(data[dataIndex][3])
-            );
+            ) * trajectoryScale;
         }
         for (int dataIndex = pivotIndex; dataIndex < numberOfValidPoints; dataIndex++)
         {
@@ -159,7 +162,7 @@ public class TrajectoryManager : MonoBehaviour
                 float.Parse(data[dataIndex][1]),
                 float.Parse(data[dataIndex][2]),
                 float.Parse(data[dataIndex][3])
-            );
+            ) * trajectoryScale;
         }
         
         pastTrajectoryPoints[^1] = interpolatedPoint; // The past trajectory's final data point
