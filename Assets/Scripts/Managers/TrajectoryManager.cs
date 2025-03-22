@@ -35,6 +35,24 @@ public class TrajectoryManager : MonoBehaviour
     
     # endregion
     
+    #region Past Trajectory Renderers
+    
+    private LineRenderer _pastNominalTrajectoryLineRenderer;
+    private LineRenderer _pastOffNominalTrajectoryLineRenderer;
+    private LineRenderer _pastMinimapTrajectoryLineRenderer;
+    private LineRenderer _pastMergeTrajectoryLineRenderer;
+    
+    # endregion
+    
+    #region Future Trajectory Renderers
+    
+    private LineRenderer _futureNominalTrajectoryLineRenderer;
+    private LineRenderer _futureOffNominalTrajectoryLineRenderer;
+    private LineRenderer _futureMinimapTrajectoryLineRenderer;
+    private LineRenderer _futureMergeTrajectoryLineRenderer;
+    
+    # endregion
+    
     [Header("Plotting")]
     [SerializeField] private float trajectoryScale;
 
