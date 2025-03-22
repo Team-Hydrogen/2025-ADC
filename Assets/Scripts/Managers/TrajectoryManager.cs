@@ -13,6 +13,24 @@ public class TrajectoryManager : MonoBehaviour
     [SerializeField] private Transform minimapTrajectory;
     [SerializeField] private Transform mergeTrajectory;
     
+    #region Past Trajectory Renderers
+    
+    private LineRenderer _pastNominalTrajectoryLineRenderer;
+    private LineRenderer _pastOffNominalTrajectoryLineRenderer;
+    private LineRenderer _pastMinimapTrajectoryLineRenderer;
+    private LineRenderer _pastMergeTrajectoryLineRenderer;
+    
+    # endregion
+    
+    #region Future Trajectory Renderers
+    
+    private LineRenderer _futureNominalTrajectoryLineRenderer;
+    private LineRenderer _futureOffNominalTrajectoryLineRenderer;
+    private LineRenderer _futureMinimapTrajectoryLineRenderer;
+    private LineRenderer _futureMergeTrajectoryLineRenderer;
+    
+    # endregion
+    
     [Header("Plotting")]
     [SerializeField] private float trajectoryScale;
 
@@ -23,36 +41,54 @@ public class TrajectoryManager : MonoBehaviour
     
     #region Event Functions
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void OnEnable()
     {
         DataManager.OnDataLoaded += LoadTrajectoryData;
+        DataManager.OnMissionStageUpdated += SetPastTrajectoryRendererByStage;
+        HttpManager.OnPathCalculated += LoadMergeTrajectoryData;
     }
 
     private void OnDisable()
     {
         DataManager.OnDataLoaded -= LoadTrajectoryData;
+        DataManager.OnMissionStageUpdated -= SetPastTrajectoryRendererByStage;
+        HttpManager.OnPathCalculated -= LoadMergeTrajectoryData;
     }
     
     #endregion
 
     #region Essential Methods
-
+    
     private void LoadTrajectoryData(DataLoadedEventArgs data)
     {
         _nominalTrajectoryData = data.NominalTrajectoryData;
         _offNominalTrajectoryData = data.OffNominalTrajectoryData;
+    }
+
+    private void LoadMergeTrajectoryData(string rawData)
+    {
+        
+    }
+    
+    /// <summary>
+    /// Sets the past trajectory based on stage
+    /// </summary>
+    /// <param name="stage">Updated mission stage</param>
+    private void SetPastTrajectoryRendererByStage(MissionStage stage)
+    {
+        // The past trajectory line renderer is set to the mission stage's respective line renderer.
+        if (_pastNominalTrajectoryLineRenderer.Equals(stage.nominalLineRenderer))
+        {
+            return;
+        }
+        
+        _pastNominalTrajectoryLineRenderer = stage.nominalLineRenderer;
+        _pastNominalTrajectoryLineRenderer = stage.offNominalLineRenderer;
+        
+        // _pastNominalTrajectoryLineRenderer.SetPosition(0, NominalSpacecraftTransform.position);
+        // _pastNominalTrajectoryLineRenderer.SetPosition(0, OffNominalSpacecraftTransform.position);
+        
+        // trigger animation here if it is correct stage
     }
     
     /// <summary>
@@ -111,7 +147,8 @@ public class TrajectoryManager : MonoBehaviour
     /// <param name="past">The line renderer visualizing the past trajectory</param>
     /// <param name="future">The line renderer visualizing the future trajectory</param>
     /// <param name="errorLines">The number of trailing erroneous or null lines</param>
-    private void SplitTrajectory(float currentTime, List<string[]> data, LineRenderer past, LineRenderer future, int errorLines=3)
+    /// <returns>The spacecraft's interpolated position</returns>
+    private Vector3 SplitTrajectory(float currentTime, List<string[]> data, LineRenderer past, LineRenderer future, int errorLines=3)
     {
         // The number of data points is calculated ahead of time based on the number of erroneous lines.
         int numberOfValidPoints = data.Count - errorLines;
@@ -143,8 +180,8 @@ public class TrajectoryManager : MonoBehaviour
         
         // The points in the past trajectory are determined by including all positions before the pivot index. The
         // points in the future trajectory are determined by including all positions at and after the pivot index. The
-        // interpolated position is included as the past trajectory's final data point and the future trajectory's first
-        // data point to visually connect the trajectory.
+        // interpolated position is included as the past trajectory's final data point and the future trajectory's
+        // first data point to visually connect the trajectory.
         Vector3[] pastTrajectoryPoints = new Vector3[pivotIndex + 1];
         Vector3[] futureTrajectoryPoints = new Vector3[numberOfValidPoints - pivotIndex + 2];
         
@@ -170,6 +207,8 @@ public class TrajectoryManager : MonoBehaviour
         
         past.SetPositions(pastTrajectoryPoints);
         future.SetPositions(futureTrajectoryPoints);
+        
+        return interpolatedPoint;
     }
     
     #endregion

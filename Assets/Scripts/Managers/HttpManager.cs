@@ -7,8 +7,8 @@ using UnityEngine.Networking;
 public class HttpManager : MonoBehaviour
 {
     public static HttpManager Instance { get; private set; }
-    private const string BumpOffCourseApiUri = "https://ce21-2601-18c-500-fbb-7f8c-2e76-f43d-413a.ngrok-free.app/trajectory";
-    private const string BumpOffCourseApiContentType = "application/json";
+    private const string TransitionPathApiUri = "https://ce21-2601-18c-500-fbb-7f8c-2e76-f43d-413a.ngrok-free.app/trajectory";
+    private const string TransitionPathApiContentType = "application/json";
     
     public static event Action<string> OnPathCalculated;
     
@@ -90,9 +90,9 @@ public class HttpManager : MonoBehaviour
     private IEnumerator PingTransitionPathApi(string postData)
     {
         var webRequest = UnityWebRequest.Post(
-            BumpOffCourseApiUri,
+            TransitionPathApiUri,
             postData,
-            BumpOffCourseApiContentType
+            TransitionPathApiContentType
         );
         
         using (webRequest)
