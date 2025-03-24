@@ -1,4 +1,3 @@
-#nullable enable
 using System;
 using TMPro;
 using UnityEngine;
@@ -15,7 +14,12 @@ public class Notification : MonoBehaviour
 
     private Action OnYesButtonPressedCallback;
 
-    public void Setup(string title, NotificationType type, Action? onYesButtonPressedCallback = null)
+    public void Setup(string title, NotificationType type)
+    {
+        Setup(title, type, null);
+    }
+
+    public void Setup(string title, NotificationType type, Action onYesButtonPressedCallback)
     {
         //transform.position = new Vector3(0, -123, 0);
         //RectTransform rectTransform = GetComponent<RectTransform>();
