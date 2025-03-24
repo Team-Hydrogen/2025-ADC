@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [Serializable]
 public struct MissionStage : IEquatable<MissionStage>
@@ -10,7 +11,7 @@ public struct MissionStage : IEquatable<MissionStage>
 
     public LineRenderer nominalLineRenderer;
     public LineRenderer minimapLineRenderer;
-    public LineRenderer offnominalLineRenderer;
+    public LineRenderer offNominalLineRenderer;
 
     public MissionStage(int startDataIndex, StageTypes stageType)
     {
@@ -18,7 +19,7 @@ public struct MissionStage : IEquatable<MissionStage>
         this.stageType = stageType;
         this.nominalLineRenderer = null;
         this.minimapLineRenderer = null;
-        this.offnominalLineRenderer = null;
+        this.offNominalLineRenderer = null;
     }
 
     public MissionStage(
@@ -30,7 +31,7 @@ public struct MissionStage : IEquatable<MissionStage>
         : this(startDataIndex, stageType)
     {
         this.nominalLineRenderer = nominalLineRenderer;
-        this.offnominalLineRenderer = offNominalLineRenderer;
+        this.offNominalLineRenderer = offNominalLineRenderer;
         this.minimapLineRenderer = minimapLineRenderer;
     }
 
