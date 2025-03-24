@@ -8,12 +8,12 @@ public class CutsceneManager : MonoBehaviour
 {
     public static CutsceneManager Instance { get; private set; }
     
+    [SerializeField] private List<Cutscene> cutscenes;
+
     [Header("UI Elements")]
     [SerializeField] private VideoPlayer videoPlayer;
     [SerializeField] private RawImage cutsceneImage;
-
-    [Header("Animations")]
-    [SerializeField] private List<Cutscene> cutscenes;
+    [SerializeField] private Transform skipCutsceneHint;
     
     private int _cutscenesPlayed = 0;
     private CutsceneState _state = CutsceneState.NotPlaying;
@@ -38,7 +38,7 @@ public class CutsceneManager : MonoBehaviour
 
     private void Start()
     {
-        StartCutscene(-3);
+        TryPlayCutscene(-3);
     }
 
     private void Update()
@@ -51,13 +51,13 @@ public class CutsceneManager : MonoBehaviour
 
     private void OnEnable()
     {
-        SpacecraftManager.OnUpdateTime += StartCutscene;
+        SpacecraftManager.OnUpdateTime += TryPlayCutscene;
         videoPlayer.loopPointReached += StopCutscene;
     }
     
     private void OnDisable()
     {
-        SpacecraftManager.OnUpdateTime -= StartCutscene;
+        SpacecraftManager.OnUpdateTime -= TryPlayCutscene;
         videoPlayer.loopPointReached -= StopCutscene;
     }
     
@@ -68,7 +68,7 @@ public class CutsceneManager : MonoBehaviour
         _playCutscenes = value;
     }
     
-    private void StartCutscene(float currentTimeInMinutes)
+    private void TryPlayCutscene(float currentTimeInMinutes)
     {
         if (_state == CutsceneState.Playing)
         {
@@ -104,7 +104,9 @@ public class CutsceneManager : MonoBehaviour
 
         videoPlayer.clip = cutscenes[_cutscenesPlayed].clip;
         videoPlayer.Play();
+
         cutsceneImage.gameObject.SetActive(true);
+        skipCutsceneHint.gameObject.SetActive(true);
 
         OnCutsceneStart?.Invoke(_cutscenesPlayed);
     }
@@ -113,6 +115,7 @@ public class CutsceneManager : MonoBehaviour
     {
         videoPlayer.Stop();
         cutsceneImage.gameObject.SetActive(false);
+        skipCutsceneHint.gameObject.SetActive(false);
 
         OnCutsceneEnd?.Invoke();
 
