@@ -44,14 +44,12 @@ public class TrajectoryManager : MonoBehaviour
     private void OnEnable()
     {
         DataManager.OnDataLoaded += LoadTrajectoryData;
-        DataManager.OnMissionStageUpdated += SetPastTrajectoryRendererByStage;
         HttpManager.OnPathCalculated += LoadMergeTrajectoryData;
     }
 
     private void OnDisable()
     {
         DataManager.OnDataLoaded -= LoadTrajectoryData;
-        DataManager.OnMissionStageUpdated -= SetPastTrajectoryRendererByStage;
         HttpManager.OnPathCalculated -= LoadMergeTrajectoryData;
     }
     
