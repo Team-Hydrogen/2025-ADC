@@ -4990,7 +4990,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1462774670}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.108023435
+  m_Size: 0.07754576
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5931,7 +5931,7 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1512057812}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.8919766}
+  m_AnchorMin: {x: 0, y: 0.92245424}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 6, y: 0}
@@ -6512,7 +6512,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 5945.22}
+  m_SizeDelta: {x: 0, y: 8564.84}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1668397641
 MonoBehaviour:
@@ -6541,22 +6541,25 @@ MonoBehaviour:
     Space Agency (CSA), aiming to test the Space Launch System (SLS) rocket and the
     Orion spacecraft's capabilities for future deep space exploration. The launch
     is scheduled from Kennedy Space Center's Launch Complex 39B.\n\n<align=\"center\"><b>Crew</b></align>\n\n<b>Prime
-    Crew</b>\nCommander: Reid Wiseman (United States, NASA)\n\u25CF Second spaceflight\n\u25CF
-    Previously served on Expedition 40/41 to the International Space Station in 2014\n\u25CF
-    Former Chief of the Astronaut Office\nPilot: Victor Glover (United States, NASA)\n\u25CF
-    Second spaceflight\n\u25CF First person of color to travel beyond Low Earth Orbit\n\u25CF
-    Previously piloted the SpaceX Crew-1 mission to the ISS\nFlight Engineer: Christina
-    Koch (United States, NASA)\n\u25CF Second spaceflight\n\u25CF First woman to
-    travel beyond Low Earth Orbit\n\u25CF Holds the record for the longest single
-    spaceflight by a woman\nMission Specialist: Jeremy Hansen (Canada, CSA)\n\u25CF
-    First spaceflight\n\u25CF First non-American to travel beyond Low Earth Orbit\n\u25CF
-    Former Royal Canadian Air Force fighter pilot\n\n<b>Backup Crew</b>\nCommander/Pilot/Mission
-    Specialist: Andre Douglas (United States, NASA)\n<indent=5%>\u25CF Serves as
-    backup for the three NASA astronauts</indent>\nMission Specialist: Jenni Gibbons
-    (Canada, CSA)\n<indent=5%>\u25CF Serves as backup for CSA astronaut Jeremy Hansen</indent>\nThe
-    inclusion of Canadian astronauts Hansen and Gibbons stems from a 2020 treaty
-    between the United States and Canada, solidifying CSA's participation in the
-    Artemis program.\n\n<align=\"center\"><b>Mission Stages</b></align>\n\n<b>Phase
+    Crew</b>\n<size=512px><sprite=\"ReidWiseman\" name=\"ReidWiseman\"></size>\nCommander:
+    Reid Wiseman (United States, NASA)\n\u25CF Second spaceflight\n\u25CF Previously
+    served on Expedition 40/41 to the International Space Station in 2014\n\u25CF
+    Former Chief of the Astronaut Office\n<size=512px><sprite=\"VictorGlover\" name=\"VictorGlover\"
+    index=0></size>\nPilot: Victor Glover (United States, NASA)\n\u25CF Second spaceflight\n\u25CF
+    First person of color to travel beyond Low Earth Orbit\n\u25CF Previously piloted
+    the SpaceX Crew-1 mission to the ISS\n<size=512px><sprite=\"ChristinaKoch\" name=\"ChristinaKoch\"
+    index=0></size>\nFlight Engineer: Christina Koch (United States, NASA)\n\u25CF
+    Second spaceflight\n\u25CF First woman to travel beyond Low Earth Orbit\n\u25CF
+    Holds the record for the longest single spaceflight by a woman\n<size=512px><sprite=\"JeremyHansen\"
+    name=\"JeremyHansen\" index=0></size>\nMission Specialist: Jeremy Hansen (Canada,
+    CSA)\n\u25CF First spaceflight\n\u25CF First non-American to travel beyond Low
+    Earth Orbit\n\u25CF Former Royal Canadian Air Force fighter pilot\n\n<b>Backup
+    Crew</b>\nCommander/Pilot/Mission Specialist: Andre Douglas (United States, NASA)\n<indent=5%>\u25CF
+    Serves as backup for the three NASA astronauts</indent>\nMission Specialist:
+    Jenni Gibbons (Canada, CSA)\n<indent=5%>\u25CF Serves as backup for CSA astronaut
+    Jeremy Hansen</indent>\nThe inclusion of Canadian astronauts Hansen and Gibbons
+    stems from a 2020 treaty between the United States and Canada, solidifying CSA's
+    participation in the Artemis program.\n\n<align=\"center\"><b>Mission Stages</b></align>\n\n<b>Phase
     1: Launch</b>\nThe Artemis II mission will commence with the launch of the Space
     Launch System (SLS) Block 1 rocket from Kennedy Space Center's Launch Complex
     39B. This powerful launch vehicle is designed to propel the Orion spacecraft
