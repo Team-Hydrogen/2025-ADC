@@ -596,7 +596,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        ShowNotification(text, Notification.NotificationType.Dismissable);
+        ShowNotification(text, Notification.NotificationType.Dismissible);
         _showedStageFiredNotification = true;
     }
 
