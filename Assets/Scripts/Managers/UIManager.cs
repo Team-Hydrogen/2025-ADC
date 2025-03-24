@@ -542,7 +542,7 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        ShowNotification(text, Notification.NotificationType.Dismissable);
+        ShowNotification(text, Notification.NotificationType.Dismissible);
         _showedStageFiredNotification = true;
     }
 
@@ -553,7 +553,7 @@ public class UIManager : MonoBehaviour
         GameObject notification = Instantiate(notificationPrefab, notificationParent);
         notification.GetComponent<Notification>().Setup(
             text,
-            Notification.NotificationType.Dismissable
+            Notification.NotificationType.Dismissible
         );
     }
     

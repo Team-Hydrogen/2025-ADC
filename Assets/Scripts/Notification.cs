@@ -49,7 +49,7 @@ public class Notification : MonoBehaviour
             }
         }
 
-        else if (type == NotificationType.Dismissable)
+        else if (type == NotificationType.Dismissible)
         {
             closeButton.SetActive(true);
         }
@@ -57,21 +57,23 @@ public class Notification : MonoBehaviour
 
     public void OnYesButtonPressed()
     {
-        if (type == NotificationType.AskYesCancel || type == NotificationType.AskYesNo)
+        if (type is not NotificationType.AskYesCancel or NotificationType.AskYesNo)
         {
-            OnYesButtonPressedCallback?.Invoke();
-            DismissNotification();
+            return;
         }
+
+        OnYesButtonPressedCallback?.Invoke();
+        DismissNotification();
     }
 
     public void DismissNotification()
     {
-        Destroy(this.gameObject);
+        Destroy(gameObject);
     }
 
     public enum NotificationType
     {
-        Dismissable,
+        Dismissible,
         AskYesNo,
         AskYesCancel
     }
