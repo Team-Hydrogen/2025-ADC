@@ -54,10 +54,13 @@ public class SpacecraftManager : MonoBehaviour
     private bool _isPlaying = false;
     private const int SkipTimeChange = 10;
     
+    [Tooltip("The interpolation ratio between two data points")]
     private float _progress = 0.0f;
+    [Tooltip("The time passed in the simulation")]
     private float _elapsedTime;
-    
+    [Tooltip("The total distance traveled along the nominal trajectory")]
     private float _totalNominalDistance = 0.0f;
+    [Tooltip("The total distance traveled along the off-nominal trajectory")]
     private float _totalOffNominalDistance = 0.0f;
     private float _mass = 0.0f;
     
@@ -72,7 +75,7 @@ public class SpacecraftManager : MonoBehaviour
     private LineRenderer _futureMergeTrajectoryRenderer;
     
     // The second stage is the same as the service module.
-    private const int SecondStageFireIndex = 120;
+    private const float SecondStageFireTime = 128.0f;
     
     private Vector3 _lastAutomaticSpacecraftPosition;
     private Vector3 _lastManualSpacecraftPosition;
@@ -158,7 +161,7 @@ public class SpacecraftManager : MonoBehaviour
                 ManuallyControlSpacecraft();
             }
             
-            if (_currentPointIndex == SecondStageFireIndex)
+            if (Mathf.Approximately(_elapsedTime, SecondStageFireTime))
             {
                 OnStageFired?.Invoke("Second Stage / Service Module Fired");
             }

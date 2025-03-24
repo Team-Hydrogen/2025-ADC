@@ -2774,7 +2774,7 @@ GameObject:
   - component: {fileID: 238558268}
   - component: {fileID: 238558269}
   m_Layer: 0
-  m_Name: Returning To Earth Offnominal Trajectory
+  m_Name: Returning To Earth Off-Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8514,22 +8514,22 @@ MonoBehaviour:
     stageType: 2
     nominalLineRenderer: {fileID: 1187994444}
     minimapLineRenderer: {fileID: 352545630}
-    offnominalLineRenderer: {fileID: 2090706359}
+    offNominalLineRenderer: {fileID: 2090706359}
   - startDataIndex: 1500
     stageType: 3
     nominalLineRenderer: {fileID: 813950156}
     minimapLineRenderer: {fileID: 2048727790}
-    offnominalLineRenderer: {fileID: 1867264470}
+    offNominalLineRenderer: {fileID: 1867264470}
   - startDataIndex: 6700
     stageType: 4
     nominalLineRenderer: {fileID: 2035502656}
     minimapLineRenderer: {fileID: 27402070}
-    offnominalLineRenderer: {fileID: 1852343220}
+    offNominalLineRenderer: {fileID: 1852343220}
   - startDataIndex: 7700
     stageType: 5
     nominalLineRenderer: {fileID: 1185995610}
     minimapLineRenderer: {fileID: 975485234}
-    offnominalLineRenderer: {fileID: 238558269}
+    offNominalLineRenderer: {fileID: 238558269}
   drawGizmos: 0
   beginningGizmosLineColor: {r: 0, g: 0.9339623, b: 0.58373624, a: 1}
   endGizmosLineColor: {r: 1, g: 0, b: 0.30254555, a: 1}
@@ -19507,7 +19507,7 @@ GameObject:
   - component: {fileID: 1270632033}
   - component: {fileID: 1270632034}
   m_Layer: 0
-  m_Name: Future Offnominal Trajectory
+  m_Name: Future Off-Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -21996,7 +21996,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1549028642}
   m_Layer: 0
-  m_Name: Offnominal Spacecraft Position
+  m_Name: Off-Nominal Spacecraft Position
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27201,7 +27201,7 @@ GameObject:
   - component: {fileID: 1852343219}
   - component: {fileID: 1852343220}
   m_Layer: 0
-  m_Name: Flying By Moon Offnominal Trajectory
+  m_Name: Flying By Moon Off-Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27435,7 +27435,7 @@ GameObject:
   - component: {fileID: 1867264469}
   - component: {fileID: 1867264470}
   m_Layer: 0
-  m_Name: Travelling To Moon Offnominal Trajectory
+  m_Name: Travelling To Moon Off-Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31557,7 +31557,7 @@ GameObject:
   - component: {fileID: 2090706358}
   - component: {fileID: 2090706359}
   m_Layer: 0
-  m_Name: Orbiting Earth Offnominal Trajectory
+  m_Name: Orbiting Earth Off-Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
