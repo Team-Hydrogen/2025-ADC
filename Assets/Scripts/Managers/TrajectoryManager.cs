@@ -80,7 +80,7 @@ public class TrajectoryManager : MonoBehaviour
     {
         // The total amount of data points and sub-trajectories are determined. The total number of sub-trajectories
         // includes multiple past trajectories and the designated future trajectory.  
-        int totalDataPoints = trajectoryData.Count;
+        int totalDataPoints = trajectoryData.Count; // This is the amount of lines in the trajectory dataset.
         int totalSubTrajectories = trajectory.childCount; // The final sub-trajectory is always the future trajectory.
         
         List<Vector3>[] subTrajectoryPositions = new List<Vector3>[totalSubTrajectories];
@@ -116,6 +116,10 @@ public class TrajectoryManager : MonoBehaviour
                     Mathf.Lerp(currentPoint.z, float.Parse(trajectoryData[dataIndex - 1][3]), interpolationRatio)
                 );
                 
+                // The interpolated point is added as the last point of the current sub-trajectory. If the timestamp
+                // is behind the simulation's timestamp, the interpolated point is added to as the first point of the
+                // next sub-trajectory. If the timestamp is at the simulation's timestamp, the interpolated point is
+                // added as the first point of the "future trajectory."
                 subTrajectoryPositions[subTrajectoryIndex].Add(interpolatedPoint);
                 subTrajectoryIndex = time > currentTime ? totalSubTrajectories - 1 : subTrajectoryIndex + 1;
                 subTrajectoryPositions[subTrajectoryIndex].Add(interpolatedPoint);
