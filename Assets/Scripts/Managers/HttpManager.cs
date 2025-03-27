@@ -102,7 +102,8 @@ public class HttpManager : MonoBehaviour
 
             if (webRequest.result != UnityWebRequest.Result.Success)
             {
-                UIManager.Instance.ShowNotification($"Error: {webRequest.error}", Notification.NotificationType.Dismissable);
+                String errorMessage = $"Error: {webRequest.error}";
+                UIManager.Instance.ShowNotification(errorMessage, Notification.NotificationType.Dismissable);
                 Debug.Log(webRequest.error);
                 Debug.Log(webRequest.result);
             }

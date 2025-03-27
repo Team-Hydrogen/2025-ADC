@@ -885,24 +885,24 @@ public class SpacecraftManager : MonoBehaviour
         return indexBounds;
     }
     
-    private Vector3 GetPositionFromTime(List<string[]> pathPoints, float elapsedTime)
+    private Vector3 GetPositionFromTime(List<string[]> trajectoryData, float elapsedTime)
     {
         var indexBounds = GetIndexBoundsFromTime(elapsedTime, _nominalPathPoints);
         var lowerIndex = indexBounds[0];
         var upperIndex = indexBounds[1];
         
-        var lowerTime = float.Parse(pathPoints[lowerIndex][0]);
-        var upperTime = float.Parse(pathPoints[upperIndex][0]);
+        var lowerTime = float.Parse(trajectoryData[lowerIndex][0]);
+        var upperTime = float.Parse(trajectoryData[upperIndex][0]);
         
         var interpolationRatio = Mathf.InverseLerp(lowerTime, upperTime, elapsedTime);
 
-        var lowerPositionX = float.Parse(pathPoints[lowerIndex][1]);
-        var lowerPositionY = float.Parse(pathPoints[lowerIndex][2]);
-        var lowerPositionZ = float.Parse(pathPoints[lowerIndex][3]);
+        var lowerPositionX = float.Parse(trajectoryData[lowerIndex][1]);
+        var lowerPositionY = float.Parse(trajectoryData[lowerIndex][2]);
+        var lowerPositionZ = float.Parse(trajectoryData[lowerIndex][3]);
         
-        var upperPositionX = float.Parse(pathPoints[upperIndex][1]);
-        var upperPositionY = float.Parse(pathPoints[upperIndex][2]);
-        var upperPositionZ = float.Parse(pathPoints[upperIndex][3]);
+        var upperPositionX = float.Parse(trajectoryData[upperIndex][1]);
+        var upperPositionY = float.Parse(trajectoryData[upperIndex][2]);
+        var upperPositionZ = float.Parse(trajectoryData[upperIndex][3]);
         
         return new Vector3(
             Mathf.Lerp(lowerPositionX, upperPositionX, interpolationRatio),
@@ -911,14 +911,50 @@ public class SpacecraftManager : MonoBehaviour
         );
     }
     
+    private Vector3 GetVelocityFromTime(List<string[]> trajectoryData, float elapsedTime)
+    {
+        var indexBounds = GetIndexBoundsFromTime(elapsedTime, _nominalPathPoints);
+        var lowerIndex = indexBounds[0];
+        var upperIndex = indexBounds[1];
+        
+        var lowerTime = float.Parse(trajectoryData[lowerIndex][0]);
+        var upperTime = float.Parse(trajectoryData[upperIndex][0]);
+        
+        var interpolationRatio = Mathf.InverseLerp(lowerTime, upperTime, elapsedTime);
+
+        var lowerVelocityX = float.Parse(trajectoryData[lowerIndex][4]);
+        var lowerVelocityY = float.Parse(trajectoryData[lowerIndex][5]);
+        var lowerVelocityZ = float.Parse(trajectoryData[lowerIndex][6]);
+        
+        var upperVelocityX = float.Parse(trajectoryData[upperIndex][4]);
+        var upperVelocityY = float.Parse(trajectoryData[upperIndex][5]);
+        var upperVelocityZ = float.Parse(trajectoryData[upperIndex][6]);
+        
+        return new Vector3(
+            Mathf.Lerp(lowerVelocityX, upperVelocityX, interpolationRatio),
+            Mathf.Lerp(lowerVelocityY, upperVelocityY, interpolationRatio),
+            Mathf.Lerp(lowerVelocityZ, upperVelocityZ, interpolationRatio)
+        );
+    }
+    
     public Vector3 GetNominalPositionFromTime(float elapsedTime)
     {
         return GetPositionFromTime(_nominalPathPoints, elapsedTime);
     }
     
+    public Vector3 GetNominalVelocityFromTime(float elapsedTime)
+    {
+        return GetVelocityFromTime(_nominalPathPoints, elapsedTime);
+    }
+    
     public Vector3 GetOffNominalPositionFromTime(float elapsedTime)
     {
         return GetPositionFromTime(_offNominalPathPoints, elapsedTime);
+    }
+    
+    public Vector3 GetOffNominalVelocityFromTime(float elapsedTime)
+    {
+        return GetVelocityFromTime(_offNominalPathPoints, elapsedTime);
     }
 
     #endregion
