@@ -44,39 +44,51 @@ public class HttpManager : MonoBehaviour
     
     # region Request Functions
 
-    private class BumpOffCourseRequest
+    private class TransitionPathRequest
     {
-        public float[] origin;
-        public float[] destination;
-        public float flightTime;
+        // Original data
+        public float[] originPosition;
+        public float[] originVelocity;
+        // Destination data
+        public float[] destinationPosition;
+        public float[] destinationVelocity;
+        // Time
         public float startTime;
+        public float flightTime;
 
-        public BumpOffCourseRequest(float[] o, float[] d, float ft, float st)
+        public TransitionPathRequest(float[] op, float[] ov, float[] dp, float[] dv, float st, float ft)
         {
-            origin = o;
-            destination = d;
-            flightTime = ft;
+            originPosition = op;
+            originVelocity = ov;
+            destinationPosition = dp;
+            destinationVelocity = dv;
             startTime = st;
+            flightTime = ft;
         }
     }
 
-    public void RequestBumpOffCourseApi(Vector3 origin, Vector3 destination, float flightTime, float startTime)
+    public void TransitionPathApi(Vector3 originPosition, Vector3 originVelocity, Vector3 destinationPosition,
+        Vector3 destinationVelocity, float startTime, float flightTime)
     {
-        float[] originPostData = { origin.x, origin.y, origin.z };
-        float[] destinationPostData = { destination.x, destination.y, destination.z };
+        float[] originPositionPostData = { originPosition.x, originPosition.y, originPosition.z };
+        float[] originVelocityPostData = { originVelocity.x, originVelocity.y, originVelocity.z };
+        float[] destinationPositionPostData = { destinationPosition.x, destinationPosition.y, destinationPosition.z };
+        float[] destinationVelocityPostData = { destinationVelocity.x, destinationVelocity.y, destinationVelocity.z };
 
-        var apiRequest = new BumpOffCourseRequest(
-            originPostData, 
-            destinationPostData, 
-            flightTime, 
-            startTime
+        var apiRequest = new TransitionPathRequest(
+            originPositionPostData,
+            originVelocityPostData,
+            destinationPositionPostData,
+            destinationVelocityPostData,
+            startTime,
+            flightTime
         );
         var postData = JsonUtility.ToJson(apiRequest);
         
-        StartCoroutine(PingBumpOffCourseApi(postData));
+        StartCoroutine(PingTransitionPathApi(postData));
     }
     
-    private IEnumerator PingBumpOffCourseApi(string postData)
+    private IEnumerator PingTransitionPathApi(string postData)
     {
         var webRequest = UnityWebRequest.Post(
             BumpOffCourseApiUri,
