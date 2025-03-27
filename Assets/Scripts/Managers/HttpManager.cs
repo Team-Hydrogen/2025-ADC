@@ -99,7 +99,7 @@ public class HttpManager : MonoBehaviour
         using (webRequest)
         {
             yield return webRequest.SendWebRequest();
-
+            
             if (webRequest.result != UnityWebRequest.Result.Success)
             {
                 String errorMessage = $"Error: {webRequest.error}";
