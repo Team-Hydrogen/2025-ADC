@@ -217,7 +217,6 @@ public class SpacecraftManager : MonoBehaviour
         
         PlotTrajectory(_nominalPathPoints, _currentNominalTrajectoryRenderer, futureNominalTrajectory);
         PlotTrajectory(_offNominalPathPoints, _currentOffNominalTrajectoryRenderer, futureOffNominalTrajectory);
-        UpdateSpacecraftMass(_currentPointIndex);
         UpdateVelocityVector(_currentPointIndex);
         
         _isPlaying = true;
@@ -605,6 +604,7 @@ public class SpacecraftManager : MonoBehaviour
     {
         OnUpdateCoordinates?.Invoke(spacecraft.position / trajectoryScale);
         CalculateDistances();
+        UpdateSpacecraftMass(_currentPointIndex);
         
         UpdateTrajectory(
             NominalSpacecraftTransform,
@@ -676,7 +676,6 @@ public class SpacecraftManager : MonoBehaviour
             );
         }
         
-        UpdateSpacecraftMass(_currentPointIndex);
         UpdateVelocityVector(_currentPointIndex);
     }
     
@@ -706,7 +705,7 @@ public class SpacecraftManager : MonoBehaviour
     {
         try
         {
-            _mass = float.Parse(_nominalPathPoints[_currentPointIndex][7]);
+            _mass = float.Parse(_nominalPathPoints[currentIndex][7]);
             OnUpdateMass?.Invoke(_mass);
         }
         catch (FormatException)

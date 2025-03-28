@@ -152,6 +152,7 @@ public class UIManager : MonoBehaviour
         SpacecraftManager.OnUpdateTime -= UpdateTimeFromMinutes;
         SpacecraftManager.OnDistanceCalculated -= UpdateDistances;
         SpacecraftManager.OnUpdateCoordinates -= UpdateCoordinatesText;
+        SpacecraftManager.OnUpdateMass -= SetSpacecraftMass;
         SpacecraftManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
         SpacecraftManager.OnCurrentIndexUpdated -= UpdateThrust;
         SpacecraftManager.OnStageFired -= ShowStageFiredNotification;
@@ -193,6 +194,7 @@ public class UIManager : MonoBehaviour
     #region Actions Panel
     
     #region Settings
+    
     public void ToggleTimeElapsedBar(bool isBarEnabled)
     {
         timeElapsedBar.SetActive(isBarEnabled);
@@ -208,6 +210,7 @@ public class UIManager : MonoBehaviour
     {
         _currentLengthUnit = UnitSystem.Metric;
     }
+    
     #endregion
     
     #region Machine Learning
