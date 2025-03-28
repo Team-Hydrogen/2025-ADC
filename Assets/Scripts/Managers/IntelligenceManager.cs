@@ -30,7 +30,7 @@ public class IntelligenceManager : MonoBehaviour
         DataManager.OnDataLoaded += LoadThrustData;
         SpacecraftManager.OnCurrentIndexUpdated += SetDataIndex;
         SpacecraftManager.OnUpdateTime += SetCurrentTime;
-        UIManager.OnBumpOffCoursePressed += OnBumpOffCourse;
+        UIManager.OnTransitionPathPressed += OnTransitionPath;
     }
 
     private void OnDisable()
@@ -38,7 +38,7 @@ public class IntelligenceManager : MonoBehaviour
         DataManager.OnDataLoaded -= LoadThrustData;
         SpacecraftManager.OnCurrentIndexUpdated -= SetDataIndex;
         SpacecraftManager.OnUpdateTime -= SetCurrentTime;
-        UIManager.OnBumpOffCoursePressed -= OnBumpOffCourse;
+        UIManager.OnTransitionPathPressed -= OnTransitionPath;
     }
     
     #endregion
@@ -146,7 +146,7 @@ public class IntelligenceManager : MonoBehaviour
         return rawFlightTime + bufferTime;
     }
 
-    private void OnBumpOffCourse()
+    private void OnTransitionPath()
     {
         var deltaTime = CalculateDeltaTime(_dataIndex);
         

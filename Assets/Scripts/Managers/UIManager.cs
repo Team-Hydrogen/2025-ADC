@@ -5,6 +5,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -39,6 +40,9 @@ public class UIManager : MonoBehaviour
     [Header("Time Scale")]
     [SerializeField] private TextMeshProUGUI timeScaleIndicator;
     
+    [Header("Spacecraft")]
+    [SerializeField] private TextMeshProUGUI spacecraftMass;
+    
     [Header("Coordinates")]
     [SerializeField] private TextMeshProUGUI xCoordinate;
     [SerializeField] private TextMeshProUGUI yCoordinate;
@@ -59,9 +63,10 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject notificationPrefab;
     
     [Header("Machine Learning")]
-    [SerializeField] private Button bumpOffCourseButton;
     [SerializeField] private GameObject thrustSection;
     [SerializeField] private TextMeshProUGUI thrustText;
+    [SerializeField] private Button transitionPathButton;
+    [SerializeField] private Button bumpOffCoursePathButton;
     
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
@@ -87,6 +92,7 @@ public class UIManager : MonoBehaviour
     
     private readonly List<string> _disabledAntennas = new();
     
+    public static event Action OnTransitionPathPressed;
     public static event Action OnBumpOffCoursePressed;
     public static event Action<SpacecraftManager.SpacecraftState> OnCurrentPathChanged;
     public static event Action<int> OnPrioritizationChanged;
@@ -131,6 +137,7 @@ public class UIManager : MonoBehaviour
         SpacecraftManager.OnUpdateTime += UpdateTimeFromMinutes;
         SpacecraftManager.OnDistanceCalculated += UpdateDistances;
         SpacecraftManager.OnUpdateCoordinates += UpdateCoordinatesText;
+        SpacecraftManager.OnUpdateMass += SetSpacecraftMass;
         SpacecraftManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
         SpacecraftManager.OnCurrentIndexUpdated += UpdateThrust;
         SpacecraftManager.OnStageFired += ShowStageFiredNotification;
@@ -205,7 +212,12 @@ public class UIManager : MonoBehaviour
     
     #region Machine Learning
     
-    public void BumpOffCourseButtonPressed()
+    public void OnTransitionPathButtonPressed()
+    {
+        OnTransitionPathPressed?.Invoke();
+    }
+    
+    public void OnBumpOffCourseButtonPressed()
     {
         OnBumpOffCoursePressed?.Invoke();
     }
@@ -270,6 +282,21 @@ public class UIManager : MonoBehaviour
         timeScaleIndicator.text = Mathf.Approximately(timeScale, 1.0f) ? "" : $"{timeScale:F0}x";
     }
     
+    #endregion
+    
+    
+    #region Spacecraft
+
+    private void SetSpacecraftMass(float massInKilograms)
+    {
+        spacecraftMass.text = _currentLengthUnit switch
+        {
+            UnitSystem.Metric => $"{massInKilograms:F3} kg",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilogramsToPounds(massInKilograms):F3} lb",
+            _ => spacecraftMass.text
+        };
+    }
+
     #endregion
     
     
