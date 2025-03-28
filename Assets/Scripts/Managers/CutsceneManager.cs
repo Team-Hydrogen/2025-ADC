@@ -114,12 +114,19 @@ public class CutsceneManager : MonoBehaviour
     private void StopCutscene(VideoPlayer source)
     {
         videoPlayer.Stop();
+
         cutsceneImage.gameObject.SetActive(false);
         skipCutsceneHint.gameObject.SetActive(false);
 
         OnCutsceneEnd?.Invoke();
 
         _cutscenesPlayed++;
+
+        try
+        {
+            videoPlayer.clip = cutscenes[_cutscenesPlayed].clip;
+        }
+        catch (ArgumentOutOfRangeException) { }
 
         _state = CutsceneState.NotPlaying;
         Time.timeScale = 1.0f;
