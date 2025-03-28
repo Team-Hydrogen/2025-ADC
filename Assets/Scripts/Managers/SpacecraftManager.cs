@@ -57,8 +57,10 @@ public class SpacecraftManager : MonoBehaviour
     
     private float _progress = 0.0f;
     private float _elapsedTime;
+    
     private float _totalNominalDistance = 0.0f;
     private float _totalOffNominalDistance = 0.0f;
+    private float _mass = 0.0f;
     
     private List<string[]> _nominalPathPoints;
     private List<string[]> _offNominalPathPoints;
@@ -95,6 +97,7 @@ public class SpacecraftManager : MonoBehaviour
     public static event Action<int> OnCurrentIndexUpdated; 
     public static event Action<float> OnUpdateTime;
     public static event Action<Vector3> OnUpdateCoordinates;
+    public static event Action<float> OnUpdateMass;
     public static event Action<DistanceTravelledEventArgs> OnDistanceCalculated;
     public static event Action<float> OnTimeScaleSet;
     public static event Action<string> OnStageFired;
@@ -601,6 +604,7 @@ public class SpacecraftManager : MonoBehaviour
     {
         OnUpdateCoordinates?.Invoke(spacecraft.position / trajectoryScale);
         CalculateDistances();
+        UpdateSpacecraftMass(_currentPointIndex);
         
         UpdateTrajectory(
             NominalSpacecraftTransform,
@@ -695,6 +699,19 @@ public class SpacecraftManager : MonoBehaviour
         _currentOffNominalTrajectoryRenderer.SetPosition(0, OffNominalSpacecraftTransform.position);
         
         // trigger animation here if it is correct stage
+    }
+
+    private void UpdateSpacecraftMass(int currentIndex)
+    {
+        try
+        {
+            _mass = float.Parse(_nominalPathPoints[currentIndex][7]);
+            OnUpdateMass?.Invoke(_mass);
+        }
+        catch (FormatException)
+        {
+            Debug.LogWarning($"There is no spacecraft mass data on line {_currentPointIndex}.");
+        }
     }
     
     private void UpdateVelocityVector(int currentIndex)
