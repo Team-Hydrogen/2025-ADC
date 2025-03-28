@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 33658fa43dd4f4b0fb578f7f682b90d8
+guid: 2fad71442daa44060ae7564ceb5f490b
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -121,12 +121,34 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: VictorGlover
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 1536
+        height: 2048
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d827e2fbcdd3e4b998fcc1f24dd8812d
+      internalID: 1801534540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +157,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      VictorGlover: 1801534540
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

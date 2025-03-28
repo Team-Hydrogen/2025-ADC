@@ -121,6 +121,7 @@ public class CutsceneManager : MonoBehaviour
     private void StopCutscene(VideoPlayer source)
     {
         videoPlayer.Stop();
+
         cutsceneImage.gameObject.SetActive(false);
         skipCutsceneHint.gameObject.SetActive(false);
 
