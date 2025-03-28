@@ -97,7 +97,7 @@ public class UIManager : MonoBehaviour
     private SpacecraftManager.SpacecraftState _spacecraftState;
 
     private bool _showedStageFiredNotification = false;
-
+    
     #region Event Functions
 
     private void Awake()
