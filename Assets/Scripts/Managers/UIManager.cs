@@ -10,6 +10,7 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    #region Variables
     public static UIManager Instance { get; private set; }
     
     [SerializeField] private CanvasGroup canvasGroup;
@@ -35,8 +36,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hourCounter;
     [SerializeField] private TextMeshProUGUI minuteCounter;
     [SerializeField] private TextMeshProUGUI secondCounter;
+
+    [Header("Color Key")]
+    [SerializeField] private Toggle colorKeyToggle;
+    [SerializeField] private GameObject colorKey;
+
     [Header("Time Elapsed Bar")]
     [SerializeField] private GameObject timeElapsedBar;
+
     [Header("Time Scale")]
     [SerializeField] private TextMeshProUGUI timeScaleIndicator;
     
@@ -57,8 +64,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI missionStageText;
 
     [Header("Notification")]
-    //[SerializeField] private GameObject notification;
-    //[SerializeField] private TextMeshProUGUI notificationText;
     [SerializeField] private Transform notificationParent;
     [SerializeField] private GameObject notificationPrefab;
     
@@ -103,7 +108,9 @@ public class UIManager : MonoBehaviour
     private SpacecraftManager.SpacecraftState _spacecraftState;
 
     private bool _showedStageFiredNotification = false;
-    
+
+    #endregion
+
     #region Event Functions
 
     private void Awake()
@@ -124,7 +131,7 @@ public class UIManager : MonoBehaviour
         
         OnPrioritizationChanged?.Invoke(prioritizationMethod.value);
 
-        //ShowNotification("testing notification", Notification.NotificationType.Dismissable);
+        ShowNotification("Show Color Key?", Notification.NotificationType.AskYesNo, ShowColorKey);
     }
 
     private void Update()
@@ -187,14 +194,31 @@ public class UIManager : MonoBehaviour
         LoadingSceneManager.sceneToLoad = 1;
         SceneManager.LoadScene(0);
     }
-    
+
     #endregion
-    
-    
+
+
     #region Actions Panel
-    
+
     #region Settings
-    
+
+    private void ShowColorKey()
+    {
+        ToggleColorKeyVisiblity(true);
+        colorKeyToggle.isOn = true;
+    }
+
+    public void HideColorKey()
+    {
+        ToggleColorKeyVisiblity(false);
+        colorKeyToggle.isOn = false;
+    }
+
+    public void ToggleColorKeyVisiblity(bool shouldBeVisible)
+    {
+        colorKey.SetActive(shouldBeVisible);
+    }
+
     public void ToggleTimeElapsedBar(bool isBarEnabled)
     {
         timeElapsedBar.SetActive(isBarEnabled);
@@ -582,7 +606,8 @@ public class UIManager : MonoBehaviour
         GameObject notification = Instantiate(notificationPrefab, notificationParent);
         notification.GetComponent<Notification>().Setup(
             text,
-            Notification.NotificationType.Dismissable
+            notificationType,
+            onYesButtonPressedCallback
         );
     }
     
