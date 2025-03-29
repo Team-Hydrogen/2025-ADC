@@ -337,15 +337,15 @@ public class UIManager : MonoBehaviour
         {
             case UnitSystem.Metric:
                 units = " km";
-                xCoordinate.text = position.x.ToString("N0") + units;
-                yCoordinate.text = position.y.ToString("N0") + units;
-                zCoordinate.text = position.z.ToString("N0") + units;
+                xCoordinate.text = $"{position.x:F3} {units}";
+                yCoordinate.text = $"{position.y:F3} {units}";
+                zCoordinate.text = $"{position.z:F3} {units}";
                 break;
             case UnitSystem.Imperial:
                 units = " mi";
-                xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.x).ToString("N0") + units;
-                yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.y).ToString("N0") + units;
-                zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.z).ToString("N0") + units;
+                xCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.x):F3} {units}";
+                yCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.y):F3} {units}";
+                zCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.z):F3} {units}";
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
