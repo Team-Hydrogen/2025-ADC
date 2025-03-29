@@ -1,7 +1,6 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Playables;
 
 public class Notification : MonoBehaviour
 {
@@ -32,7 +31,7 @@ public class Notification : MonoBehaviour
         yesButton.SetActive(false);
         cancelButton.SetActive(false);
 
-        if (type == NotificationType.AskYesCancel)
+        if (type is NotificationType.AskYesCancel or NotificationType.AskYesNo)
         {
             yesButton.SetActive(true);
             cancelButton.SetActive(true);
