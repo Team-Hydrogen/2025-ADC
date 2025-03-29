@@ -43,8 +43,8 @@ public class SpacecraftManager : MonoBehaviour
 
     #endregion
 
-    #region Private variables
-    // Private variables
+    #region Private Variables
+    
     private SpacecraftState _currentState = SpacecraftState.Nominal;
 
     private const float MinimumTimeScale = 1.0f;
@@ -94,6 +94,10 @@ public class SpacecraftManager : MonoBehaviour
     private const float MaximumManualControlTime = 5.0f;
     private const int MaximumFutureDataPoints = 60;
     
+    #endregion
+    
+    #region Actions
+    
     public static event Action<int> OnCurrentIndexUpdated; 
     public static event Action<float> OnUpdateTime;
     public static event Action<Vector3> OnUpdateCoordinates;
@@ -102,7 +106,7 @@ public class SpacecraftManager : MonoBehaviour
     public static event Action<float> OnTimeScaleSet;
     public static event Action<string> OnStageFired;
     public static event Action<SpacecraftState> OnSpacecraftStateUpdated;
-
+    
     #endregion
 
     #region Vector Material Variables
