@@ -588,9 +588,20 @@ public class SpacecraftManager : MonoBehaviour
     
     private void UpdateTimeIntervalAndProgress()
     {
-        var currentPoint = _offNominalPathPoints[_currentPointIndex];
-        var nextPoint = _offNominalPathPoints[(_currentPointIndex + 1) % _offNominalPathPoints.Count];
-        
+        string[] currentPoint;
+        string[] nextPoint;
+
+        try
+        {
+            currentPoint = _offNominalPathPoints[_currentPointIndex];
+            nextPoint = _offNominalPathPoints[_currentPointIndex + 1];
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            Time.timeScale = 0.0f;
+            return;
+        }
+
         var currentTime = float.Parse(currentPoint[0]);
         var nextTime = float.Parse(nextPoint[0]);
         _timeInterval = (nextTime - currentTime) * 60.0f;
@@ -644,8 +655,13 @@ public class SpacecraftManager : MonoBehaviour
         _previousPointIndex = _currentPointIndex;
         
         // The simulation is reset.
-        _currentPointIndex = (_currentPointIndex + Mathf.FloorToInt(_progress)) % _nominalPathPoints.Count;
-        
+        _currentPointIndex += Mathf.FloorToInt(_progress);
+
+        if (_currentPointIndex >= _nominalPathPoints.Count)
+        {
+            _currentPointIndex = _nominalPathPoints.Count - 1;
+        }
+
         // The progress is reset.
         _progress %= 1;
         
