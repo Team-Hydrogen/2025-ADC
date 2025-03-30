@@ -1010,18 +1010,19 @@ public class SpacecraftManager : MonoBehaviour
 
     private void UpdateModel(int cutsceneIndex)
     {
-        switch (cutsceneIndex)
-        {
-            case < 3:
-                DisplayModel(0);
-                return;
-            case <= 6:
-                DisplayModel(cutsceneIndex - 2);
-                return;
-            default:
-                DisplayModel(4);
-                return;
-        }
+        DisplayModel(cutsceneIndex);
+        //switch (cutsceneIndex)
+        //{
+        //    case < 1:
+        //        DisplayModel(0);
+        //        return;
+        //    case <= 2:
+        //        DisplayModel(cutsceneIndex - 2);
+        //        return;
+        //    default:
+        //        DisplayModel(4);
+        //        return;
+        //}
     }
 
     #endregion

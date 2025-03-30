@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ public class CutsceneManager : MonoBehaviour
     [SerializeField] private VideoPlayer videoPlayer;
     [SerializeField] private RawImage cutsceneImage;
     [SerializeField] private Transform skipCutsceneHint;
+    [SerializeField] private GameObject blackScreen;
     
     private int _cutscenesPlayed = 0;
     private CutsceneState _state = CutsceneState.NotPlaying;
@@ -38,6 +40,9 @@ public class CutsceneManager : MonoBehaviour
 
     private void Start()
     {
+        ShowBlackScreen();
+        videoPlayer.Prepare();
+        StartCoroutine(HideBlackScreenOnStart());
         TryPlayCutscene(-3);
     }
 
@@ -105,6 +110,8 @@ public class CutsceneManager : MonoBehaviour
         videoPlayer.clip = cutscenes[_cutscenesPlayed].clip;
         videoPlayer.Play();
 
+        ShowBlackScreen();
+
         cutsceneImage.gameObject.SetActive(true);
         skipCutsceneHint.gameObject.SetActive(true);
 
@@ -114,17 +121,67 @@ public class CutsceneManager : MonoBehaviour
     private void StopCutscene(VideoPlayer source)
     {
         videoPlayer.Stop();
+
         cutsceneImage.gameObject.SetActive(false);
         skipCutsceneHint.gameObject.SetActive(false);
+
+        StartCoroutine(HideBlackScreen());
 
         OnCutsceneEnd?.Invoke();
 
         _cutscenesPlayed++;
 
+        try
+        {
+            videoPlayer.clip = cutscenes[_cutscenesPlayed].clip;
+        } catch (ArgumentOutOfRangeException) { }
+
+        videoPlayer.Prepare();
+
         _state = CutsceneState.NotPlaying;
         Time.timeScale = 1.0f;
     }
-    
+
+    private void ShowBlackScreen()
+    {
+        blackScreen.GetComponent<Image>().color = new Color(0, 0, 0, 1);
+        blackScreen.SetActive(true);
+    }
+
+    private IEnumerator HideBlackScreenOnStart()
+    {
+        yield return new WaitForSeconds(.2f);
+
+        float fadeOutSpeedMultiplier = 2.0f;
+        Image blackScreenImage = blackScreen.GetComponent<Image>();
+        Color color = blackScreenImage.color;
+
+        while (color.a > 0)
+        {
+            color.a -= Time.deltaTime * fadeOutSpeedMultiplier;
+            blackScreenImage.color = color;
+            yield return null;
+        }
+
+        blackScreen.SetActive(false);
+    }
+
+    private IEnumerator HideBlackScreen()
+    {
+        float fadeOutSpeedMultiplier = 2.0f;
+        Image blackScreenImage = blackScreen.GetComponent<Image>();
+        Color color = blackScreenImage.color;
+
+        while (color.a > 0)
+        {
+            color.a -= Time.deltaTime * fadeOutSpeedMultiplier;
+            blackScreenImage.color = color;
+            yield return null;
+        }
+
+        blackScreen.SetActive(false);
+    }
+
     private enum CutsceneState
     {
         NotPlaying,
