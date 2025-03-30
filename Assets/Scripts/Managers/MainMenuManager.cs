@@ -10,6 +10,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private RectTransform startSimulationButton;
     [SerializeField] private RectTransform missionInformationButton;
     [SerializeField] private RectTransform modelViewerButton;
+    [SerializeField] private RectTransform helpButton;
     [SerializeField] private RectTransform quitButton;
 
     private void Start()
@@ -19,17 +20,19 @@ public class MainMenuManager : MonoBehaviour
         StartCoroutine(MainMenuUIIntro(startSimulationButton, 1.5f));
         StartCoroutine(MainMenuUIIntro(missionInformationButton, 2f));
         StartCoroutine(MainMenuUIIntro(modelViewerButton, 2.5f));
-        StartCoroutine(MainMenuUIIntro(quitButton, 3f));
+        StartCoroutine(MainMenuUIIntro(helpButton, 3f));
+        StartCoroutine(MainMenuUIIntro(quitButton, 3.5f));
     }
 
     public void LoadMainScene()
     {
         StartCoroutine(MainMenuUIOutro(quitButton, 0f));
-        StartCoroutine(MainMenuUIOutro(modelViewerButton, 0.05f));
-        StartCoroutine(MainMenuUIOutro(missionInformationButton, 0.1f));
-        StartCoroutine(MainMenuUIOutro(startSimulationButton, 0.15f));
-        StartCoroutine(MainMenuUIOutro(backgroundImage, 0.2f));
-        StartCoroutine(MainMenuUIOutro(blackScreen, 0.2f));
+        StartCoroutine(MainMenuUIOutro(helpButton, 0.05f));
+        StartCoroutine(MainMenuUIOutro(modelViewerButton, 0.1f));
+        StartCoroutine(MainMenuUIOutro(missionInformationButton, 0.15f));
+        StartCoroutine(MainMenuUIOutro(startSimulationButton, 0.2f));
+        StartCoroutine(MainMenuUIOutro(backgroundImage, 0.25f));
+        StartCoroutine(MainMenuUIOutro(blackScreen, 0.25f));
         StartCoroutine(SwitchToLoadingScene());
     }
 
