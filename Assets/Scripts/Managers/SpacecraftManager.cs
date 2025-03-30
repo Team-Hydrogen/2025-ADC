@@ -62,6 +62,7 @@ public class SpacecraftManager : MonoBehaviour
     private float _totalNominalDistance = 0.0f;
     [Tooltip("The total distance traveled along the off-nominal trajectory")]
     private float _totalOffNominalDistance = 0.0f;
+    private float _mass = 0.0f;
     
     private List<string[]> _nominalPathPoints;
     private List<string[]> _offNominalPathPoints;
@@ -95,14 +96,19 @@ public class SpacecraftManager : MonoBehaviour
     private const float MaximumManualControlTime = 5.0f;
     private const int MaximumFutureDataPoints = 60;
     
+    #endregion
+    
+    #region Actions
+    
     public static event Action<int> OnCurrentIndexUpdated; 
     public static event Action<float> OnUpdateTime;
     public static event Action<Vector3> OnUpdateCoordinates;
+    public static event Action<float> OnUpdateMass;
     public static event Action<DistanceTravelledEventArgs> OnDistanceCalculated;
     public static event Action<float> OnTimeScaleSet;
     public static event Action<string> OnStageFired;
     public static event Action<SpacecraftState> OnSpacecraftStateUpdated;
-
+    
     #endregion
 
     #region Vector Material Variables
@@ -604,6 +610,7 @@ public class SpacecraftManager : MonoBehaviour
     {
         OnUpdateCoordinates?.Invoke(spacecraft.position / trajectoryScale);
         CalculateDistances();
+        UpdateSpacecraftMass(_currentPointIndex);
         
         UpdateTrajectory(
             NominalSpacecraftTransform,
@@ -698,6 +705,19 @@ public class SpacecraftManager : MonoBehaviour
         _currentOffNominalTrajectoryRenderer.SetPosition(0, OffNominalSpacecraftTransform.position);
         
         // trigger animation here if it is correct stage
+    }
+
+    private void UpdateSpacecraftMass(int currentIndex)
+    {
+        try
+        {
+            _mass = float.Parse(_nominalPathPoints[currentIndex][7]);
+            OnUpdateMass?.Invoke(_mass);
+        }
+        catch (FormatException)
+        {
+            Debug.LogWarning($"There is no spacecraft mass data on line {_currentPointIndex}.");
+        }
     }
     
     private void UpdateVelocityVector(int currentIndex)
@@ -888,24 +908,24 @@ public class SpacecraftManager : MonoBehaviour
         return indexBounds;
     }
     
-    private Vector3 GetPositionFromTime(List<string[]> pathPoints, float elapsedTime)
+    private Vector3 GetPositionFromTime(List<string[]> trajectoryData, float elapsedTime)
     {
         var indexBounds = GetIndexBoundsFromTime(elapsedTime, _nominalPathPoints);
         var lowerIndex = indexBounds[0];
         var upperIndex = indexBounds[1];
         
-        var lowerTime = float.Parse(pathPoints[lowerIndex][0]);
-        var upperTime = float.Parse(pathPoints[upperIndex][0]);
+        var lowerTime = float.Parse(trajectoryData[lowerIndex][0]);
+        var upperTime = float.Parse(trajectoryData[upperIndex][0]);
         
         var interpolationRatio = Mathf.InverseLerp(lowerTime, upperTime, elapsedTime);
 
-        var lowerPositionX = float.Parse(pathPoints[lowerIndex][1]);
-        var lowerPositionY = float.Parse(pathPoints[lowerIndex][2]);
-        var lowerPositionZ = float.Parse(pathPoints[lowerIndex][3]);
+        var lowerPositionX = float.Parse(trajectoryData[lowerIndex][1]);
+        var lowerPositionY = float.Parse(trajectoryData[lowerIndex][2]);
+        var lowerPositionZ = float.Parse(trajectoryData[lowerIndex][3]);
         
-        var upperPositionX = float.Parse(pathPoints[upperIndex][1]);
-        var upperPositionY = float.Parse(pathPoints[upperIndex][2]);
-        var upperPositionZ = float.Parse(pathPoints[upperIndex][3]);
+        var upperPositionX = float.Parse(trajectoryData[upperIndex][1]);
+        var upperPositionY = float.Parse(trajectoryData[upperIndex][2]);
+        var upperPositionZ = float.Parse(trajectoryData[upperIndex][3]);
         
         return new Vector3(
             Mathf.Lerp(lowerPositionX, upperPositionX, interpolationRatio),
@@ -914,14 +934,50 @@ public class SpacecraftManager : MonoBehaviour
         );
     }
     
+    private Vector3 GetVelocityFromTime(List<string[]> trajectoryData, float elapsedTime)
+    {
+        var indexBounds = GetIndexBoundsFromTime(elapsedTime, _nominalPathPoints);
+        var lowerIndex = indexBounds[0];
+        var upperIndex = indexBounds[1];
+        
+        var lowerTime = float.Parse(trajectoryData[lowerIndex][0]);
+        var upperTime = float.Parse(trajectoryData[upperIndex][0]);
+        
+        var interpolationRatio = Mathf.InverseLerp(lowerTime, upperTime, elapsedTime);
+
+        var lowerVelocityX = float.Parse(trajectoryData[lowerIndex][4]);
+        var lowerVelocityY = float.Parse(trajectoryData[lowerIndex][5]);
+        var lowerVelocityZ = float.Parse(trajectoryData[lowerIndex][6]);
+        
+        var upperVelocityX = float.Parse(trajectoryData[upperIndex][4]);
+        var upperVelocityY = float.Parse(trajectoryData[upperIndex][5]);
+        var upperVelocityZ = float.Parse(trajectoryData[upperIndex][6]);
+        
+        return new Vector3(
+            Mathf.Lerp(lowerVelocityX, upperVelocityX, interpolationRatio),
+            Mathf.Lerp(lowerVelocityY, upperVelocityY, interpolationRatio),
+            Mathf.Lerp(lowerVelocityZ, upperVelocityZ, interpolationRatio)
+        );
+    }
+    
     public Vector3 GetNominalPositionFromTime(float elapsedTime)
     {
         return GetPositionFromTime(_nominalPathPoints, elapsedTime);
     }
     
+    public Vector3 GetNominalVelocityFromTime(float elapsedTime)
+    {
+        return GetVelocityFromTime(_nominalPathPoints, elapsedTime);
+    }
+    
     public Vector3 GetOffNominalPositionFromTime(float elapsedTime)
     {
         return GetPositionFromTime(_offNominalPathPoints, elapsedTime);
+    }
+    
+    public Vector3 GetOffNominalVelocityFromTime(float elapsedTime)
+    {
+        return GetVelocityFromTime(_offNominalPathPoints, elapsedTime);
     }
 
     #endregion
@@ -957,18 +1013,19 @@ public class SpacecraftManager : MonoBehaviour
 
     private void UpdateModel(int cutsceneIndex)
     {
-        switch (cutsceneIndex)
-        {
-            case < 3:
-                DisplayModel(0);
-                return;
-            case <= 6:
-                DisplayModel(cutsceneIndex - 2);
-                return;
-            default:
-                DisplayModel(4);
-                return;
-        }
+        DisplayModel(cutsceneIndex);
+        //switch (cutsceneIndex)
+        //{
+        //    case < 1:
+        //        DisplayModel(0);
+        //        return;
+        //    case <= 2:
+        //        DisplayModel(cutsceneIndex - 2);
+        //        return;
+        //    default:
+        //        DisplayModel(4);
+        //        return;
+        //}
     }
 
     #endregion

@@ -30,7 +30,7 @@ public class IntelligenceManager : MonoBehaviour
         DataManager.OnDataLoaded += LoadThrustData;
         SpacecraftManager.OnCurrentIndexUpdated += SetDataIndex;
         SpacecraftManager.OnUpdateTime += SetCurrentTime;
-        UIManager.OnBumpOffCoursePressed += OnBumpOffCourse;
+        UIManager.OnTransitionPathPressed += OnTransitionPath;
     }
 
     private void OnDisable()
@@ -38,7 +38,7 @@ public class IntelligenceManager : MonoBehaviour
         DataManager.OnDataLoaded -= LoadThrustData;
         SpacecraftManager.OnCurrentIndexUpdated -= SetDataIndex;
         SpacecraftManager.OnUpdateTime -= SetCurrentTime;
-        UIManager.OnBumpOffCoursePressed -= OnBumpOffCourse;
+        UIManager.OnTransitionPathPressed -= OnTransitionPath;
     }
     
     #endregion
@@ -146,21 +146,25 @@ public class IntelligenceManager : MonoBehaviour
         return rawFlightTime + bufferTime;
     }
 
-    private void OnBumpOffCourse()
+    private void OnTransitionPath()
     {
         var deltaTime = CalculateDeltaTime(_dataIndex);
         
-        var origin = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
-        var oppositePathPosition = SpacecraftManager.Instance.NominalSpacecraftTransform.position;
-        var destination = SpacecraftManager.Instance.GetNominalPositionFromTime(_currentTime + deltaTime);
+        Vector3 originPosition = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
+        Vector3 originVelocity = SpacecraftManager.Instance.OffNominalSpacecraftTransform.rotation.eulerAngles;
+        Vector3 oppositePathPosition = SpacecraftManager.Instance.NominalSpacecraftTransform.position;
+        Vector3 destinationPosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_currentTime + deltaTime);
+        Vector3 destinationVelocity = SpacecraftManager.Instance.GetNominalVelocityFromTime(_currentTime + deltaTime);
         
-        var flightTime = CalculateFlightTime(origin, oppositePathPosition, destination, deltaTime);
+        var flightTime = CalculateFlightTime(originPosition, oppositePathPosition, destinationPosition, deltaTime);
         
-        HttpManager.Instance.RequestBumpOffCourseApi(
-            origin, 
-            destination, 
-            flightTime,
-            _currentTime
+        HttpManager.Instance.TransitionPathApi(
+            originPosition,
+            originVelocity,
+            destinationPosition, 
+            destinationVelocity,
+            _currentTime,
+            flightTime
         );
     }
     

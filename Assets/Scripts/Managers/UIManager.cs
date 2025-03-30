@@ -5,10 +5,12 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    #region Variables
     public static UIManager Instance { get; private set; }
     
     [SerializeField] private CanvasGroup canvasGroup;
@@ -34,10 +36,19 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI hourCounter;
     [SerializeField] private TextMeshProUGUI minuteCounter;
     [SerializeField] private TextMeshProUGUI secondCounter;
+
+    [Header("Color Key")]
+    [SerializeField] private Toggle colorKeyToggle;
+    [SerializeField] private GameObject colorKey;
+
     [Header("Time Elapsed Bar")]
     [SerializeField] private GameObject timeElapsedBar;
+
     [Header("Time Scale")]
     [SerializeField] private TextMeshProUGUI timeScaleIndicator;
+    
+    [Header("Spacecraft")]
+    [SerializeField] private TextMeshProUGUI spacecraftMass;
     
     [Header("Coordinates")]
     [SerializeField] private TextMeshProUGUI xCoordinate;
@@ -53,15 +64,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI missionStageText;
 
     [Header("Notification")]
-    //[SerializeField] private GameObject notification;
-    //[SerializeField] private TextMeshProUGUI notificationText;
     [SerializeField] private Transform notificationParent;
     [SerializeField] private GameObject notificationPrefab;
     
     [Header("Machine Learning")]
-    [SerializeField] private Button bumpOffCourseButton;
     [SerializeField] private GameObject thrustSection;
     [SerializeField] private TextMeshProUGUI thrustText;
+    [SerializeField] private Button transitionPathButton;
+    [SerializeField] private Button bumpOffCoursePathButton;
     
     [Header("UI Settings")]
     [SerializeField] private float uiFadeSpeed;
@@ -87,6 +97,7 @@ public class UIManager : MonoBehaviour
     
     private readonly List<string> _disabledAntennas = new();
     
+    public static event Action OnTransitionPathPressed;
     public static event Action OnBumpOffCoursePressed;
     public static event Action<SpacecraftManager.SpacecraftState> OnCurrentPathChanged;
     public static event Action<int> OnPrioritizationChanged;
@@ -97,6 +108,8 @@ public class UIManager : MonoBehaviour
     private SpacecraftManager.SpacecraftState _spacecraftState;
 
     private bool _showedStageFiredNotification = false;
+
+    #endregion
 
     #region Event Functions
 
@@ -118,7 +131,7 @@ public class UIManager : MonoBehaviour
         
         OnPrioritizationChanged?.Invoke(prioritizationMethod.value);
 
-        //ShowNotification("testing notification", Notification.NotificationType.Dismissable);
+        ShowNotification("Show Color Key?", Notification.NotificationType.AskYesNo, ShowColorKey);
     }
 
     private void Update()
@@ -131,6 +144,7 @@ public class UIManager : MonoBehaviour
         SpacecraftManager.OnUpdateTime += UpdateTimeFromMinutes;
         SpacecraftManager.OnDistanceCalculated += UpdateDistances;
         SpacecraftManager.OnUpdateCoordinates += UpdateCoordinatesText;
+        SpacecraftManager.OnUpdateMass += SetSpacecraftMass;
         SpacecraftManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
         SpacecraftManager.OnCurrentIndexUpdated += UpdateThrust;
         SpacecraftManager.OnStageFired += ShowStageFiredNotification;
@@ -145,6 +159,7 @@ public class UIManager : MonoBehaviour
         SpacecraftManager.OnUpdateTime -= UpdateTimeFromMinutes;
         SpacecraftManager.OnDistanceCalculated -= UpdateDistances;
         SpacecraftManager.OnUpdateCoordinates -= UpdateCoordinatesText;
+        SpacecraftManager.OnUpdateMass -= SetSpacecraftMass;
         SpacecraftManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
         SpacecraftManager.OnCurrentIndexUpdated -= UpdateThrust;
         SpacecraftManager.OnStageFired -= ShowStageFiredNotification;
@@ -179,13 +194,31 @@ public class UIManager : MonoBehaviour
         LoadingSceneManager.sceneToLoad = 1;
         SceneManager.LoadScene(0);
     }
-    
+
     #endregion
-    
-    
+
+
     #region Actions Panel
-    
+
     #region Settings
+
+    private void ShowColorKey()
+    {
+        ToggleColorKeyVisiblity(true);
+        colorKeyToggle.isOn = true;
+    }
+
+    public void HideColorKey()
+    {
+        ToggleColorKeyVisiblity(false);
+        colorKeyToggle.isOn = false;
+    }
+
+    public void ToggleColorKeyVisiblity(bool shouldBeVisible)
+    {
+        colorKey.SetActive(shouldBeVisible);
+    }
+
     public void ToggleTimeElapsedBar(bool isBarEnabled)
     {
         timeElapsedBar.SetActive(isBarEnabled);
@@ -201,11 +234,17 @@ public class UIManager : MonoBehaviour
     {
         _currentLengthUnit = UnitSystem.Metric;
     }
+    
     #endregion
     
     #region Machine Learning
     
-    public void BumpOffCourseButtonPressed()
+    public void OnTransitionPathButtonPressed()
+    {
+        OnTransitionPathPressed?.Invoke();
+    }
+    
+    public void OnBumpOffCourseButtonPressed()
     {
         OnBumpOffCoursePressed?.Invoke();
     }
@@ -273,6 +312,21 @@ public class UIManager : MonoBehaviour
     #endregion
     
     
+    #region Spacecraft
+
+    private void SetSpacecraftMass(float massInKilograms)
+    {
+        spacecraftMass.text = _currentLengthUnit switch
+        {
+            UnitSystem.Metric => $"{massInKilograms:F3} kg",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilogramsToPounds(massInKilograms):F3} lb",
+            _ => spacecraftMass.text
+        };
+    }
+
+    #endregion
+    
+    
     #region Coordinates
     
     private void UpdateCoordinatesText(Vector3 position)
@@ -283,15 +337,15 @@ public class UIManager : MonoBehaviour
         {
             case UnitSystem.Metric:
                 units = " km";
-                xCoordinate.text = position.x.ToString("N0") + units;
-                yCoordinate.text = position.y.ToString("N0") + units;
-                zCoordinate.text = position.z.ToString("N0") + units;
+                xCoordinate.text = $"{position.x:F3} {units}";
+                yCoordinate.text = $"{position.y:F3} {units}";
+                zCoordinate.text = $"{position.z:F3} {units}";
                 break;
             case UnitSystem.Imperial:
                 units = " mi";
-                xCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.x).ToString("N0") + units;
-                yCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.y).ToString("N0") + units;
-                zCoordinate.text = UnitAndCoordinateConverter.KilometersToMiles(position.z).ToString("N0") + units;
+                xCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.x):F3} {units}";
+                yCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.y):F3} {units}";
+                zCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.z):F3} {units}";
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -552,7 +606,7 @@ public class UIManager : MonoBehaviour
         GameObject notification = Instantiate(notificationPrefab, notificationParent);
         notification.GetComponent<Notification>().Setup(
             text,
-            Notification.NotificationType.Dismissible
+            Notification.NotificationType.Dismissable
         );
     }
     

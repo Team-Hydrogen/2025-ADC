@@ -31,6 +31,7 @@ Team Hydrogen would like to thank the following members of our founding organiza
 - [Suchin Ravi](https://github.com/wonksknowsuchin), for organizing this team, providing mentorship in machine learning, and guiding the trajectory of our project.
 - Leonel Cruz, for his assistance in the UI/UX design, 3-D modeling, and animation.
 - Shivendra Singh, for his assistance in 3-D modeling and animation.
+- Prasanna Gurumallapla, for periodically checking in and assisting in the organization of our team.
 - Jayson Harriott, for kickstarting our project and performing required formal procedures.
 
 [^1]: Lowndes High School, Valdosta, GA

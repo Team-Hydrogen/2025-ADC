@@ -36,7 +36,7 @@ public class Notification : MonoBehaviour
         yesButton.SetActive(false);
         cancelButton.SetActive(false);
 
-        if (type == NotificationType.AskYesCancel)
+        if (type is NotificationType.AskYesCancel or NotificationType.AskYesNo)
         {
             yesButton.SetActive(true);
             cancelButton.SetActive(true);
