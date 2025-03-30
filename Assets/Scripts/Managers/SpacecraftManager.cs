@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -452,7 +453,7 @@ public class SpacecraftManager : MonoBehaviour
 
     private float UpdateSpacecraftPositionOnPath(List<string[]> points, Transform spacecraftPosition)
     {
-        var currentPoint = points[_currentPointIndex];
+        string[] currentPoint = points[_currentPointIndex];
         Vector3 currentVelocityVector;
         try
         {
@@ -466,8 +467,8 @@ public class SpacecraftManager : MonoBehaviour
         {
             currentVelocityVector = Vector3.zero;
         }
-        
-        var nextPoint = points[(_currentPointIndex + 1) % points.Count];
+
+        string[] nextPoint = _currentPointIndex + 1 < points.Count ? points[_currentPointIndex + 1] : currentPoint;
         Vector3 nextVelocityVector;
         try
         {
@@ -545,7 +546,7 @@ public class SpacecraftManager : MonoBehaviour
             float.Parse(currentPoint[5]),
             float.Parse(currentPoint[6]));
         
-        var nextPoint = points[upperIndex % points.Count];
+        var nextPoint = points[upperIndex];
         var nextVelocityVector = new Vector3(
             float.Parse(nextPoint[4]),
             float.Parse(nextPoint[5]),
@@ -593,8 +594,8 @@ public class SpacecraftManager : MonoBehaviour
 
         try
         {
-            currentPoint = _offNominalPathPoints[_currentPointIndex];
-            nextPoint = _offNominalPathPoints[_currentPointIndex + 1];
+            currentPoint = _nominalPathPoints[_currentPointIndex];
+            nextPoint = _nominalPathPoints[_currentPointIndex + 1];
         }
         catch (ArgumentOutOfRangeException)
         {
@@ -604,10 +605,9 @@ public class SpacecraftManager : MonoBehaviour
 
         var currentTime = float.Parse(currentPoint[0]);
         var nextTime = float.Parse(nextPoint[0]);
+        
         _timeInterval = (nextTime - currentTime) * 60.0f;
-        
         _progress += Time.deltaTime / _timeInterval * timeScale;
-        
         _elapsedTime = currentTime + (nextTime - currentTime) * _progress;
         
         OnUpdateTime?.Invoke(_elapsedTime);
@@ -750,7 +750,11 @@ public class SpacecraftManager : MonoBehaviour
                 float.Parse(pathPoints[currentIndex + 1][4]),
                 float.Parse(pathPoints[currentIndex + 1][5]),
                 float.Parse(pathPoints[currentIndex + 1][6]));
-        } 
+        }
+        catch (ArgumentOutOfRangeException e)
+        {
+            return;
+        }
         catch (FormatException e)
         {
             Debug.LogWarning($"Incorrect data format provided at line {currentIndex}: {e}");

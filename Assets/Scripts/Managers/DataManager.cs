@@ -167,7 +167,7 @@ public class DataManager : MonoBehaviour
             maximumFutureIndex = 60;
         }
         
-        for (var futureIndex = 1; futureIndex <= maximumFutureIndex; futureIndex++)
+        for (var futureIndex = 1; futureIndex <= maximumFutureIndex && index + futureIndex < _nominalTrajectoryDataValues.Count; futureIndex++)
         {
             string futureSpacecraftName;
 
