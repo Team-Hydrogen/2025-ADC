@@ -66,8 +66,8 @@ public class SpacecraftManager : MonoBehaviour
     private List<string[]> _offNominalPathPoints;
     private List<string[]> _mergePathPoints;
     
-    private LineRenderer _currentNominalTrajectoryRenderer;
-    private LineRenderer _currentOffNominalTrajectoryRenderer;
+    private LineRenderer _pastNominalTrajectoryRenderer;
+    private LineRenderer _pastOffNominalTrajectoryRenderer;
     
     private LineRenderer _pastMergeTrajectoryRenderer;
     private LineRenderer _futureMergeTrajectoryRenderer;
@@ -216,11 +216,11 @@ public class SpacecraftManager : MonoBehaviour
     {
         _nominalPathPoints = data.NominalTrajectoryData;
         _offNominalPathPoints = data.OffNominalTrajectoryData;
-        _currentNominalTrajectoryRenderer = data.MissionStage.nominalLineRenderer;
-        _currentOffNominalTrajectoryRenderer = data.MissionStage.offnominalLineRenderer;
+        _pastNominalTrajectoryRenderer = data.MissionStage.nominalLineRenderer;
+        _pastOffNominalTrajectoryRenderer = data.MissionStage.offnominalLineRenderer;
         
-        PlotTrajectory(_nominalPathPoints, _currentNominalTrajectoryRenderer, futureNominalTrajectory);
-        PlotTrajectory(_offNominalPathPoints, _currentOffNominalTrajectoryRenderer, futureOffNominalTrajectory);
+        PlotTrajectory(_nominalPathPoints, _pastNominalTrajectoryRenderer, futureNominalTrajectory);
+        PlotTrajectory(_offNominalPathPoints, _pastOffNominalTrajectoryRenderer, futureOffNominalTrajectory);
         UpdateVelocityVector(_currentPointIndex);
         
         _isPlaying = true;
@@ -272,16 +272,16 @@ public class SpacecraftManager : MonoBehaviour
     /// Updates a trajectory
     /// </summary>
     /// <param name="spacecraftTransform"></param>
-    /// <param name="current"></param>
+    /// <param name="past"></param>
     /// <param name="future"></param>
     /// <param name="indexUpdated"></param>
     /// <param name="positionUpdated"></param>
-    private void UpdateTrajectory(Transform spacecraftTransform, LineRenderer current, LineRenderer future, bool indexUpdated, bool positionUpdated)
+    private void UpdateTrajectory(Transform spacecraftTransform, LineRenderer past, LineRenderer future, bool indexUpdated, bool positionUpdated)
     {
         if (positionUpdated)
         {
             future.SetPosition(0, spacecraftTransform.position);
-            current.SetPosition(current.positionCount - 1, spacecraftTransform.position);
+            past.SetPosition(past.positionCount - 1, spacecraftTransform.position);
         }
 
         if (!indexUpdated)
@@ -289,9 +289,7 @@ public class SpacecraftManager : MonoBehaviour
             return;
         }
 
-        var indexChange = _currentState == SpacecraftState.Merging
-            ? 1
-            : _currentPointIndex - _previousPointIndex;
+        var indexChange = _currentPointIndex - _previousPointIndex;
         
         switch (indexChange)
         {
@@ -311,8 +309,8 @@ public class SpacecraftManager : MonoBehaviour
                     indexChange);
 
                 // Add these points to the past trajectory
-                var pastTrajectoryPoints = new Vector3[current.positionCount];
-                current.GetPositions(pastTrajectoryPoints);
+                var pastTrajectoryPoints = new Vector3[past.positionCount];
+                past.GetPositions(pastTrajectoryPoints);
                 
                 // Combine past trajectory points and new points
                 var newPastTrajectoryPoints = new Vector3[pastTrajectoryPoints.Length + pointsToMove.Length];
@@ -330,8 +328,8 @@ public class SpacecraftManager : MonoBehaviour
                     pointsToMove.Length);
                 
                 // Update past trajectory
-                current.positionCount = newPastTrajectoryPoints.Length;
-                current.SetPositions(newPastTrajectoryPoints);
+                past.positionCount = newPastTrajectoryPoints.Length;
+                past.SetPositions(newPastTrajectoryPoints);
                 
                 // Remove moved points from future trajectory
                 var newFuturePointCount = future.positionCount - indexChange;
@@ -352,8 +350,8 @@ public class SpacecraftManager : MonoBehaviour
                 indexChange = -indexChange;
                 
                 // Get all points in the past trajectory
-                var pastTrajectoryPoints = new Vector3[current.positionCount];
-                current.GetPositions(pastTrajectoryPoints);
+                var pastTrajectoryPoints = new Vector3[past.positionCount];
+                past.GetPositions(pastTrajectoryPoints);
                 
                 // Extract points to move back to the future trajectory
                 var pointsToMove = new Vector3[indexChange];
@@ -387,7 +385,7 @@ public class SpacecraftManager : MonoBehaviour
                 future.SetPositions(newFutureTrajectoryPoints);
 
                 // Remove moved points from past trajectory
-                var newPastPointCount = current.positionCount - indexChange;
+                var newPastPointCount = past.positionCount - indexChange;
                 var newPastTrajectoryPoints = new Vector3[newPastPointCount];
                 Array.Copy(
                     pastTrajectoryPoints,
@@ -396,8 +394,8 @@ public class SpacecraftManager : MonoBehaviour
                     0,
                     newPastPointCount);
                 
-                current.positionCount = newPastPointCount;
-                current.SetPositions(newPastTrajectoryPoints);
+                past.positionCount = newPastPointCount;
+                past.SetPositions(newPastTrajectoryPoints);
                 break;
             }
         }
@@ -612,7 +610,7 @@ public class SpacecraftManager : MonoBehaviour
         
         UpdateTrajectory(
             NominalSpacecraftTransform,
-            _currentNominalTrajectoryRenderer,
+            _pastNominalTrajectoryRenderer,
             futureNominalTrajectory,
             false,
             true
@@ -620,7 +618,7 @@ public class SpacecraftManager : MonoBehaviour
 
         UpdateTrajectory(
             OffNominalSpacecraftTransform,
-            _currentOffNominalTrajectoryRenderer,
+            _pastOffNominalTrajectoryRenderer,
             futureOffNominalTrajectory,
             false,
             true
@@ -655,7 +653,7 @@ public class SpacecraftManager : MonoBehaviour
         
         UpdateTrajectory(
             NominalSpacecraftTransform,
-            _currentNominalTrajectoryRenderer,
+            _pastNominalTrajectoryRenderer,
             futureNominalTrajectory,
             true,
             false
@@ -663,7 +661,7 @@ public class SpacecraftManager : MonoBehaviour
 
         UpdateTrajectory(
             OffNominalSpacecraftTransform,
-            _currentOffNominalTrajectoryRenderer,
+            _pastOffNominalTrajectoryRenderer,
             futureOffNominalTrajectory,
             true,
             false
@@ -691,16 +689,16 @@ public class SpacecraftManager : MonoBehaviour
     
     private void OnMissionStageUpdated(MissionStage stage)
     {
-        if (_currentNominalTrajectoryRenderer.Equals(stage.nominalLineRenderer))
+        if (_pastNominalTrajectoryRenderer.Equals(stage.nominalLineRenderer))
         {
             return;
         }
         
-        _currentNominalTrajectoryRenderer = stage.nominalLineRenderer;
-        _currentNominalTrajectoryRenderer.SetPosition(0, NominalSpacecraftTransform.position);
+        _pastNominalTrajectoryRenderer = stage.nominalLineRenderer;
+        _pastNominalTrajectoryRenderer.SetPosition(0, NominalSpacecraftTransform.position);
 
-        _currentOffNominalTrajectoryRenderer = stage.offnominalLineRenderer;
-        _currentOffNominalTrajectoryRenderer.SetPosition(0, OffNominalSpacecraftTransform.position);
+        _pastOffNominalTrajectoryRenderer = stage.offnominalLineRenderer;
+        _pastOffNominalTrajectoryRenderer.SetPosition(0, OffNominalSpacecraftTransform.position);
         
         // trigger animation here if it is correct stage
     }
