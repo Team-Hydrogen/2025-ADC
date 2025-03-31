@@ -290,8 +290,7 @@ public class SpacecraftManager : MonoBehaviour
             return;
         }
         
-        var indexChange = _currentPointIndex - _previousPointIndex;
-        Debug.Log($"The index updated.   {_currentPointIndex} - {_previousPointIndex} = {indexChange}");
+        int indexChange = _currentPointIndex - _previousPointIndex;
         
         switch (indexChange)
         {
@@ -489,38 +488,38 @@ public class SpacecraftManager : MonoBehaviour
         int lowerIndex = indexBounds[0];
         int upperIndex = indexBounds[1];
         
-        var currentPoint = points[lowerIndex];
-        var currentVelocityVector = new Vector3(
+        string[] currentPoint = points[lowerIndex];
+        Vector3 currentVelocityVector = new Vector3(
             float.Parse(currentPoint[4]),
             float.Parse(currentPoint[5]),
             float.Parse(currentPoint[6]));
         
-        var nextPoint = points[upperIndex];
-        var nextVelocityVector = new Vector3(
+        string[] nextPoint = points[upperIndex];
+        Vector3 nextVelocityVector = new Vector3(
             float.Parse(nextPoint[4]),
             float.Parse(nextPoint[5]),
             float.Parse(nextPoint[6]));
         
         
-        var currentPosition = new Vector3(
-            float.Parse(currentPoint[1]) * trajectoryScale,
-            float.Parse(currentPoint[2]) * trajectoryScale,
-            float.Parse(currentPoint[3]) * trajectoryScale
-        );
-        var nextPosition = new Vector3(
-            float.Parse(nextPoint[1]) * trajectoryScale,
-            float.Parse(nextPoint[2]) * trajectoryScale,
-            float.Parse(nextPoint[3]) * trajectoryScale
-        );
+        Vector3 currentPosition = new Vector3(
+            float.Parse(currentPoint[1]),
+            float.Parse(currentPoint[2]),
+            float.Parse(currentPoint[3])
+        ) * trajectoryScale;
+        Vector3 nextPosition = new Vector3(
+            float.Parse(nextPoint[1]),
+            float.Parse(nextPoint[2]),
+            float.Parse(nextPoint[3])
+        ) * trajectoryScale;
         
         // Interpolate position
-        var previousPosition = spacecraftPosition.position;
+        Vector3 previousPosition = spacecraftPosition.position;
         spacecraftPosition.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
 
-        var netDistance = Vector3.Distance(previousPosition, spacecraftPosition.position) / trajectoryScale;
+        float netDistance = Vector3.Distance(previousPosition, spacecraftPosition.position) / trajectoryScale;
 
         // Calculate spacecraft direction
-        var direction = (nextPosition - currentPosition).normalized;
+        Vector3 direction = (nextPosition - currentPosition).normalized;
         if (direction == Vector3.zero)
         {
             return netDistance;
@@ -552,8 +551,10 @@ public class SpacecraftManager : MonoBehaviour
             return;
         }
 
-        var currentTime = float.Parse(currentPoint[0]);
-        var nextTime = float.Parse(nextPoint[0]);
+        float currentTime = float.Parse(currentPoint[0]);
+        float nextTime = float.Parse(nextPoint[0]);
+        
+        Debug.Log($"Current time = {currentTime}, next time = {nextTime}");
         
         _timeInterval = (nextTime - currentTime) * 60.0f;
         _progress += Time.deltaTime / _timeInterval * timeScale;
@@ -605,8 +606,6 @@ public class SpacecraftManager : MonoBehaviour
         _previousPointIndex = _currentPointIndex;
         _currentPointIndex = Mathf.Clamp(
             _currentPointIndex + Mathf.FloorToInt(_progress), 0, _nominalPathPoints.Count - 1);
-        
-        Debug.Log($"Previous point: {_previousPointIndex}, current point: {_currentPointIndex}");
         
         // The progress is reset.
         _progress %= 1;
