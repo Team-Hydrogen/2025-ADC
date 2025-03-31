@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -281,8 +280,9 @@ public class SpacecraftManager : MonoBehaviour
     {
         if (positionUpdated)
         {
-            future.SetPosition(0, spacecraftTransform.position);
+            Debug.Log($"The spacecraft's position updated at time = {_elapsedTime}.");
             past.SetPosition(past.positionCount - 1, spacecraftTransform.position);
+            future.SetPosition(0, spacecraftTransform.position);
         }
         
         if (!indexUpdated)
@@ -291,7 +291,7 @@ public class SpacecraftManager : MonoBehaviour
         }
         
         var indexChange = _currentPointIndex - _previousPointIndex;
-        Debug.Log($"{_currentPointIndex} - {_previousPointIndex} = {indexChange}");
+        Debug.Log($"The index updated.   {_currentPointIndex} - {_previousPointIndex} = {indexChange}");
         
         switch (indexChange)
         {
@@ -308,11 +308,6 @@ public class SpacecraftManager : MonoBehaviour
                 // Get the traversed points between the past and current indexes.
                 Vector3[] traversedPoints = new Vector3[indexChange];
                 Array.Copy(futureTrajectoryPoints, 1, traversedPoints, 0, indexChange);
-                
-                // Debug statements for testing
-                Debug.Log($"At i = {_currentPointIndex}, traversed ={string.Join("  ", traversedPoints)}.");
-                Debug.Log($"At i = {_currentPointIndex}, past = {string.Join("  ", pastTrajectoryPoints)}.");
-                Debug.Log($"At i = {_currentPointIndex}, future = {string.Join("  ", futureTrajectoryPoints[..6])}.");
                 
                 // Created new trajectory arrays.
                 Vector3[] newPastTrajectoryPoints = new Vector3[past.positionCount + indexChange];
@@ -446,72 +441,42 @@ public class SpacecraftManager : MonoBehaviour
 
     private float UpdateSpacecraftPositionOnPath(List<string[]> points, Transform spacecraftPosition)
     {
+        // Define the current and next data point.
         string[] currentPoint = points[_currentPointIndex];
-        Vector3 currentVelocityVector;
-        try
-        {
-            currentVelocityVector = new Vector3(
-                float.Parse(currentPoint[4]),
-                float.Parse(currentPoint[5]),
-                float.Parse(currentPoint[6])
-            );
-        }
-        catch (FormatException)
-        {
-            currentVelocityVector = Vector3.zero;
-        }
-
-        string[] nextPoint = _currentPointIndex + 1 < points.Count ? points[_currentPointIndex + 1] : currentPoint;
-        Vector3 nextVelocityVector;
-        try
-        {
-            nextVelocityVector = new Vector3(
-                float.Parse(nextPoint[4]),
-                float.Parse(nextPoint[5]),
-                float.Parse(nextPoint[6])
-            );
-        }
-        catch (FormatException)
-        {
-            nextVelocityVector = Vector3.zero;
-        }
-
-        Vector3 currentPosition;
-        try
-        {
-            currentPosition = new Vector3(
-                float.Parse(currentPoint[1]) * trajectoryScale,
-                float.Parse(currentPoint[2]) * trajectoryScale,
-                float.Parse(currentPoint[3]) * trajectoryScale
-            );
-        }
-        catch (FormatException)
-        {
-            currentPosition = Vector3.zero;
-        }
+        string[] futurePoint = _currentPointIndex + 1 < points.Count ? points[_currentPointIndex + 1] : points[^1];
         
-        Vector3 nextPosition = Vector3.zero;
-        try
-        {
-            nextPosition = new Vector3(
-                float.Parse(nextPoint[1]) * trajectoryScale,
-                float.Parse(nextPoint[2]) * trajectoryScale,
-                float.Parse(nextPoint[3]) * trajectoryScale
-            );
-        }
-        catch (FormatException)
-        {
-            currentPosition = Vector3.zero;
-        }
-
+        // Determine the current position and velocity vector.
+        Vector3 currentPosition = new Vector3(
+            float.Parse(currentPoint[1]),
+            float.Parse(currentPoint[2]),
+            float.Parse(currentPoint[3])
+        ) * trajectoryScale;
+        Vector3 currentVelocityVector = new Vector3(
+            float.Parse(currentPoint[4]),
+            float.Parse(currentPoint[5]),
+            float.Parse(currentPoint[6])
+        );
+        
+        // Determine the future position and velocity vector.
+        Vector3 futurePosition = new Vector3(
+            float.Parse(futurePoint[1]),
+            float.Parse(futurePoint[2]),
+            float.Parse(futurePoint[3])
+        ) * trajectoryScale;
+        Vector3 futureVelocityVector = new Vector3(
+            float.Parse(futurePoint[4]),
+            float.Parse(futurePoint[5]),
+            float.Parse(futurePoint[6])
+        );
+        
         // Interpolate position
-        var previousPosition = spacecraftPosition.position;
-        spacecraftPosition.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
-
-        var netDistance = Vector3.Distance(previousPosition, spacecraftPosition.position) / trajectoryScale;
-
+        Vector3 previousPosition = spacecraftPosition.position;
+        spacecraftPosition.position = Vector3.Lerp(currentPosition, futurePosition, _progress);
+        
+        float netDistance = Vector3.Distance(previousPosition, spacecraftPosition.position) / trajectoryScale;
+        
         // Calculate spacecraft direction
-        var direction = (nextPosition - currentPosition).normalized;
+        Vector3 direction = (futurePosition - currentPosition).normalized;
         if (direction == Vector3.zero)
         {
             return netDistance;
@@ -520,7 +485,7 @@ public class SpacecraftManager : MonoBehaviour
         // Interpolate rotation
         spacecraftPosition.rotation = Quaternion.Slerp(
             Quaternion.LookRotation(currentVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f),
-            Quaternion.LookRotation(nextVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
+            Quaternion.LookRotation(futureVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
             _progress
         );
 
