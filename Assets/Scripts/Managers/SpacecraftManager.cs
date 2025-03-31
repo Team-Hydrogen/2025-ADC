@@ -57,8 +57,8 @@ public class SpacecraftManager : MonoBehaviour
     
     #region Data Variables
     
-    private float _totalNominalDistance = 0.0f;
-    private float _totalOffNominalDistance = 0.0f;
+    private float _nominalDistanceTraveled = 0.0f;
+    private float _offNominalDistanceTraveled = 0.0f;
     private float _mass = 0.0f;
     
     #endregion
@@ -159,7 +159,7 @@ public class SpacecraftManager : MonoBehaviour
     
     private void Start()
     {
-        _totalNominalDistance = 0.0f;
+        _nominalDistanceTraveled = 0.0f;
         _vectorRenderers = velocityVector.GetComponentsInChildren<Renderer>();
         OnTimeScaleSet?.Invoke(timeScale);
     }
@@ -185,24 +185,24 @@ public class SpacecraftManager : MonoBehaviour
     private void OnEnable()
     {
         CutsceneManager.OnCutsceneStart += UpdateModel;
-        DataManager.OnDataLoaded += OnDataLoaded;
+        DataManager.OnDataLoaded += LoadData;
         DataManager.OnMissionStageUpdated += OnMissionStageUpdated;
         HttpManager.OnPathCalculated += OnPathCalculated;
-        UIManager.OnCurrentPathChanged += OnChangedCurrentPath;
+        UIManager.OnCurrentPathChanged += OnTrajectorySelected;
     }
     
     private void OnDisable()
     {
         CutsceneManager.OnCutsceneStart -= UpdateModel;
-        DataManager.OnDataLoaded -= OnDataLoaded;
+        DataManager.OnDataLoaded -= LoadData;
         DataManager.OnMissionStageUpdated -= OnMissionStageUpdated;
         HttpManager.OnPathCalculated -= OnPathCalculated;
-        UIManager.OnCurrentPathChanged -= OnChangedCurrentPath;
+        UIManager.OnCurrentPathChanged -= OnTrajectorySelected;
     }
     
     #endregion
     
-    #region Time Scale
+    #region Timeline Methods
 
     public void ForwardButtonPressed()
     {
@@ -226,23 +226,23 @@ public class SpacecraftManager : MonoBehaviour
         OnTimeScaleSet?.Invoke(timeScale);
     }
     
-    #endregion
-
-    private void OnDataLoaded(DataLoadedEventArgs data)
+    private void OnMissionStageUpdated(MissionStage stage)
     {
-        _nominalTrajectoryData = data.NominalTrajectoryData;
-        _offNominalTrajectoryData = data.OffNominalTrajectoryData;
-        _pastNominalTrajectoryRenderer = data.MissionStage.nominalLineRenderer;
-        _pastOffNominalTrajectoryRenderer = data.MissionStage.offnominalLineRenderer;
+        if (_pastNominalTrajectoryRenderer.Equals(stage.nominalLineRenderer))
+        {
+            return;
+        }
         
-        PlotTrajectory(_nominalTrajectoryData, _pastNominalTrajectoryRenderer, futureNominalTrajectory);
-        PlotTrajectory(_offNominalTrajectoryData, _pastOffNominalTrajectoryRenderer, futureOffNominalTrajectory);
-        UpdateVelocityVector(_currentPointIndex);
+        _pastNominalTrajectoryRenderer = stage.nominalLineRenderer;
+        _pastNominalTrajectoryRenderer.SetPosition(0, NominalSpacecraftTransform.position);
+
+        _pastOffNominalTrajectoryRenderer = stage.offnominalLineRenderer;
+        _pastOffNominalTrajectoryRenderer.SetPosition(0, OffNominalSpacecraftTransform.position);
         
-        _isPlaying = true;
-        
-        OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
+        // trigger animation here if it is correct stage
     }
+    
+    #endregion
 
     #region Trajectory
     
@@ -410,8 +410,8 @@ public class SpacecraftManager : MonoBehaviour
         
         UpdateTimeIntervalAndProgress();
         
-        _totalNominalDistance += UpdateSpacecraftPositionOnPath(_nominalTrajectoryData, NominalSpacecraftTransform);
-        _totalOffNominalDistance += UpdateSpacecraftPositionOnPath(_offNominalTrajectoryData, OffNominalSpacecraftTransform);
+        _nominalDistanceTraveled += UpdateSpacecraftPositionOnPath(_nominalTrajectoryData, NominalSpacecraftTransform);
+        _offNominalDistanceTraveled += UpdateSpacecraftPositionOnPath(_offNominalTrajectoryData, OffNominalSpacecraftTransform);
         
         if (_currentState == SpacecraftState.Merging)
         {
@@ -663,28 +663,49 @@ public class SpacecraftManager : MonoBehaviour
         UpdateVelocityVector(_currentPointIndex);
     }
     
-    private void OnChangedCurrentPath(SpacecraftState state)
+    private void OnTrajectorySelected(SpacecraftState state)
     {
         _currentState = state;
         OnSpacecraftStateUpdated?.Invoke(_currentState);
     }
     
-    private void OnMissionStageUpdated(MissionStage stage)
+    #region Data Methods
+    
+    private void LoadData(DataLoadedEventArgs data)
     {
-        if (_pastNominalTrajectoryRenderer.Equals(stage.nominalLineRenderer))
-        {
-            return;
-        }
+        // Get both the nominal and off-nominal trajectory data.
+        _nominalTrajectoryData = data.NominalTrajectoryData;
+        _offNominalTrajectoryData = data.OffNominalTrajectoryData;
+        // Get both the nominal and off-nominal line renderers.
+        _pastNominalTrajectoryRenderer = data.MissionStage.nominalLineRenderer;
+        _pastOffNominalTrajectoryRenderer = data.MissionStage.offnominalLineRenderer;
         
-        _pastNominalTrajectoryRenderer = stage.nominalLineRenderer;
-        _pastNominalTrajectoryRenderer.SetPosition(0, NominalSpacecraftTransform.position);
-
-        _pastOffNominalTrajectoryRenderer = stage.offnominalLineRenderer;
-        _pastOffNominalTrajectoryRenderer.SetPosition(0, OffNominalSpacecraftTransform.position);
+        // Generate an initial plot of both trajectories. 
+        PlotTrajectory(_nominalTrajectoryData, _pastNominalTrajectoryRenderer, futureNominalTrajectory);
+        PlotTrajectory(_offNominalTrajectoryData, _pastOffNominalTrajectoryRenderer, futureOffNominalTrajectory);
         
-        // trigger animation here if it is correct stage
+        UpdateVelocityVector(_currentPointIndex);
+        
+        _isPlaying = true;
+        
+        OnCurrentIndexUpdated?.Invoke(_currentPointIndex);
     }
+    
+    private void CalculateDistances()
+    {
+        // Get the distance between the spacecraft and the celestial bodies.
+        float distanceToEarth = Vector3.Distance(spacecraft.position, earth.position) / trajectoryScale;
+        float distanceToMoon = Vector3.Distance(spacecraft.position, moon.position) / trajectoryScale;
+        
+        // Get the distance the spacecraft traveled along its selected path.
+        float selectedDistanceTraveled = _currentState == SpacecraftState.Nominal
+            ? _nominalDistanceTraveled
+            : _offNominalDistanceTraveled;
 
+        OnDistanceCalculated?.Invoke(
+            new DistanceTravelledEventArgs(selectedDistanceTraveled, distanceToEarth, distanceToMoon));
+    }
+    
     private void UpdateSpacecraftMass(int currentIndex)
     {
         bool isMassValid = float.TryParse(_nominalTrajectoryData[currentIndex][7], out _mass);
@@ -754,18 +775,7 @@ public class SpacecraftManager : MonoBehaviour
         }
     }
     
-    private void CalculateDistances()
-    {
-        float distanceToEarth = Vector3.Distance(
-            spacecraft.position, earth.position) / trajectoryScale;
-        float distanceToMoon = Vector3.Distance(
-            spacecraft.position, moon.position) / trajectoryScale;
-
-        float distanceTravelledToSend = _currentState == SpacecraftState.OffNominal ? _totalOffNominalDistance : _totalNominalDistance;
-
-        OnDistanceCalculated?.Invoke(
-            new DistanceTravelledEventArgs(distanceTravelledToSend, distanceToEarth, distanceToMoon));
-    }
+    #endregion
     
     #region Machine Learning
     
