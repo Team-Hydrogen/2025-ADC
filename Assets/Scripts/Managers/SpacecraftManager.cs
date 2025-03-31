@@ -79,7 +79,7 @@ public class SpacecraftManager : MonoBehaviour
     private Vector3 _lastManualSpacecraftPosition;
     private int _lastAutomaticSpacecraftIndex;
     private int _lastManualSpacecraftIndex;
-    private float _timeInterval;
+    private float _timeIntervalInSeconds;
 
     private readonly Dictionary<KeyCode, Vector3> _manualControlScheme = new()
     {
@@ -280,7 +280,6 @@ public class SpacecraftManager : MonoBehaviour
     {
         if (positionUpdated)
         {
-            Debug.Log($"The spacecraft's position updated at time = {_elapsedTime}.");
             past.SetPosition(past.positionCount - 1, spacecraftTransform.position);
             future.SetPosition(0, spacecraftTransform.position);
         }
@@ -291,6 +290,7 @@ public class SpacecraftManager : MonoBehaviour
         }
         
         int indexChange = _currentPointIndex - _previousPointIndex;
+        Debug.Log($"index change = {indexChange} @ t = {_elapsedTime}");
         
         switch (indexChange)
         {
@@ -396,6 +396,7 @@ public class SpacecraftManager : MonoBehaviour
         
         _totalNominalDistance += UpdateSpacecraftPositionOnPath(_nominalPathPoints, NominalSpacecraftTransform);
         _totalOffNominalDistance += UpdateSpacecraftPositionOnPath(_offNominalPathPoints, OffNominalSpacecraftTransform);
+        
         if (_currentState == SpacecraftState.Merging)
         {
             UpdateSpacecraftPositionOnPathFromTime(_elapsedTime, _mergePathPoints, MergeSpacecraftTransform);
@@ -431,29 +432,39 @@ public class SpacecraftManager : MonoBehaviour
 
     private float UpdateSpacecraftPositionOnPath(List<string[]> points, Transform spacecraftPosition)
     {
-        // Define the current and next data point.
-        string[] currentPoint = points[_currentPointIndex];
-        string[] futurePoint = _currentPointIndex + 1 < points.Count ? points[_currentPointIndex + 1] : points[^1];
+        Debug.Log($"p = {_progress}, ⌊p⌋ = {Mathf.FloorToInt(_progress)}, ⌈p⌉ = {Mathf.CeilToInt(_progress)} @ t = {_elapsedTime}");
         
-        // Determine the current position and velocity vector.
+        // Determine the current and future indices.
+        int currentIndex = _currentPointIndex;
+        int futureIndex = _currentPointIndex + 1;
+        futureIndex = Mathf.Min(futureIndex, points.Count - 1);
+        
+        // int currentIndex = _currentPointIndex + Mathf.FloorToInt(_progress);
+        // int futureIndex = _currentPointIndex + Mathf.CeilToInt(_progress);
+        // futureIndex = Mathf.Min(futureIndex, points.Count - 1);
+        
+        string[] currentPoint = points[currentIndex];
+        string[] futurePoint = points[futureIndex]; 
+        
+        // Get the current position and velocity.
         Vector3 currentPosition = new Vector3(
             float.Parse(currentPoint[1]),
             float.Parse(currentPoint[2]),
             float.Parse(currentPoint[3])
         ) * trajectoryScale;
-        Vector3 currentVelocityVector = new Vector3(
+        Vector3 currentVelocity = new Vector3(
             float.Parse(currentPoint[4]),
             float.Parse(currentPoint[5]),
             float.Parse(currentPoint[6])
         );
         
-        // Determine the future position and velocity vector.
+        // Get the future position and velocity.
         Vector3 futurePosition = new Vector3(
             float.Parse(futurePoint[1]),
             float.Parse(futurePoint[2]),
             float.Parse(futurePoint[3])
         ) * trajectoryScale;
-        Vector3 futureVelocityVector = new Vector3(
+        Vector3 futureVelocity = new Vector3(
             float.Parse(futurePoint[4]),
             float.Parse(futurePoint[5]),
             float.Parse(futurePoint[6])
@@ -462,6 +473,7 @@ public class SpacecraftManager : MonoBehaviour
         // Interpolate position
         Vector3 previousPosition = spacecraftPosition.position;
         spacecraftPosition.position = Vector3.Lerp(currentPosition, futurePosition, _progress);
+        // spacecraftPosition.position = Vector3.Lerp(currentPosition, futurePosition, _progress % 1);
         
         float netDistance = Vector3.Distance(previousPosition, spacecraftPosition.position) / trajectoryScale;
         
@@ -474,8 +486,8 @@ public class SpacecraftManager : MonoBehaviour
         
         // Interpolate rotation
         spacecraftPosition.rotation = Quaternion.Slerp(
-            Quaternion.LookRotation(currentVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f),
-            Quaternion.LookRotation(futureVelocityVector) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
+            Quaternion.LookRotation(currentVelocity) * Quaternion.Euler(90.0f, 0.0f, 0.0f),
+            Quaternion.LookRotation(futureVelocity) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
             _progress
         );
 
@@ -537,28 +549,21 @@ public class SpacecraftManager : MonoBehaviour
     
     private void UpdateTimeIntervalAndProgress()
     {
-        string[] currentPoint;
-        string[] nextPoint;
-
-        try
+        const float secondsPerMinute = 60.0f;
+        
+        // If the current index exceeds or is the last index, progress is reset to 0, and time freezes.
+        if (_currentPointIndex >= _nominalPathPoints.Count - 1)
         {
-            currentPoint = _nominalPathPoints[_currentPointIndex];
-            nextPoint = _nominalPathPoints[_currentPointIndex + 1];
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            Time.timeScale = 0.0f;
+            Time.timeScale = 0;
             return;
         }
-
-        float currentTime = float.Parse(currentPoint[0]);
-        float nextTime = float.Parse(nextPoint[0]);
         
-        Debug.Log($"Current time = {currentTime}, next time = {nextTime}");
+        float currentTime = float.Parse(_nominalPathPoints[_currentPointIndex][0]);
+        float futureTime = float.Parse(_nominalPathPoints[_currentPointIndex + 1][0]);
         
-        _timeInterval = (nextTime - currentTime) * 60.0f;
-        _progress += Time.deltaTime / _timeInterval * timeScale;
-        _elapsedTime = currentTime + (nextTime - currentTime) * _progress;
+        _timeIntervalInSeconds = (futureTime - currentTime) * secondsPerMinute;
+        _progress += Time.deltaTime * timeScale / _timeIntervalInSeconds;
+        _elapsedTime = currentTime + (futureTime - currentTime) * _progress;
         
         OnUpdateTime?.Invoke(_elapsedTime);
     }
@@ -745,7 +750,31 @@ public class SpacecraftManager : MonoBehaviour
         OnDistanceCalculated?.Invoke(
             new DistanceTravelledEventArgs(distanceTravelledToSend, distanceToEarth, distanceToMoon));
     }
+    
+    #region Machine Learning
+    
+    #region Transition Path
+    
+    private void OnPathCalculated(string data)
+    {
+        Debug.Log(data);
+        
+        _mergePathPoints = CsvReader.TextToData(data);
+        _mergePathPoints.RemoveAt(0);
+        
+        GameObject mergeTrajectory = Instantiate(mergeTrajectoryPrefab, trajectoryParent);
+        LineRenderer[] mergeTrajectoryRenderers = mergeTrajectory.GetComponentsInChildren<LineRenderer>();
 
+        _pastMergeTrajectoryRenderer = mergeTrajectoryRenderers[0];
+        _futureMergeTrajectoryRenderer = mergeTrajectoryRenderers[1];
+        
+        PlotTrajectory(_mergePathPoints, _pastMergeTrajectoryRenderer, _futureMergeTrajectoryRenderer);
+        
+        _currentState = SpacecraftState.Merging;
+    }
+    
+    #endregion
+    
     #region Bump Off Course
 
     private void OnBumpOffCourse()
@@ -824,7 +853,9 @@ public class SpacecraftManager : MonoBehaviour
     }
 
     #endregion
-
+    
+    #endregion
+    
     #region Time Helper Functions
 
     private int GetClosestIndexFromTime(float time, List<string[]> pathPoints)
@@ -942,25 +973,8 @@ public class SpacecraftManager : MonoBehaviour
 
     #endregion
 
-    private void OnPathCalculated(string data)
-    {
-        Debug.Log(data);
-        
-        _mergePathPoints = CsvReader.TextToData(data);
-        _mergePathPoints.RemoveAt(0);
-        
-        GameObject mergeTrajectory = Instantiate(mergeTrajectoryPrefab, trajectoryParent);
-        LineRenderer[] mergeTrajectoryRenderers = mergeTrajectory.GetComponentsInChildren<LineRenderer>();
-
-        _pastMergeTrajectoryRenderer = mergeTrajectoryRenderers[0];
-        _futureMergeTrajectoryRenderer = mergeTrajectoryRenderers[1];
-        
-        PlotTrajectory(_mergePathPoints, _pastMergeTrajectoryRenderer, _futureMergeTrajectoryRenderer);
-        
-        _currentState = SpacecraftState.Merging;
-    }
-
     #region Spacecraft Model
+    
     private void DisplayModel(int displayedModelIndex)
     {
         Transform rocketParts = spacecraft.GetChild(0);

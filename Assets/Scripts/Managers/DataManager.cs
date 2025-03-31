@@ -282,4 +282,16 @@ public class DataManager : MonoBehaviour
         Switch,
         Asset
     }
+
+    public enum DataStructure
+    {
+        Time,
+        PositionX,
+        PositionY,
+        PositionZ,
+        VelocityX,
+        VelocityY,
+        VelocityZ,
+        SpacecraftMass
+    }
 }
