@@ -309,18 +309,18 @@ public class SpacecraftManager : MonoBehaviour
                 Vector3[] traversedPoints = new Vector3[indexChange];
                 Array.Copy(futureTrajectoryPoints, 1, traversedPoints, 0, indexChange);
                 
-                // Created new trajectory arrays.
+                // Create new trajectory arrays.
                 Vector3[] newPastTrajectoryPoints = new Vector3[past.positionCount + indexChange];
                 Vector3[] newFutureTrajectoryPoints = new Vector3[future.positionCount - indexChange];
                 
-                // Combine the traversed points with the past trajectory.
+                // Append the traversed points with the past trajectory.
                 pastTrajectoryPoints.CopyTo(newPastTrajectoryPoints, 0);
                 traversedPoints.CopyTo(newPastTrajectoryPoints, pastTrajectoryPoints.Length);
                 // Update the past trajectory.
                 past.positionCount = newPastTrajectoryPoints.Length;
                 past.SetPositions(newPastTrajectoryPoints);
                 
-                // Remove moved points from future trajectory
+                // Remove the traversed points from the future trajectory.
                 Array.Copy(
                     futureTrajectoryPoints,
                     indexChange,
@@ -338,53 +338,44 @@ public class SpacecraftManager : MonoBehaviour
             {
                 indexChange = -indexChange;
                 
-                // Get all points in the past trajectory
-                var pastTrajectoryPoints = new Vector3[past.positionCount];
+                // Get all past trajectory data points.
+                Vector3[] pastTrajectoryPoints = new Vector3[past.positionCount];
                 past.GetPositions(pastTrajectoryPoints);
+                // Get all future trajectory data points.
+                Vector3[] futureTrajectoryPoints = new Vector3[future.positionCount];
+                future.GetPositions(futureTrajectoryPoints);
                 
-                // Extract points to move back to the future trajectory
-                var pointsToMove = new Vector3[indexChange];
+                // Get the traversed points between the past and current indexes.
+                Vector3[] traversedPoints = new Vector3[indexChange];
                 Array.Copy(
                     pastTrajectoryPoints,
-                    pastTrajectoryPoints.Length - indexChange,
-                    pointsToMove,
+                    pastTrajectoryPoints.Length - indexChange - 1,
+                    traversedPoints,
                     0,
                     indexChange);
                 
-                // Add these points back to the future trajectory
-                var futureTrajectoryPoints = new Vector3[future.positionCount];
-                future.GetPositions(futureTrajectoryPoints);
+                // Create new trajectory arrays.
+                Vector3[] newPastTrajectoryPoints = new Vector3[past.positionCount - indexChange];
+                Vector3[] newFutureTrajectoryPoints = new Vector3[future.positionCount + indexChange];
                 
-                var newFutureTrajectoryPoints = new Vector3[futureTrajectoryPoints.Length + pointsToMove.Length];
-                Array.Copy(
-                    pointsToMove,
-                    0,
-                    newFutureTrajectoryPoints,
-                    0,
-                    pointsToMove.Length);
-                Array.Copy(
-                    futureTrajectoryPoints,
-                    0,
-                    newFutureTrajectoryPoints,
-                    pointsToMove.Length,
-                    futureTrajectoryPoints.Length);
-                
-                // Update future trajectory
+                // Prepend the traversed points with the future trajectory.
+                traversedPoints.CopyTo(newFutureTrajectoryPoints, 0);
+                futureTrajectoryPoints.CopyTo(newFutureTrajectoryPoints, traversedPoints.Length);
+                // Update the future trajectory.
                 future.positionCount = newFutureTrajectoryPoints.Length;
                 future.SetPositions(newFutureTrajectoryPoints);
-
-                // Remove moved points from past trajectory
-                var newPastPointCount = past.positionCount - indexChange;
-                var newPastTrajectoryPoints = new Vector3[newPastPointCount];
+                
+                // Remove the traversed points from the past trajectory.
                 Array.Copy(
                     pastTrajectoryPoints,
                     0,
                     newPastTrajectoryPoints,
                     0,
-                    newPastPointCount);
-                
-                past.positionCount = newPastPointCount;
+                    newPastTrajectoryPoints.Length);
+                // Update the past trajectory.
+                past.positionCount = newPastTrajectoryPoints.Length;
                 past.SetPositions(newPastTrajectoryPoints);
+                
                 break;
             }
         }
@@ -612,12 +603,10 @@ public class SpacecraftManager : MonoBehaviour
         
         // The previous index is set to the current.
         _previousPointIndex = _currentPointIndex;
-        _currentPointIndex += Mathf.FloorToInt(_progress);
+        _currentPointIndex = Mathf.Clamp(
+            _currentPointIndex + Mathf.FloorToInt(_progress), 0, _nominalPathPoints.Count - 1);
         
-        if (_currentPointIndex >= _nominalPathPoints.Count)
-        {
-            _currentPointIndex = _nominalPathPoints.Count - 1;
-        }
+        Debug.Log($"Previous point: {_previousPointIndex}, current point: {_currentPointIndex}");
         
         // The progress is reset.
         _progress %= 1;
