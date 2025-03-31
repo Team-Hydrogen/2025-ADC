@@ -284,69 +284,62 @@ public class SpacecraftManager : MonoBehaviour
             future.SetPosition(0, spacecraftTransform.position);
             past.SetPosition(past.positionCount - 1, spacecraftTransform.position);
         }
-
+        
         if (!indexUpdated)
         {
             return;
         }
-
+        
         var indexChange = _currentPointIndex - _previousPointIndex;
+        Debug.Log($"{_currentPointIndex} - {_previousPointIndex} = {indexChange}");
         
         switch (indexChange)
         {
-            case > 0: // The spacecraft moves forward.
+            // If the index change is positive, the spacecraft moves forward across data points.
+            case > 0:
             {
-                // Get all points in the future trajectory
-                var futureTrajectoryPoints = new Vector3[future.positionCount];
+                // Get all past trajectory data points.
+                Vector3[] pastTrajectoryPoints = new Vector3[past.positionCount];
+                past.GetPositions(pastTrajectoryPoints);
+                // Get all future trajectory data points.
+                Vector3[] futureTrajectoryPoints = new Vector3[future.positionCount];
                 future.GetPositions(futureTrajectoryPoints);
                 
-                // Extract points to push to the past trajectory
-                var pointsToMove = new Vector3[indexChange];
-                Array.Copy(
-                    futureTrajectoryPoints,
-                    0,
-                    pointsToMove,
-                    0,
-                    indexChange);
-
-                // Add these points to the past trajectory
-                var pastTrajectoryPoints = new Vector3[past.positionCount];
-                past.GetPositions(pastTrajectoryPoints);
+                // Get the traversed points between the past and current indexes.
+                Vector3[] traversedPoints = new Vector3[indexChange];
+                Array.Copy(futureTrajectoryPoints, 1, traversedPoints, 0, indexChange);
                 
-                // Combine past trajectory points and new points
-                var newPastTrajectoryPoints = new Vector3[pastTrajectoryPoints.Length + pointsToMove.Length];
-                Array.Copy(
-                    pastTrajectoryPoints,
-                    0,
-                    newPastTrajectoryPoints,
-                    0,
-                    pastTrajectoryPoints.Length);
-                Array.Copy(
-                    pointsToMove,
-                    0,
-                    newPastTrajectoryPoints,
-                    pastTrajectoryPoints.Length,
-                    pointsToMove.Length);
+                // Debug statements for testing
+                Debug.Log($"At i = {_currentPointIndex}, traversed ={string.Join("  ", traversedPoints)}.");
+                Debug.Log($"At i = {_currentPointIndex}, past = {string.Join("  ", pastTrajectoryPoints)}.");
+                Debug.Log($"At i = {_currentPointIndex}, future = {string.Join("  ", futureTrajectoryPoints[..6])}.");
                 
-                // Update past trajectory
+                // Created new trajectory arrays.
+                Vector3[] newPastTrajectoryPoints = new Vector3[past.positionCount + indexChange];
+                Vector3[] newFutureTrajectoryPoints = new Vector3[future.positionCount - indexChange];
+                
+                // Combine the traversed points with the past trajectory.
+                pastTrajectoryPoints.CopyTo(newPastTrajectoryPoints, 0);
+                traversedPoints.CopyTo(newPastTrajectoryPoints, pastTrajectoryPoints.Length);
+                // Update the past trajectory.
                 past.positionCount = newPastTrajectoryPoints.Length;
                 past.SetPositions(newPastTrajectoryPoints);
                 
                 // Remove moved points from future trajectory
-                var newFuturePointCount = future.positionCount - indexChange;
-                var newFutureTrajectoryPoints = new Vector3[newFuturePointCount];
                 Array.Copy(
                     futureTrajectoryPoints,
                     indexChange,
                     newFutureTrajectoryPoints,
                     0,
-                    newFuturePointCount);
-                
-                future.positionCount = newFuturePointCount;
+                    newFutureTrajectoryPoints.Length);
+                // Update the future trajectory.
+                future.positionCount = newFutureTrajectoryPoints.Length;
                 future.SetPositions(newFutureTrajectoryPoints);
+                
                 break;
             }
-            case < 0: // The spacecraft moves backwards.
+            // Otherwise, if the index change is negative, the spacecraft moves backward across data points.
+            case < 0:
             {
                 indexChange = -indexChange;
                 
@@ -563,7 +556,7 @@ public class SpacecraftManager : MonoBehaviour
             float.Parse(nextPoint[2]) * trajectoryScale,
             float.Parse(nextPoint[3]) * trajectoryScale
         );
-
+        
         // Interpolate position
         var previousPosition = spacecraftPosition.position;
         spacecraftPosition.position = Vector3.Lerp(currentPosition, nextPosition, _progress);
@@ -646,22 +639,21 @@ public class SpacecraftManager : MonoBehaviour
             );
         }
         
-        // Move to the next point when progress is complete
+        // Move to the next point when progress is complete.
         if (_progress is < 1.0f and > -1.0f)
         {
             return;
         }
-
-        _previousPointIndex = _currentPointIndex;
         
-        // The simulation is reset.
+        // The previous index is set to the current.
+        _previousPointIndex = _currentPointIndex;
         _currentPointIndex += Mathf.FloorToInt(_progress);
-
+        
         if (_currentPointIndex >= _nominalPathPoints.Count)
         {
             _currentPointIndex = _nominalPathPoints.Count - 1;
         }
-
+        
         // The progress is reset.
         _progress %= 1;
         
