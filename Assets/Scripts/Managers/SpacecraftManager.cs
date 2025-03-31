@@ -678,15 +678,14 @@ public class SpacecraftManager : MonoBehaviour
 
     private void UpdateSpacecraftMass(int currentIndex)
     {
-        try
+        bool isMassValid = float.TryParse(_nominalPathPoints[currentIndex][7], out _mass);
+        
+        if (!isMassValid)
         {
-            _mass = float.Parse(_nominalPathPoints[currentIndex][7]);
-            OnUpdateMass?.Invoke(_mass);
+            throw new FormatException($"There is no spacecraft mass data on line {currentIndex}.");
         }
-        catch (FormatException)
-        {
-            Debug.LogWarning($"There is no spacecraft mass data on line {_currentPointIndex}.");
-        }
+        
+        OnUpdateMass?.Invoke(_mass);
     }
     
     private void UpdateVelocityVector(int currentIndex)
