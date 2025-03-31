@@ -991,7 +991,7 @@ public class SpacecraftManager : MonoBehaviour
 
     #region Spacecraft Model
     
-    private void DisplayModel(int displayedModelIndex)
+    private void SetModel(int displayedModelIndex)
     {
         Transform rocketParts = spacecraft.GetChild(0);
         for (int modelIndex = 0; modelIndex < rocketParts.childCount; modelIndex++)
@@ -1002,21 +1002,11 @@ public class SpacecraftManager : MonoBehaviour
 
     private void UpdateModel(int cutsceneIndex)
     {
-        DisplayModel(cutsceneIndex);
-        //switch (cutsceneIndex)
-        //{
-        //    case < 1:
-        //        DisplayModel(0);
-        //        return;
-        //    case <= 2:
-        //        DisplayModel(cutsceneIndex - 2);
-        //        return;
-        //    default:
-        //        DisplayModel(4);
-        //        return;
-        //}
+        int maximumModelIndex = spacecraft.GetChild(0).childCount - 1;
+        int modelIndex = Mathf.Min(cutsceneIndex, maximumModelIndex);
+        SetModel(modelIndex);
     }
-
+    
     #endregion
 
     public enum SpacecraftState
