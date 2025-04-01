@@ -397,7 +397,7 @@ public class SpacecraftManager : MonoBehaviour
     }
     
     #endregion
-
+    
     /// <summary>
     /// Updates the position of the Orion capsule
     /// </summary>
@@ -453,11 +453,8 @@ public class SpacecraftManager : MonoBehaviour
         // Determine the current and future indices.
         int currentIndex = _currentPointIndex;
         int futureIndex = _currentPointIndex + 1;
-        futureIndex = Mathf.Min(futureIndex, points.Count - 1);
-        
-        // int currentIndex = _currentPointIndex + Mathf.FloorToInt(_progress);
         // int futureIndex = _currentPointIndex + Mathf.CeilToInt(_progress);
-        // futureIndex = Mathf.Min(futureIndex, points.Count - 1);
+        futureIndex = Mathf.Min(futureIndex, points.Count - 1);
         
         string[] currentPoint = points[currentIndex];
         string[] futurePoint = points[futureIndex]; 
@@ -489,7 +486,7 @@ public class SpacecraftManager : MonoBehaviour
         // Interpolate position
         Vector3 previousPosition = spacecraftPosition.position;
         spacecraftPosition.position = Vector3.Lerp(currentPosition, futurePosition, _progress);
-        // spacecraftPosition.position = Vector3.Lerp(currentPosition, futurePosition, _progress % 1);
+        // spacecraftPosition.position = Vector3.Lerp(currentPosition, futurePosition, _progress / Mathf.CeilToInt(_progress));
         
         float netDistance = Vector3.Distance(previousPosition, spacecraftPosition.position) / trajectoryScale;
         
