@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class DataManager : MonoBehaviour
 {
@@ -167,7 +166,7 @@ public class DataManager : MonoBehaviour
             maximumFutureIndex = 60;
         }
         
-        for (var futureIndex = 1; futureIndex <= maximumFutureIndex; futureIndex++)
+        for (var futureIndex = 1; futureIndex <= maximumFutureIndex && index + futureIndex < _nominalTrajectoryDataValues.Count; futureIndex++)
         {
             string futureSpacecraftName;
 
@@ -282,5 +281,17 @@ public class DataManager : MonoBehaviour
         Signal,
         Switch,
         Asset
+    }
+
+    public enum DataStructure
+    {
+        Time,
+        PositionX,
+        PositionY,
+        PositionZ,
+        VelocityX,
+        VelocityY,
+        VelocityZ,
+        SpacecraftMass
     }
 }
