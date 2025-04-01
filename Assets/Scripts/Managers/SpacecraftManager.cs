@@ -59,7 +59,7 @@ public class SpacecraftManager : MonoBehaviour
     
     private float _nominalDistanceTraveled = 0.0f;
     private float _offNominalDistanceTraveled = 0.0f;
-    private float _mass = 0.0f;
+    private float _mass;
     
     #endregion
     
@@ -408,7 +408,7 @@ public class SpacecraftManager : MonoBehaviour
             return;
         }
         
-        UpdateTimeIntervalAndProgress();
+        UpdateElapsedTime();
         
         _nominalDistanceTraveled += UpdateSpacecraftPositionOnPath(_nominalTrajectoryData, NominalSpacecraftTransform);
         _offNominalDistanceTraveled += UpdateSpacecraftPositionOnPath(_offNominalTrajectoryData, OffNominalSpacecraftTransform);
@@ -563,7 +563,7 @@ public class SpacecraftManager : MonoBehaviour
         return netDistance;
     }
     
-    private void UpdateTimeIntervalAndProgress()
+    private void UpdateElapsedTime()
     {
         const float secondsPerMinute = 60.0f;
         
