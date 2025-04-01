@@ -2105,7 +2105,11 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: Users have the freedom to deviate the spacecraft from
+            its trajectory in cislunar space. In the <i>Actions</i> panel, press
+            <i>Bump Off Course</i>. Users will be given five seconds to deviate the
+            spacecraft using WASDQE controls. Finally, a generated sub-trajectory
+            will appear that will push the spacecraft back to its original trajectory.
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &423992946
@@ -2929,7 +2933,12 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: The data section is the best.
+          m_StringArgument: Critical mission data is easily accessible in the <i>Data</i>
+            panel. The data includes the distance between the satellite and Earth,
+            distance between satellite and Moon, total distance traveled along the
+            selected trajectory, spacecraft mass, relative position to Earth, and
+            velocity vector. The minimap and link budget prioritization is featured
+            too.
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &511037586
@@ -3064,8 +3073,8 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: Our application has full compatibility and extensive
             features dedicated to the off-nominal mission. Switching between the
-            two missions is supported in the Actions panel. The off-nominal trajectory
-            will display Thrust to Nominal in the Data panel.
+            two missions is supported in the <i>Actions</i> panel. The off-nominal
+            trajectory will display <i>Thrust to Nominal</i> in the <i>Data</i> panel.
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &595123983
@@ -3751,11 +3760,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2087879495}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -42, y: 326}
-  m_SizeDelta: {x: 600, y: 50}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -35}
+  m_SizeDelta: {x: 650, y: 50}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &770836944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3776,7 +3785,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: The data section displays the visualized data.
+  m_text: Critical mission data is easily accessible in the <i>Data</i> panel. The
+    data includes the distance between the satellite and Earth, distance between
+    satellite and Moon, total distance traveled along the selected trajectory, spacecraft
+    mass, relative position to Earth, and velocity vector. The minimap and link budget
+    prioritization is featured too.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4b009e6b9d07d4f59a95453bcb8c61a8, type: 2}
   m_sharedMaterial: {fileID: 1508867962351748385, guid: 4b009e6b9d07d4f59a95453bcb8c61a8,
@@ -5107,7 +5120,10 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: Users can smoothly transition between the nominal and
+            off-nominal trajectories. In the <i>Actions</i> panel, press <i>Transition
+            Trajectory</i>. A generated red sub-trajectory will push the spacecraft
+            to the opposite trajectory.
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1027258893
@@ -6207,7 +6223,10 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: The Artemis II mission is divided into several mission
+            stages. Each mission stage is color-coded in the trajectory. A color-coded
+            text indicator of the current mission stage can be found directly under
+            the elapsed time.
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1166161661
@@ -8165,7 +8184,12 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: "Color coding is employed in antenna prioritization,
+            the velocity vector, and the mission stage. To open the color key, press
+            turn on <i>Toggle Color Key Visibility</i> in the <i>Actions</i> panel.
+            Also, users can press <i>Yes</i> to the \u201CShow Color Key\u201D notification
+            at the beginning of the simulation. To color antennas in antenna prioritization,
+            enable <i>Color Antennas</i> in the <i>Actions</i> panel."
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1536755018
@@ -8560,11 +8584,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 2087879495}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -170}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: -70}
   m_SizeDelta: {x: 650, y: 450}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1660594869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10793,7 +10817,9 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: By default, the amount of time passed in the simulation
+            is seen as text. A visual representation of the mission is supported.
+            In the <i>Actions</i> panel, enable <i>Show Time Elapsed as Bar</i>.
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1958833090
@@ -11542,7 +11568,10 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: The data section is even even better.
+          m_StringArgument: The algorithm behind the link budget prioritization is
+            documented extensively. In the <i>Actions</i> panel, press <i>View Prioritization
+            Rationale</i> to open prioritization rationale dialog. Press the back
+            button to dismiss the dialog and continue the simulation.
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &2035579399
