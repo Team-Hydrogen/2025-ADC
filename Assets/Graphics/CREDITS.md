@@ -11,13 +11,13 @@ Team Hydrogen would like to thank the following members of our founding organiza
 ## Software
 Blender. (2025). _Blender_ (Version 4.2.6 LTS) [Software]. Blender.Org. https://www.blender.org/download/lts/4-2/
 
-JetBrains. (2024). _Rider_ (Version 2024.3.3) [Software]. JetBrains.Com. https://www.jetbrains.com/rider/download/
+JetBrains. (2024). _Rider_ (Version 2024.3.6) [Software]. JetBrains.Com. https://www.jetbrains.com/rider/download/
 
 Microsoft. (2025). _Visual Studio 2022_ (Version 17.12.4) [Software]. Microsoft.Com. https://visualstudio.microsoft.com/downloads/
 
-Python Software Foundation. (2024). _Python_ (Version 3.13.1) [Software]. Python.Org. https://www.python.org/downloads/
+Python Software Foundation. (2024). _Python_ (Version 3.13.2) [Software]. Python.Org. https://www.python.org/downloads/
 
-Unity Technologies. (2025). _Unity Editor_ (Version 6000.0.34f1) [Software]. Unity.Com. https://unity.com/releases/editor/
+Unity Technologies. (2025). _Unity Editor_ (Version 6000.0.41f1) [Software]. Unity.Com. https://unity.com/releases/editor/
 
 ## Textures
 Levy, R. (2025, January 22). _NASA Visible Earth - Collection: Blue Marble_. Nasa.gov; NASA Visible Earth. https://visibleearth.nasa.gov/collection/1484/blue-marble?page=2
