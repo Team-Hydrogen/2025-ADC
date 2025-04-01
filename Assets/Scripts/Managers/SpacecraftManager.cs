@@ -581,6 +581,13 @@ public class SpacecraftManager : MonoBehaviour
         _progress += Time.deltaTime * timeScale / _timeIntervalInSeconds;
         _elapsedTime = currentTime + (futureTime - currentTime) * _progress;
         
+        // Reset the progress and elapsed time if the elapsed time is negative.
+        if (_elapsedTime < 0.0f)
+        {
+            _progress = 0.0f;
+            _elapsedTime = 0.0f;
+        }
+        
         OnUpdateTime?.Invoke(_elapsedTime);
     }
     
