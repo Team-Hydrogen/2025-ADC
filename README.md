@@ -11,7 +11,7 @@ You can also download the repository and open it as a separate folder.
 Then, open Unity Hub. In the top-right corner, click `Add` > `Add project from disk` and select the repository folder. You can then open the project.
 
 ## Challenge Information
-In the 2025 NASA App Development Challenge, high school teams have 10 weeks to create a video showcasing their application visualizing the flight path of Artemis II while indicating which of SCaN’s antennas are available to communicate with Earth in real-time.
+In the 2025 NASA App Development Challenge, high school teams have ten (10) weeks to create a video showcasing their application visualizing the flight path of Artemis II while indicating which of SCaN’s antennas are available to communicate with Earth in real-time.
 
 ## Team Members
 - [Aarav Dave](https://github.com/aaravdave)[^1]: Project Manager, UI/UX Designer
@@ -23,7 +23,7 @@ In the 2025 NASA App Development Challenge, high school teams have 10 weeks to c
 ## Technical Specifications
 - Blender (4.2.6 LTS)
 - Rider (2024.3.3)
-- Unity Editor (6000.0.34f1 LTS)
+- Unity Editor (6000.0.41f1 LTS)
 - Visual Studio 2022 (17.12.4)
 
 ## Acknowledgements
