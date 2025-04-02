@@ -413,9 +413,10 @@ public class UIManager : MonoBehaviour
     {
         float[] currentLinkBudget = new float[antennaNames.Count];
 
-        List<string[]> linkBudgetData = 
-            _spacecraftState == SpacecraftManager.SpacecraftState.Nominal ? _nominalLinkBudgetData : _offNominalLinkBudgetData;
-        string[] currentLinkBudgetValues = linkBudgetData[currentIndex][18..22];
+        List<string[]> linkBudgetData = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
+            ? _nominalLinkBudgetData
+            : _offNominalLinkBudgetData;
+        string[] currentLinkBudgetValues = linkBudgetData[currentIndex][^4..^1];
         
         for (int antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
         {
@@ -478,7 +479,7 @@ public class UIManager : MonoBehaviour
             var antennaLabel = antennasGrid.GetChild(index);
             antennaLabels[index] = antennaLabel;
         }
-
+        
         var selectedAntennaLabels = antennaLabels
             .Select(antennaLabel => new
             {
