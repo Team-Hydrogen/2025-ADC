@@ -173,15 +173,11 @@ public class TrajectoryManager : MonoBehaviour
                 // Get all future trajectory data points.
                 Vector3[] futureTrajectoryPoints = new Vector3[future.positionCount];
                 future.GetPositions(futureTrajectoryPoints);
-                
                 // Get the traversed points between the past and current indexes.
-                Vector3[] traversedPoints = new Vector3[indexChange];
-                Array.Copy(
+                Vector3[] traversedPoints = new ArraySegment<Vector3>(
                     futureTrajectoryPoints,
                     1,
-                    traversedPoints,
-                    0,
-                    indexChange);
+                    indexChange).ToArray();
                 
                 // Create new trajectory arrays.
                 Vector3[] newPastTrajectoryPoints = new Vector3[past.positionCount + indexChange];
@@ -218,20 +214,15 @@ public class TrajectoryManager : MonoBehaviour
                 // Get all future trajectory data points.
                 Vector3[] futureTrajectoryPoints = new Vector3[future.positionCount];
                 future.GetPositions(futureTrajectoryPoints);
-                
                 // Get the traversed points between the past and current indexes.
-                Vector3[] traversedPoints = new Vector3[indexChange];
-                Array.Copy(
+                Vector3[] traversedPoints = new ArraySegment<Vector3>(
                     pastTrajectoryPoints,
                     pastTrajectoryPoints.Length - indexChange - 1,
-                    traversedPoints,
-                    0,
-                    indexChange);
+                    indexChange).ToArray();
                 
                 // Create new trajectory arrays.
                 Vector3[] newPastTrajectoryPoints = new Vector3[past.positionCount - indexChange];
                 Vector3[] newFutureTrajectoryPoints = new Vector3[future.positionCount + indexChange];
-                
                 // Prepend the traversed points with the future trajectory.
                 traversedPoints.CopyTo(newFutureTrajectoryPoints, 0);
                 futureTrajectoryPoints.CopyTo(newFutureTrajectoryPoints, traversedPoints.Length);
