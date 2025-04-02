@@ -5,49 +5,56 @@ using UnityEngine;
 
 public class DataManager : MonoBehaviour
 {
-    [Header("Data Files")]
+    public static DataManager Instance { get; private set; }
+    
+    // Inspector
+    [Header("Trajectory")]
     [SerializeField] private TextAsset nominalTrajectoryDataFile;
-    [SerializeField] private TextAsset offnominalTrajectoryDataFile;
-    [SerializeField] private TextAsset linkBudgetDataFile;
-
+    [SerializeField] private TextAsset offNominalTrajectoryDataFile;
+    
+    [Header("Antenna Availability")]
+    [SerializeField] private TextAsset nominalAntennaAvailabilityDataFile;
+    [SerializeField] private TextAsset offNominalAntennaAvailabilityDataFile;
+    
+    [Header("Link Budget")]
+    [SerializeField] private TextAsset nominalLinkBudgetDataFile;
+    [SerializeField] private TextAsset offNominalLinkBudgetDataFile;
+    
+    [Header("Intelligence")]
+    [SerializeField] private TextAsset thrustDataFile;
+    
+    [Header("Mission Stages")]
+    [SerializeField] private List<MissionStage> stages;
+    
     [Header("Scene View Settings")]
     [SerializeField] private bool drawGizmos;
+    
     [SerializeField] private Color beginningGizmosLineColor;
     [SerializeField] private Color endGizmosLineColor;
     [SerializeField, Range(1f, 100f)] private int gizmosLevelOfDetail;
-
-    [Header("Settings")]
-    [Tooltip("How fast the data manager updates in data points per second initially"), Range(0, 400)]
-    [SerializeField] private int initialUpdateSpeed;
-    [Tooltip("The maximum speed the data manager updates in data points per second"), Range(0, 400)]
-    [SerializeField] private int maximumUpdateSpeed;
-    [Tooltip("The acceleration of the speed."), Range(10, 50)]
-    [SerializeField] private int updateSpeedAcceleration;
-
-    [Header("Stages")]
-    [SerializeField] private List<MissionStage> stages;
-
-    public static event Action OnDataLoaded;
-    public static event Action<int> OnDataUpdated;
+    
+    // State management
+    private SpacecraftManager.SpacecraftState _spacecraftState;
+    public MissionStage CurrentMissionStage { get; private set; }
+    public LinkBudgetAlgorithm PriorityAlgorithm { get; private set; }
+    
+    // Given data
+    private List<string[]> _nominalTrajectoryDataValues;
+    private List<string[]> _offNominalTrajectoryDataValues;
+    private List<string[]> _antennaAvailabilityDataValues;
+    private List<string[]> _thrustDataValues;
+    private List<string[]> _nominalLinkBudgetDataValues;
+    private List<string[]> _offNominalLinkBudgetDataValues;
+    
+    public string CurrentPrioritizedAntenna { get; private set; }
+    private List<Vector3> _positionVectorsForGizmos;
+    
+    // Actions
+    public static event Action<DataLoadedEventArgs> OnDataLoaded;
     public static event Action<MissionStage> OnMissionStageUpdated;
-
-    public static DataManager Instance { get; private set; }
     
-    public static List<string[]> nominalTrajectoryDataValues { get; private set; }
-    public static List<string[]> offnominalTrajectoryDataValues { get; private set; }
-    public static List<string[]> linkBudgetDataValues { get; private set; }
     
-    private int _currentDataIndex;
-    private string[] _currentData;
-    private MissionStage _currentMissionStage;
-    private const int DataPointsForward = 500;
-    private const int DataPointsBackward = 500;
-    
-    private float _currentUpdateSpeed;
-    private float _timeSinceLastDataPoint = 0.0f;
-    private float _timePerDataPoint;
-
-    List<Vector3> positionVectorsForGizmos;
+    #region Event Functions
     
     private void Awake()
     {
@@ -59,75 +66,156 @@ public class DataManager : MonoBehaviour
 
         Instance = this;
     }
-
+    
     private void Start()
     {
-        _currentDataIndex = 0;
-        _currentUpdateSpeed = initialUpdateSpeed;
-        _timePerDataPoint =  1.0f / _currentUpdateSpeed;
-
-        nominalTrajectoryDataValues = ReadNominalTrajectoryData();
-        offnominalTrajectoryDataValues = ReadOffnominalTrajectoryData();
-        linkBudgetDataValues = ReadLinkBudgetData();
-
-        OnDataLoaded?.Invoke();
+        CurrentMissionStage = stages[0];
+        
+        _nominalTrajectoryDataValues = ReadDataFile(nominalTrajectoryDataFile);
+        _offNominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
+        _antennaAvailabilityDataValues = ReadDataFile(nominalAntennaAvailabilityDataFile);
+        _nominalLinkBudgetDataValues = ReadDataFile(nominalLinkBudgetDataFile);
+        _offNominalLinkBudgetDataValues = ReadDataFile(offNominalLinkBudgetDataFile);
+        _thrustDataValues = ReadDataFile(thrustDataFile);
+        
+        OnDataLoaded?.Invoke(
+            new DataLoadedEventArgs(
+                _nominalTrajectoryDataValues, 
+                _offNominalTrajectoryDataValues, 
+                _antennaAvailabilityDataValues,
+                _nominalLinkBudgetDataValues,
+                _offNominalLinkBudgetDataValues,
+                _thrustDataValues,
+                stages[0]) // First stage should start right after simulation begins
+            );
+    }
+    
+    private void OnEnable()
+    {
+        SpacecraftManager.OnCurrentIndexUpdated += UpdateDataManager;
+        SpacecraftManager.OnSpacecraftStateUpdated += UpdateSpacecraftState;
+        UIManager.OnPrioritizationChanged += SetPriorityAlgorithm;
+    }
+    
+    private void OnDisable()
+    {
+        SpacecraftManager.OnCurrentIndexUpdated -= UpdateDataManager;
+        SpacecraftManager.OnSpacecraftStateUpdated -= UpdateSpacecraftState;
+        UIManager.OnPrioritizationChanged -= SetPriorityAlgorithm;
+    }
+    
+    #endregion
+    
+    private void UpdateDataManager(int index)
+    {
+        UpdateMissionStage(index);
+        CurrentPrioritizedAntenna = GetHighestPriorityAntenna(index);
+    }
+    
+    /// <summary>
+    /// Reads and processes a given CSV file.
+    /// </summary>
+    /// <param name="dataFile">The raw data file (CSV only)</param>
+    /// <returns>The processed data file</returns>
+    private static List<string[]> ReadDataFile(TextAsset dataFile)
+    {
+        var dataValues = CsvReader.ReadCsvFile(dataFile);
+        dataValues.RemoveAt(0); // The first row of headers is removed.
+        //dataValues.RemoveAt(0); // The first row of data (time=0) is removed.
+        return dataValues;
     }
 
-    private void Update()
+    private void UpdateSpacecraftState(SpacecraftManager.SpacecraftState state)
     {
-        // The tick variable updates.
-        _timeSinceLastDataPoint += Time.deltaTime;
+        _spacecraftState = state;
+    }
+
+    private void SetPriorityAlgorithm(int algorithmIndex)
+    {
+        PriorityAlgorithm = (LinkBudgetAlgorithm)algorithmIndex;
+    }
+
+    /// <summary>
+    /// Determines the highest priority antenna using link budget and future asset changes.
+    /// </summary>
+    /// <param name="index">The current data index</param>
+    /// <returns>The name of the highest priority antenna</returns>
+    private string GetHighestPriorityAntenna(int index)
+    {
+        var currentSpacecraftName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
+            ? _antennaAvailabilityDataValues[index][1]
+            : _offNominalTrajectoryDataValues[index][1];
         
-        if (_timeSinceLastDataPoint >= _timePerDataPoint && _currentDataIndex < nominalTrajectoryDataValues.Count)
+        if (index <= 0)
         {
-            OnDataUpdated?.Invoke(_currentDataIndex);
-            _currentDataIndex++;
-            _timeSinceLastDataPoint -= _timePerDataPoint;
+            return currentSpacecraftName;
         }
         
-        // The current update speed increases with acceleration.
-        _currentUpdateSpeed += updateSpeedAcceleration * Time.deltaTime;
-        if (_currentUpdateSpeed > maximumUpdateSpeed)
+        var previousSpacecraftName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
+            ? _antennaAvailabilityDataValues[index - 1][1]
+            : _offNominalTrajectoryDataValues[index - 1][1];
+
+        if (previousSpacecraftName == currentSpacecraftName)
         {
-            _currentUpdateSpeed = maximumUpdateSpeed;
+            return previousSpacecraftName;
         }
-        _timePerDataPoint =  1.0f / _currentUpdateSpeed;
         
-        if (!_currentMissionStage.Equals(GetCurrentMissionStage()))
+        int maximumFutureIndex = 20;
+        if (PriorityAlgorithm == LinkBudgetAlgorithm.Asset)
         {
-            _currentMissionStage = GetCurrentMissionStage();
-            OnMissionStageUpdated?.Invoke(_currentMissionStage);
+            maximumFutureIndex = 60;
         }
-    }
-
-    public void SkipBackward(float timeInSeconds)
-    {
-        _currentDataIndex = Mathf.Max(0, _currentDataIndex - DataPointsBackward);
-    }
-
-    public void SkipForward(float timeInSeconds)
-    {
-        _currentDataIndex = Mathf.Min(_currentDataIndex + DataPointsForward, nominalTrajectoryDataValues.Count - 1);
-    }
-
-    private MissionStage GetCurrentMissionStage()
-    {
-        MissionStage latestStage = new MissionStage(_currentDataIndex, MissionStage.StageTypes.None);
-
-        for (int i = 0; i < stages.Count; i++)
+        
+        for (var futureIndex = 1; futureIndex <= maximumFutureIndex && index + futureIndex < _nominalTrajectoryDataValues.Count; futureIndex++)
         {
-            if (_currentDataIndex >= stages[i].startDataIndex)
+            string futureSpacecraftName;
+
+            try
             {
-                latestStage = stages[i];
+                futureSpacecraftName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
+                    ? _antennaAvailabilityDataValues[index + futureIndex][1]
+                    : _offNominalTrajectoryDataValues[index + futureIndex][1];
             }
-
-            else if (_currentDataIndex < stages[i].startDataIndex)
+            catch (IndexOutOfRangeException)
             {
-                return latestStage;
+                continue;
             }
+            
+            if (currentSpacecraftName != futureSpacecraftName)
+            {
+                return previousSpacecraftName;
+            }
+            futureIndex++;
         }
-
-        return latestStage;
+        
+        return currentSpacecraftName;
+    }
+    
+    /// <summary>
+    /// Updates the mission stage.
+    /// </summary>
+    /// <param name="dataIndex"></param>
+    private void UpdateMissionStage(int dataIndex)
+    {
+        var index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
+        
+        if (index == -1 || stages[index].Equals(CurrentMissionStage))
+        {
+            return;
+        }
+        
+        CurrentMissionStage = stages[index];
+        OnMissionStageUpdated?.Invoke(stages[index]);
+    }
+    
+    #region Gizmos
+    
+    private void OnValidate()
+    {
+        if (drawGizmos)
+        {
+            LoadGizmosPathData();
+        }
     }
 
     /// <summary>
@@ -140,71 +228,34 @@ public class DataManager : MonoBehaviour
             return;
         }
 
-        int midpoint = positionVectorsForGizmos.Count / 2;
+        int midpoint = _positionVectorsForGizmos.Count / 2;
 
         Gizmos.color = beginningGizmosLineColor;
         for (int i = 0; i < midpoint; i += gizmosLevelOfDetail)
         {
-            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
+            Gizmos.DrawLine(_positionVectorsForGizmos[i], _positionVectorsForGizmos[i + gizmosLevelOfDetail]);
         }
 
         Gizmos.color = endGizmosLineColor;
-        for (int i = midpoint; i < positionVectorsForGizmos.Count - gizmosLevelOfDetail; i += gizmosLevelOfDetail)
+        for (int i = midpoint; i < _positionVectorsForGizmos.Count - gizmosLevelOfDetail; i += gizmosLevelOfDetail)
         {
-            Gizmos.DrawLine(positionVectorsForGizmos[i], positionVectorsForGizmos[i + gizmosLevelOfDetail]);
+            Gizmos.DrawLine(_positionVectorsForGizmos[i], _positionVectorsForGizmos[i + gizmosLevelOfDetail]);
         }
     }
-
-    /// <summary>
-    /// Reads the nominal trajectory data.
-    /// </summary>
-    /// <returns>A list of String arrays representing the CSV file</returns>
-    private List<string[]> ReadNominalTrajectoryData()
-    {
-        nominalTrajectoryDataValues = CsvReader.ReadCsvFile(nominalTrajectoryDataFile);
-        nominalTrajectoryDataValues.RemoveAt(0);
-        return nominalTrajectoryDataValues;
-    }
     
-    /// <summary>
-    /// Reads the offnominal trajectory data.
-    /// </summary>
-    /// <returns>A list of String arrays representing the CSV file</returns>
-    private List<string[]> ReadOffnominalTrajectoryData()
-    {
-        offnominalTrajectoryDataValues = CsvReader.ReadCsvFile(offnominalTrajectoryDataFile);
-        offnominalTrajectoryDataValues.RemoveAt(0);
-        return offnominalTrajectoryDataValues;
-    }
-    
-    private List<string[]> ReadLinkBudgetData()
-    {
-        linkBudgetDataValues = CsvReader.ReadCsvFile(linkBudgetDataFile);
-        linkBudgetDataValues.RemoveAt(0);
-        return linkBudgetDataValues;
-    }
-
-    private void OnValidate()
-    {
-        if (drawGizmos)
-        {
-            LoadGizmosPathData();
-        }
-    }
-
     [ContextMenu("Reload Gizmos Path Data")]
     private void LoadGizmosPathData()
     {
-        nominalTrajectoryDataValues = ReadOffnominalTrajectoryData();
+        _nominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
 
         float trajectoryScale = 0.01f;
 
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = nominalTrajectoryDataValues.Count;
+        int numberOfPoints = _nominalTrajectoryDataValues.Count;
         Vector3[] trajectoryPoints = new Vector3[numberOfPoints];
-        for (int i = 0; i < nominalTrajectoryDataValues.Count; i++)
+        for (int i = 0; i < _nominalTrajectoryDataValues.Count; i++)
         {
-            string[] point = nominalTrajectoryDataValues[i];
+            string[] point = _nominalTrajectoryDataValues[i];
 
             try
             {
@@ -220,6 +271,27 @@ public class DataManager : MonoBehaviour
             }
         }
 
-        positionVectorsForGizmos = trajectoryPoints.ToList();
+        _positionVectorsForGizmos = trajectoryPoints.ToList();
+    }
+    #endregion
+    
+    public enum LinkBudgetAlgorithm
+    {
+        None,
+        Signal,
+        Switch,
+        Asset
+    }
+
+    public enum DataStructure
+    {
+        Time,
+        PositionX,
+        PositionY,
+        PositionZ,
+        VelocityX,
+        VelocityY,
+        VelocityZ,
+        SpacecraftMass
     }
 }

@@ -1,12 +1,13 @@
-using Cinemachine;
+using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField, Header("Free Look Camera")]
-    private CinemachineFreeLook freeLookCamera;
+    [SerializeField, Header("Orbital Follow")]
+    private CinemachineOrbitalFollow orbitalFollow;
     
-    [Header("Camera Zoom Settings")]
+    [Header("Camera Zoom")]
     [SerializeField, Range(0.0f, 15.0f)]
     private float zoomSpeed = 5.0f;
     [SerializeField, Range(0.0f, 25.0f)]
@@ -18,64 +19,59 @@ public class CameraManager : MonoBehaviour
     
     private void Start()
     {
-        if (freeLookCamera == null)
+        if (orbitalFollow == null)
         {
-            freeLookCamera = GetComponent<CinemachineFreeLook>();
+            orbitalFollow = GetComponent<CinemachineOrbitalFollow>();
         }
-        CinemachineCore.GetInputAxis = GetAxisCustom;
+        CinemachineCore.GetInputAxis = GetCustomInputAxis;
     }
     
-    private void Update()
+    private void LateUpdate()
     {
         Zoom();
     }
-
+    
+    /// <summary>
+    /// Enables a Cinemachine camera to zoom in and out using the mouse wheel.
+    /// </summary>
     private void Zoom()
     {
         var netScrollSpeed = -zoomSpeed * Input.GetAxis("Mouse ScrollWheel");
-        var newCameraRadius = freeLookCamera.m_Orbits[1].m_Radius + netScrollSpeed;
+        var newCameraRadius = orbitalFollow.Orbits.Center.Radius + netScrollSpeed;
         
-        freeLookCamera.m_Orbits[0].m_Radius = Mathf.Clamp(
+        orbitalFollow.Orbits.Top.Radius = Mathf.Clamp(
             newCameraRadius * TopBottomRadiusRatio,
             minimumCameraDistance * TopBottomRadiusRatio,
             maximumCameraDistance * TopBottomRadiusRatio);
-        freeLookCamera.m_Orbits[0].m_Height = newCameraRadius;
+        orbitalFollow.Orbits.Top.Height = newCameraRadius;
         
-        freeLookCamera.m_Orbits[1].m_Radius = Mathf.Clamp(
+        orbitalFollow.Orbits.Center.Radius = Mathf.Clamp(
             newCameraRadius,
             minimumCameraDistance,
             maximumCameraDistance);
-        freeLookCamera.m_Orbits[1].m_Height = 0.0f;
+        orbitalFollow.Orbits.Center.Height = 0.0f;
         
-        freeLookCamera.m_Orbits[2].m_Radius = Mathf.Clamp(
+        orbitalFollow.Orbits.Bottom.Radius = Mathf.Clamp(
             newCameraRadius * TopBottomRadiusRatio,
             minimumCameraDistance * TopBottomRadiusRatio,
             maximumCameraDistance * TopBottomRadiusRatio);
-        freeLookCamera.m_Orbits[2].m_Height = -newCameraRadius;
+        orbitalFollow.Orbits.Bottom.Height = -newCameraRadius;
     }
     
-    public float GetAxisCustom(string axisName)
+    /// <summary>
+    /// Implements a custom input scheme for camera panning.
+    /// </summary>
+    /// <param name="axisName">The name of the handled axis</param>
+    /// <returns>Input magnitude of handled axis</returns>
+    private static float GetCustomInputAxis(string axisName)
     {
-        if (axisName == "Mouse X")
+        return axisName switch
         {
-            if (Input.GetMouseButton(1))
-            {
-                return Input.GetAxis("Mouse X");
-            }
-
-            return 0;
-        }
-
-        if (axisName == "Mouse Y")
-        {
-            if (Input.GetMouseButton(1))
-            {
-                return Input.GetAxis("Mouse Y");
-            }
-
-            return 0;
-        }
-
-        return Input.GetAxis(axisName);
+            "Mouse X" when Input.GetMouseButton(1) => Input.GetAxis("Mouse X"),
+            "Mouse X" => 0,
+            "Mouse Y" when Input.GetMouseButton(1) => -Input.GetAxis("Mouse Y"),
+            "Mouse Y" => 0,
+            _ => Input.GetAxis(axisName)
+        };
     }
 }

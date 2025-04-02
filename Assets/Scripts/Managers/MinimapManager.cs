@@ -1,11 +1,13 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class MinimapManager : MonoBehaviour
 {
+    public static MinimapManager Instance { get; private set; }
+    
     [Header("Nominal Minimap Trajectory")]
-    [SerializeField] private LineRenderer pastMinimapTrajectory;
+    //[SerializeField] private LineRenderer pastMinimapTrajectory;
     [SerializeField] private LineRenderer futureMinimapTrajectory;
     
     [Header("Minimap Marker")]
@@ -13,8 +15,9 @@ public class MinimapManager : MonoBehaviour
     
     [Header("Settings")]
     [SerializeField] private float trajectoryScale;
-    
-    public static MinimapManager Instance { get; private set; }
+
+    private int _previousIndex = 0;
+    private LineRenderer _currentMinimapTrajectory;
 
     private void Awake()
     {
@@ -29,31 +32,40 @@ public class MinimapManager : MonoBehaviour
     
     private void OnEnable()
     {
-        DataManager.OnDataLoaded += PlotMinimapTrajectory;
-        DataManager.OnDataUpdated += UpdateMinimapTrajectory;
-        DataManager.OnDataUpdated += UpdateMarkerPosition;
+        DataManager.OnDataLoaded += OnDataLoaded;
+        DataManager.OnMissionStageUpdated += OnMissionStageUpdated;
+        SpacecraftManager.OnCurrentIndexUpdated += UpdateMinimapTrajectory;
     }
 
     private void OnDisable()
     {
-        DataManager.OnDataLoaded -= PlotMinimapTrajectory;
-        DataManager.OnDataUpdated -= UpdateMinimapTrajectory;
-        DataManager.OnDataUpdated -= UpdateMarkerPosition;
-    }
-
-    private void Start()
-    {
-        
+        DataManager.OnDataLoaded -= OnDataLoaded;
+        DataManager.OnMissionStageUpdated -= OnMissionStageUpdated;
+        SpacecraftManager.OnCurrentIndexUpdated -= UpdateMinimapTrajectory;
     }
     
-    private void PlotMinimapTrajectory()
+    private void OnDataLoaded(DataLoadedEventArgs data)
+    {
+        _currentMinimapTrajectory = data.MissionStage.minimapLineRenderer;
+        PlotMinimapTrajectory(data.NominalTrajectoryData);
+    }
+
+    private void OnMissionStageUpdated(MissionStage missionStage)
+    {
+        if (!_currentMinimapTrajectory.Equals(missionStage.minimapLineRenderer))
+        {
+            _currentMinimapTrajectory = missionStage.minimapLineRenderer;
+        }
+    }
+    
+    private void PlotMinimapTrajectory(List<string[]> nominalTrajectoryData)
     {
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = DataManager.nominalTrajectoryDataValues.Count;
+        int numberOfPoints = nominalTrajectoryData.Count;
         Vector3[] futureTrajectoryPoints = new Vector3[numberOfPoints];
         for (int index = 0; index < numberOfPoints; index++)
         {
-            string[] point = DataManager.nominalTrajectoryDataValues[index];
+            string[] point = nominalTrajectoryData[index];
 
             try
             {
@@ -68,9 +80,10 @@ public class MinimapManager : MonoBehaviour
                 Debug.LogWarning("No positional data on line " + index + "!");
             }
         }
+
         // The first point of the pastTrajectory is added.
-        pastMinimapTrajectory.positionCount = 1;
-        pastMinimapTrajectory.SetPosition(0, futureTrajectoryPoints[0]);
+        _currentMinimapTrajectory.positionCount = 1;
+        _currentMinimapTrajectory.SetPosition(0, futureTrajectoryPoints[0]);
         // The processed points are pushed to the future trajectory line.
         futureMinimapTrajectory.positionCount = numberOfPoints;
         futureMinimapTrajectory.SetPositions(futureTrajectoryPoints);
@@ -78,33 +91,76 @@ public class MinimapManager : MonoBehaviour
 
     private void UpdateMinimapTrajectory(int index)
     {
-        // The current future trajectory is loaded.
-        Vector3[] futureTrajectoryPoints = new Vector3[futureMinimapTrajectory.positionCount];
-        futureMinimapTrajectory.GetPositions(futureTrajectoryPoints);
-        // The past trajectory's list of positions expands, so the next future data point is added.
-        Vector3 nextTrajectoryPoint = futureTrajectoryPoints[1];
-        pastMinimapTrajectory.positionCount++;
-        pastMinimapTrajectory.SetPosition(pastMinimapTrajectory.positionCount - 1, nextTrajectoryPoint);
-        // The next point in the future trajectory gets removed.
-        futureTrajectoryPoints = futureTrajectoryPoints[1..^1];
-        futureMinimapTrajectory.positionCount--;
-        futureMinimapTrajectory.SetPositions(futureTrajectoryPoints);
-    }
-    
-    /// <summary>
-    /// Updates the position of the Orion capsule marker
-    /// </summary>
-    private void UpdateMarkerPosition(int index)
-    {
-        if (futureMinimapTrajectory.positionCount <= 0)
+        int indexChange = index - _previousIndex;
+        _previousIndex = index;
+
+        if (indexChange > 0)
         {
-            return;
+            Vector3[] futureTrajectoryPoints = new Vector3[futureMinimapTrajectory.positionCount];
+            futureMinimapTrajectory.GetPositions(futureTrajectoryPoints);
+
+            Vector3[] pointsToMove = new Vector3[indexChange];
+            Array.Copy(futureTrajectoryPoints, 0, pointsToMove, 0, indexChange);
+
+            // Add these points to the past trajectory
+            Vector3[] pastTrajectoryPoints = new Vector3[_currentMinimapTrajectory.positionCount];
+            _currentMinimapTrajectory.GetPositions(pastTrajectoryPoints);
+
+            // Combine past trajectory points and new points
+            Vector3[] newPastTrajectoryPoints = new Vector3[pastTrajectoryPoints.Length + pointsToMove.Length];
+            Array.Copy(pastTrajectoryPoints, 0, newPastTrajectoryPoints, 0, pastTrajectoryPoints.Length);
+            Array.Copy(pointsToMove, 0, newPastTrajectoryPoints, pastTrajectoryPoints.Length, pointsToMove.Length);
+
+            // Update past trajectory
+            _currentMinimapTrajectory.positionCount = newPastTrajectoryPoints.Length;
+            _currentMinimapTrajectory.SetPositions(newPastTrajectoryPoints);
+
+            // Remove moved points from future trajectory
+            int newFuturePointCount = futureMinimapTrajectory.positionCount - indexChange;
+            Vector3[] newFutureTrajectoryPoints = new Vector3[newFuturePointCount];
+            Array.Copy(futureTrajectoryPoints, indexChange, newFutureTrajectoryPoints, 0, newFuturePointCount);
+
+            futureMinimapTrajectory.positionCount = newFuturePointCount;
+            futureMinimapTrajectory.SetPositions(newFutureTrajectoryPoints);
+
+            // Update minimap marker
+            minimapMarker.transform.position = newFutureTrajectoryPoints[0];
         }
-        // The second point of the future trajectory is chosen because the first point is the satellite's position.
-        Vector3 newSatellitePosition = futureMinimapTrajectory.GetPosition(1);
-        // The satellite transforms to its new position.
-        minimapMarker.transform.position = newSatellitePosition;
-        // Rotation correction
-        minimapMarker.transform.Rotate(new Vector3(90, 0, 0));
+
+        else if (indexChange < 0)
+        {
+            indexChange = -indexChange;
+
+            // Get all points in the past trajectory
+            Vector3[] pastTrajectoryPoints = new Vector3[_currentMinimapTrajectory.positionCount];
+            _currentMinimapTrajectory.GetPositions(pastTrajectoryPoints);
+
+            // Extract points to move back to the future trajectory
+            Vector3[] pointsToMove = new Vector3[indexChange];
+            Array.Copy(pastTrajectoryPoints, pastTrajectoryPoints.Length - indexChange, pointsToMove, 0, indexChange);
+
+            // Add these points back to the future trajectory
+            Vector3[] futureTrajectoryPoints = new Vector3[futureMinimapTrajectory.positionCount];
+            futureMinimapTrajectory.GetPositions(futureTrajectoryPoints);
+
+            Vector3[] newFutureTrajectoryPoints = new Vector3[futureTrajectoryPoints.Length + pointsToMove.Length];
+            Array.Copy(pointsToMove, 0, newFutureTrajectoryPoints, 0, pointsToMove.Length);
+            Array.Copy(futureTrajectoryPoints, 0, newFutureTrajectoryPoints, pointsToMove.Length, futureTrajectoryPoints.Length);
+
+            // Update future trajectory
+            futureMinimapTrajectory.positionCount = newFutureTrajectoryPoints.Length;
+            futureMinimapTrajectory.SetPositions(newFutureTrajectoryPoints);
+
+            // Remove moved points from past trajectory
+            int newPastPointCount = _currentMinimapTrajectory.positionCount - indexChange;
+            Vector3[] newPastTrajectoryPoints = new Vector3[newPastPointCount];
+            Array.Copy(pastTrajectoryPoints, 0, newPastTrajectoryPoints, 0, newPastPointCount);
+
+            _currentMinimapTrajectory.positionCount = newPastPointCount;
+            _currentMinimapTrajectory.SetPositions(newPastTrajectoryPoints);
+
+            // Update minimap marker
+            minimapMarker.transform.position = newPastTrajectoryPoints[0];
+        }
     }
 }
