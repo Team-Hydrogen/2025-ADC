@@ -484,11 +484,10 @@ public class UIManager : MonoBehaviour
             {
                 Label = antennaLabel,
                 ConnectionSpeed = float.TryParse(
-                    antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out var speed)
-                    ? speed
-                    : float.MinValue,
-                PriorityWeight = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text
-                                 == DataManager.Instance.CurrentPrioritizedAntenna
+                    antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[1].text, out float speed)
+                        ? speed
+                        : 0.0f,
+                PriorityWeight = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text == DataManager.Instance.PrioritizedAntenna
                     ? 1.0f
                     : 0.0f,
                 Name = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>()[0].text,
@@ -526,13 +525,13 @@ public class UIManager : MonoBehaviour
             label.SetSiblingIndex(sortedAntennaLabels.IndexOf(label));
         }
     }
-
+    
     private void ColorAntennas()
     {
         var index = 0;
         foreach (Transform antennaBackground in antennasGrid)
         {
-            antennaBackground.GetComponent<UnityEngine.UI.Image>().color = index < 4 - _disabledAntennas.Count
+            antennaBackground.GetComponent<Image>().color = index < 4 - _disabledAntennas.Count
                 ? enabledAntennaBackgroundColors[_disabledAntennas.Count]
                 : disabledAntennaBackgroundColor;
             index++;
