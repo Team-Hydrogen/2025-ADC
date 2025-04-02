@@ -41,12 +41,13 @@ public class DataManager : MonoBehaviour
     // Given data
     private List<string[]> _nominalTrajectoryDataValues;
     private List<string[]> _offNominalTrajectoryDataValues;
-    private List<string[]> _antennaAvailabilityDataValues;
+    private List<string[]> _nominalAntennaAvailabilityDataValues;
+    private List<string[]> _offNominalAntennaAvailabilityDataValues;
     private List<string[]> _thrustDataValues;
     private List<string[]> _nominalLinkBudgetDataValues;
     private List<string[]> _offNominalLinkBudgetDataValues;
     
-    public string CurrentPrioritizedAntenna { get; private set; }
+    public string PrioritizedAntenna { get; private set; }
     private List<Vector3> _positionVectorsForGizmos;
     
     // Actions
@@ -73,16 +74,21 @@ public class DataManager : MonoBehaviour
         
         _nominalTrajectoryDataValues = ReadDataFile(nominalTrajectoryDataFile);
         _offNominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
-        _antennaAvailabilityDataValues = ReadDataFile(nominalAntennaAvailabilityDataFile);
+        
+        _nominalAntennaAvailabilityDataValues = ReadDataFile(nominalAntennaAvailabilityDataFile);
+        _offNominalAntennaAvailabilityDataValues = ReadDataFile(offNominalAntennaAvailabilityDataFile);
+        
         _nominalLinkBudgetDataValues = ReadDataFile(nominalLinkBudgetDataFile);
         _offNominalLinkBudgetDataValues = ReadDataFile(offNominalLinkBudgetDataFile);
+        
         _thrustDataValues = ReadDataFile(thrustDataFile);
         
         OnDataLoaded?.Invoke(
             new DataLoadedEventArgs(
                 _nominalTrajectoryDataValues, 
                 _offNominalTrajectoryDataValues, 
-                _antennaAvailabilityDataValues,
+                _nominalAntennaAvailabilityDataValues,
+                _offNominalAntennaAvailabilityDataValues,
                 _nominalLinkBudgetDataValues,
                 _offNominalLinkBudgetDataValues,
                 _thrustDataValues,
@@ -109,7 +115,7 @@ public class DataManager : MonoBehaviour
     private void UpdateDataManager(int index)
     {
         UpdateMissionStage(index);
-        CurrentPrioritizedAntenna = GetHighestPriorityAntenna(index);
+        PrioritizedAntenna = GetHighestPriorityAntenna(index);
     }
     
     /// <summary>
@@ -142,53 +148,51 @@ public class DataManager : MonoBehaviour
     /// <returns>The name of the highest priority antenna</returns>
     private string GetHighestPriorityAntenna(int index)
     {
-        var currentSpacecraftName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
-            ? _antennaAvailabilityDataValues[index][1]
-            : _offNominalTrajectoryDataValues[index][1];
+        var currentAntennaName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
+            ? _nominalAntennaAvailabilityDataValues[index][1]
+            : _offNominalAntennaAvailabilityDataValues[index][1];
         
         if (index <= 0)
         {
-            return currentSpacecraftName;
+            return currentAntennaName;
         }
         
-        var previousSpacecraftName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
-            ? _antennaAvailabilityDataValues[index - 1][1]
-            : _offNominalTrajectoryDataValues[index - 1][1];
+        var previousAntennaName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
+            ? _nominalAntennaAvailabilityDataValues[index - 1][1]
+            : _offNominalAntennaAvailabilityDataValues[index - 1][1];
 
-        if (previousSpacecraftName == currentSpacecraftName)
+        if (previousAntennaName == currentAntennaName)
         {
-            return previousSpacecraftName;
+            return previousAntennaName;
         }
         
-        int maximumFutureIndex = 20;
-        if (PriorityAlgorithm == LinkBudgetAlgorithm.Asset)
-        {
-            maximumFutureIndex = 60;
-        }
+        int maximumOffset = PriorityAlgorithm == LinkBudgetAlgorithm.Asset ? 60 : 20;
+        int maximumIndex = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
+            ? _nominalAntennaAvailabilityDataValues.Count - 1
+            : _offNominalAntennaAvailabilityDataValues.Count - 1;
         
-        for (var futureIndex = 1; futureIndex <= maximumFutureIndex && index + futureIndex < _nominalTrajectoryDataValues.Count; futureIndex++)
+        for (int offset = 1; offset <= maximumOffset && index + offset <= maximumIndex; offset++)
         {
-            string futureSpacecraftName;
-
+            string futureAntennaName;
+            
             try
             {
-                futureSpacecraftName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
-                    ? _antennaAvailabilityDataValues[index + futureIndex][1]
-                    : _offNominalTrajectoryDataValues[index + futureIndex][1];
+                futureAntennaName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
+                    ? _nominalAntennaAvailabilityDataValues[index + offset][1]
+                    : _offNominalAntennaAvailabilityDataValues[index + offset][1];
             }
             catch (IndexOutOfRangeException)
             {
                 continue;
             }
             
-            if (currentSpacecraftName != futureSpacecraftName)
+            if (currentAntennaName != futureAntennaName)
             {
-                return previousSpacecraftName;
+                return previousAntennaName;
             }
-            futureIndex++;
         }
         
-        return currentSpacecraftName;
+        return currentAntennaName;
     }
     
     /// <summary>
@@ -282,8 +286,8 @@ public class DataManager : MonoBehaviour
         Switch,
         Asset
     }
-
-    public enum DataStructure
+    
+    public enum NominalDataStructure
     {
         Time,
         PositionX,
