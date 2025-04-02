@@ -2,7 +2,7 @@
 This is Team Hydrogen's application for the 2025 NASA App Development Challenge.
 
 ## Download Instructions
-Clone the repository using the command:
+Clone this repository using the command:
 ```commandline
 git clone https://github.com/Team-Hydrogen/2025-ADC.git
 ```
@@ -21,18 +21,18 @@ In the 2025 NASA App Development Challenge, high school teams have ten (10) week
 - [Vignesha Jayakumar](https://github.com/vigcode123)[^4]: Data Specialist, AI Developer
 
 ## Technical Specifications
-- Blender (4.2.6 LTS)
-- Rider (2024.3.3)
+- Blender (4.2.8 LTS)
+- Rider (2024.3.6)
 - Unity Editor (6000.0.41f1 LTS)
 - Visual Studio 2022 (17.12.4)
 
 ## Acknowledgements
 Team Hydrogen would like to thank the following members of our founding organization YoungWonks for their unwavering support and encouragement throughout the development of our application.
+- Jayson Harriott, for kickstarting our project and performing required formal procedures.
 - [Suchin Ravi](https://github.com/wonksknowsuchin), for organizing this team, providing mentorship in machine learning, and guiding the trajectory of our project.
 - Leonel Cruz, for his assistance in the UI/UX design, 3-D modeling, and animation.
 - Shivendra Singh, for his assistance in 3-D modeling and animation.
 - Prasanna Gurumallapla, for periodically checking in and assisting in the organization of our team.
-- Jayson Harriott, for kickstarting our project and performing required formal procedures.
 
 [^1]: Lowndes High School, Valdosta, GA
 [^2]: Foothill High School, Pleasanton, CA
