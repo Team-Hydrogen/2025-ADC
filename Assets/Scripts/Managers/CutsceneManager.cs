@@ -56,13 +56,13 @@ public class CutsceneManager : MonoBehaviour
 
     private void OnEnable()
     {
-        SpacecraftManager.OnUpdateTime += TryPlayCutscene;
+        SpacecraftManager.OnTimeUpdated += TryPlayCutscene;
         videoPlayer.loopPointReached += StopCutscene;
     }
     
     private void OnDisable()
     {
-        SpacecraftManager.OnUpdateTime -= TryPlayCutscene;
+        SpacecraftManager.OnTimeUpdated -= TryPlayCutscene;
         videoPlayer.loopPointReached -= StopCutscene;
     }
     

@@ -135,10 +135,10 @@ public class SpacecraftManager : MonoBehaviour
     #region Actions
     
     public static event Action<int> OnCurrentIndexUpdated; 
-    public static event Action<float> OnUpdateTime;
-    public static event Action<Vector3> OnUpdateCoordinates;
-    public static event Action<float> OnUpdateMass;
-    public static event Action<DistanceTravelledEventArgs> OnDistanceCalculated;
+    public static event Action<float> OnTimeUpdated;
+    public static event Action<Vector3> OnCoordinatesUpdated;
+    public static event Action<float> OnMassUpdated;
+    public static event Action<DistanceCalculatedEventArgs> OnDistanceCalculated;
     public static event Action<float> OnTimeScaleSet;
     public static event Action<string> OnStageFired;
     public static event Action<SpacecraftState> OnSpacecraftStateUpdated;
@@ -252,7 +252,7 @@ public class SpacecraftManager : MonoBehaviour
             _elapsedTime = 0.0f;
         }
         
-        OnUpdateTime?.Invoke(_elapsedTime);
+        OnTimeUpdated?.Invoke(_elapsedTime);
     }
     
     private void OnMissionStageUpdated(MissionStage stage)
@@ -579,7 +579,7 @@ public class SpacecraftManager : MonoBehaviour
     
     private void UpdateSpacecraftProgressAndTrajectories()
     {
-        OnUpdateCoordinates?.Invoke(spacecraft.position / trajectoryScale);
+        OnCoordinatesUpdated?.Invoke(spacecraft.position / trajectoryScale);
         CalculateDistances();
         UpdateSpacecraftMass(_currentPointIndex);
         
@@ -713,7 +713,7 @@ public class SpacecraftManager : MonoBehaviour
             : _offNominalDistanceTraveled;
 
         OnDistanceCalculated?.Invoke(
-            new DistanceTravelledEventArgs(selectedDistanceTraveled, distanceToEarth, distanceToMoon));
+            new DistanceCalculatedEventArgs(selectedDistanceTraveled, distanceToEarth, distanceToMoon));
     }
     
     private void UpdateSpacecraftMass(int currentIndex)
@@ -725,7 +725,7 @@ public class SpacecraftManager : MonoBehaviour
             throw new FormatException($"There is no spacecraft mass data on line {currentIndex}.");
         }
         
-        OnUpdateMass?.Invoke(_mass);
+        OnMassUpdated?.Invoke(_mass);
     }
     
     private void UpdateVelocityVector(int currentIndex)
@@ -787,7 +787,7 @@ public class SpacecraftManager : MonoBehaviour
     
     #endregion
     
-    #region Machine Learning
+    #region Trajectory Generation
     
     #region Transition Path
     

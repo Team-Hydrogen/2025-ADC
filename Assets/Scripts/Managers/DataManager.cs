@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+/// <summary>
+/// Stores and computes provided data
+/// </summary>
 public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
     
-    // Inspector
+    #region Files
+    
     [Header("Trajectory")]
     [SerializeField] private TextAsset nominalTrajectoryDataFile;
     [SerializeField] private TextAsset offNominalTrajectoryDataFile;
@@ -23,6 +27,8 @@ public class DataManager : MonoBehaviour
     [Header("Intelligence")]
     [SerializeField] private TextAsset thrustDataFile;
     
+    #endregion
+    
     [Header("Mission Stages")]
     [SerializeField] private List<MissionStage> stages;
     
@@ -37,6 +43,9 @@ public class DataManager : MonoBehaviour
     private SpacecraftManager.SpacecraftState _spacecraftState;
     public MissionStage CurrentMissionStage { get; private set; }
     public LinkBudgetAlgorithm PriorityAlgorithm { get; private set; }
+    
+    // Calculated data
+    // public float ElapsedTime { get; private set; }
     
     // Given data
     private List<string[]> _nominalTrajectoryDataValues;
@@ -125,9 +134,8 @@ public class DataManager : MonoBehaviour
     /// <returns>The processed data file</returns>
     private static List<string[]> ReadDataFile(TextAsset dataFile)
     {
-        var dataValues = CsvReader.ReadCsvFile(dataFile);
+        List<string[]> dataValues = CsvReader.ReadCsvFile(dataFile);
         dataValues.RemoveAt(0); // The first row of headers is removed.
-        //dataValues.RemoveAt(0); // The first row of data (time=0) is removed.
         return dataValues;
     }
 
@@ -297,5 +305,10 @@ public class DataManager : MonoBehaviour
         VelocityY,
         VelocityZ,
         SpacecraftMass
+    }
+
+    public enum OffNominalDataStructure
+    {
+        
     }
 }

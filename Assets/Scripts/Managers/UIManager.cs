@@ -67,7 +67,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Transform notificationParent;
     [SerializeField] private GameObject notificationPrefab;
     
-    [Header("Machine Learning")]
+    [Header("Intelligence")]
     [SerializeField] private GameObject thrustSection;
     [SerializeField] private TextMeshProUGUI thrustText;
     [SerializeField] private Button transitionPathButton;
@@ -97,6 +97,7 @@ public class UIManager : MonoBehaviour
     
     private readonly List<string> _disabledAntennas = new();
     
+    // Trajectory Generation
     public static event Action OnTransitionPathPressed;
     public static event Action OnBumpOffCoursePressed;
     public static event Action<SpacecraftManager.SpacecraftState> OnCurrentPathChanged;
@@ -141,10 +142,10 @@ public class UIManager : MonoBehaviour
     
     private void OnEnable()
     {
-        SpacecraftManager.OnUpdateTime += UpdateTimeFromMinutes;
+        SpacecraftManager.OnTimeUpdated += UpdateTimeFromMinutes;
         SpacecraftManager.OnDistanceCalculated += UpdateDistances;
-        SpacecraftManager.OnUpdateCoordinates += UpdateCoordinatesText;
-        SpacecraftManager.OnUpdateMass += SetSpacecraftMass;
+        SpacecraftManager.OnCoordinatesUpdated += CoordinatesUpdatedText;
+        SpacecraftManager.OnMassUpdated += SetSpacecraftMassUpdated;
         SpacecraftManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
         SpacecraftManager.OnCurrentIndexUpdated += UpdateThrust;
         SpacecraftManager.OnStageFired += ShowStageFiredNotification;
@@ -156,10 +157,10 @@ public class UIManager : MonoBehaviour
     
     private void OnDisable()
     {
-        SpacecraftManager.OnUpdateTime -= UpdateTimeFromMinutes;
+        SpacecraftManager.OnTimeUpdated -= UpdateTimeFromMinutes;
         SpacecraftManager.OnDistanceCalculated -= UpdateDistances;
-        SpacecraftManager.OnUpdateCoordinates -= UpdateCoordinatesText;
-        SpacecraftManager.OnUpdateMass -= SetSpacecraftMass;
+        SpacecraftManager.OnCoordinatesUpdated -= CoordinatesUpdatedText;
+        SpacecraftManager.OnMassUpdated -= SetSpacecraftMassUpdated;
         SpacecraftManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
         SpacecraftManager.OnCurrentIndexUpdated -= UpdateThrust;
         SpacecraftManager.OnStageFired -= ShowStageFiredNotification;
@@ -204,19 +205,19 @@ public class UIManager : MonoBehaviour
 
     private void ShowColorKey()
     {
-        ToggleColorKeyVisiblity(true);
+        ToggleColorKeyVisibility(true);
         colorKeyToggle.isOn = true;
     }
 
     public void HideColorKey()
     {
-        ToggleColorKeyVisiblity(false);
+        ToggleColorKeyVisibility(false);
         colorKeyToggle.isOn = false;
     }
 
-    public void ToggleColorKeyVisiblity(bool shouldBeVisible)
+    public void ToggleColorKeyVisibility(bool isVisible)
     {
-        colorKey.SetActive(shouldBeVisible);
+        colorKey.SetActive(isVisible);
     }
 
     public void ToggleTimeElapsedBar(bool isBarEnabled)
@@ -237,7 +238,7 @@ public class UIManager : MonoBehaviour
     
     #endregion
     
-    #region Machine Learning
+    #region Trajectory Generation
     
     public void OnTransitionPathButtonPressed()
     {
@@ -264,13 +265,13 @@ public class UIManager : MonoBehaviour
         
         var minutesLeft = timeInMinutes;
         
-        var days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
+        int days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
         minutesLeft %= minutesPerDay;
-        var hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
+        int hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
         minutesLeft %= minutesPerHour;
-        var minutes = Mathf.FloorToInt(minutesLeft);
+        int minutes = Mathf.FloorToInt(minutesLeft);
         minutesLeft -= minutes;
-        var seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
+        int seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
 
         SetTimeCounter(days, hours, minutes, seconds);
         SetTimeElapsedBar(timeInMinutes);
@@ -314,7 +315,7 @@ public class UIManager : MonoBehaviour
     
     #region Spacecraft
 
-    private void SetSpacecraftMass(float massInKilograms)
+    private void SetSpacecraftMassUpdated(float massInKilograms)
     {
         spacecraftMass.text = _currentLengthUnit switch
         {
@@ -329,7 +330,7 @@ public class UIManager : MonoBehaviour
     
     #region Coordinates
     
-    private void UpdateCoordinatesText(Vector3 position)
+    private void CoordinatesUpdatedText(Vector3 position)
     {
         string units;
 
@@ -387,9 +388,9 @@ public class UIManager : MonoBehaviour
         };
     }
     
-    private void UpdateDistances(DistanceTravelledEventArgs distances)
+    private void UpdateDistances(DistanceCalculatedEventArgs distances)
     {
-        SetTotalDistance(distances.TotalDistance);
+        SetTotalDistance(distances.TotalDistanceTraveled);
         SetDistanceFromEarth(distances.DistanceFromEarth);
         SetDistanceFromMoon(distances.DistanceFromMoon);
     }

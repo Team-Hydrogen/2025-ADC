@@ -3,7 +3,11 @@ using UnityEngine;
 public class CursorManager : MonoBehaviour
 {
     [HideInInspector] public static CursorManager Instance { get; private set; }
-
+    
+    private const int LeftMouseButton = 0;
+    private const int RightMouseButton = 1;
+    private const int MiddleMouseButton = 2;
+    
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -17,7 +21,7 @@ public class CursorManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButton(1))
+        if (Input.GetMouseButton(RightMouseButton))
         {
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;

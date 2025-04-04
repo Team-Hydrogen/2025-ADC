@@ -28043,7 +28043,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 512236118}
         m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
-        m_MethodName: ToggleColorKeyVisiblity
+        m_MethodName: ToggleColorKeyVisibility
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

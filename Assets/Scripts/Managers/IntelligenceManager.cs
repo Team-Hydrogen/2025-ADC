@@ -29,16 +29,16 @@ public class IntelligenceManager : MonoBehaviour
     {
         DataManager.OnDataLoaded += LoadThrustData;
         SpacecraftManager.OnCurrentIndexUpdated += SetDataIndex;
-        SpacecraftManager.OnUpdateTime += SetCurrentTime;
-        UIManager.OnTransitionPathPressed += OnTransitionPath;
+        SpacecraftManager.OnTimeUpdated += SetCurrentTimeUpdated;
+        UIManager.OnTransitionPathPressed += StartTransitionPath;
     }
 
     private void OnDisable()
     {
         DataManager.OnDataLoaded -= LoadThrustData;
         SpacecraftManager.OnCurrentIndexUpdated -= SetDataIndex;
-        SpacecraftManager.OnUpdateTime -= SetCurrentTime;
-        UIManager.OnTransitionPathPressed -= OnTransitionPath;
+        SpacecraftManager.OnTimeUpdated -= SetCurrentTimeUpdated;
+        UIManager.OnTransitionPathPressed -= StartTransitionPath;
     }
     
     #endregion
@@ -46,7 +46,7 @@ public class IntelligenceManager : MonoBehaviour
     
     # region Getters and Setters
 
-    private void SetCurrentTime(float time)
+    private void SetCurrentTimeUpdated(float time)
     {
         _currentTime = time;
     }
@@ -60,7 +60,7 @@ public class IntelligenceManager : MonoBehaviour
     
     
     #region Thrust
-
+    
     private void LoadThrustData(DataLoadedEventArgs data)
     {
         _thrustData = data.ThrustData;
@@ -146,7 +146,7 @@ public class IntelligenceManager : MonoBehaviour
         return rawFlightTime + bufferTime;
     }
 
-    private void OnTransitionPath()
+    private void StartTransitionPath()
     {
         var deltaTime = CalculateDeltaTime(_dataIndex);
         
