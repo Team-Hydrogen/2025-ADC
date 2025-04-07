@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -8,10 +7,10 @@ public class HttpManager : MonoBehaviour
 {
     public static HttpManager Instance { get; private set; }
     
-    private const string BumpOffCourseApiUri = "https://5ef6-2601-18c-500-fbb-18f2-2a3b-3c1e-d7bb.ngrok-free.app/trajectory";
-    private const string BumpOffCourseApiContentType = "application/json";
+    private const string TransitionPathApiUri = "https://5ef6-2601-18c-500-fbb-18f2-2a3b-3c1e-d7bb.ngrok-free.app/trajectory";
+    private const string TransitionPathApiContentType = "application/json";
     
-    public static event Action<string> OnPathCalculated;
+    public static event Action<string> PathCalculated;
     
     
     #region Event Functions
@@ -55,7 +54,7 @@ public class HttpManager : MonoBehaviour
         // Time
         public float startTime;
         public float flightTime;
-
+        
         public TransitionPathRequest(float[] op, float[] ov, float[] dp, float[] dv, float st, float ft)
         {
             originPosition = op;
@@ -75,7 +74,7 @@ public class HttpManager : MonoBehaviour
         float[] destinationPositionPostData = { destinationPosition.x, destinationPosition.y, destinationPosition.z };
         float[] destinationVelocityPostData = { destinationVelocity.x, destinationVelocity.y, destinationVelocity.z };
 
-        var apiRequest = new TransitionPathRequest(
+        TransitionPathRequest apiRequest = new TransitionPathRequest(
             originPositionPostData,
             originVelocityPostData,
             destinationPositionPostData,
@@ -83,7 +82,7 @@ public class HttpManager : MonoBehaviour
             startTime,
             flightTime
         );
-        var postData = JsonUtility.ToJson(apiRequest);
+        string postData = JsonUtility.ToJson(apiRequest);
         
         StartCoroutine(PingTransitionPathApi(postData));
     }
@@ -91,9 +90,9 @@ public class HttpManager : MonoBehaviour
     private IEnumerator PingTransitionPathApi(string postData)
     {
         var webRequest = UnityWebRequest.Post(
-            BumpOffCourseApiUri,
+            TransitionPathApiUri,
             postData,
-            BumpOffCourseApiContentType
+            TransitionPathApiContentType
         );
         
         using (webRequest)
@@ -109,10 +108,41 @@ public class HttpManager : MonoBehaviour
             }
             else
             {
-                OnPathCalculated?.Invoke(webRequest.downloadHandler.text);
+                PathCalculated?.Invoke(webRequest.downloadHandler.text);
             }
         }
     }
     
     # endregion
+
+
+    #region Utility Functions
+    
+    private IEnumerator SendRequest(string uri, string postData, string contentType = "application/json")
+    {
+        var webRequest = UnityWebRequest.Post(
+            uri,
+            postData,
+            contentType
+        );
+        
+        using (webRequest)
+        {
+            yield return webRequest.SendWebRequest();
+            
+            if (webRequest.result != UnityWebRequest.Result.Success)
+            {
+                String errorMessage = $"Error: {webRequest.error}";
+                UIManager.Instance.ShowNotification(errorMessage, Notification.NotificationType.Dismissable);
+                Debug.Log(webRequest.error);
+                Debug.Log(webRequest.result);
+            }
+            else
+            {
+                PathCalculated?.Invoke(webRequest.downloadHandler.text);
+            }
+        }
+    }
+
+    #endregion
 }

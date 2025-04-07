@@ -1,38 +1,25 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public static class CsvReader
 {
     private const char Delimiter = ',';
     
-    public static List<string[]> ReadCsvFile(TextAsset file)
+    public static string[][] ReadCsvString(string fileContent)
     {
-        //var streamReader = new StreamReader(filePath);
-        string fileContent = file.text;
         string[] contentLines = fileContent.Split('\n');
 
-        List<string[]> csvData = new List<string[]>();
+        string[][] csvData = new string[contentLines.Length][];
 
-        foreach (string line in contentLines)
+        for (int index = 0; index < contentLines.Length; index++)
         {
-            csvData.Add(line.Split(Delimiter));
+            csvData[index] = contentLines[index].Split(Delimiter);
         }
         
         return csvData;
     }
     
-    public static List<string[]> TextToData(string fileContent)
+    public static string[][] ReadCsvFile(TextAsset file)
     {
-        //var streamReader = new StreamReader(filePath);
-        string[] contentLines = fileContent.Split('\n');
-
-        List<string[]> csvData = new List<string[]>();
-
-        foreach (string line in contentLines)
-        {
-            csvData.Add(line.Split(Delimiter));
-        }
-        
-        return csvData;
+        return ReadCsvString(file.text);
     }
 }

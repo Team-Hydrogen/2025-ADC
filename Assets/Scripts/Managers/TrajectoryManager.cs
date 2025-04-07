@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class TrajectoryManager : MonoBehaviour
 {
@@ -13,56 +13,79 @@ public class TrajectoryManager : MonoBehaviour
     [SerializeField] private LineRenderer futureNominalTrajectory;
     [SerializeField] private LineRenderer futureOffNominalTrajectory;
     
-    [Header("Spacecraft Positions")]
-    [SerializeField] private Transform nominalSpacecraftTransform;
-    [SerializeField] private Transform offNominalSpacecraftTransform;
-    [SerializeField] private Transform transitionSpacecraftTransform;
-    private Transform _selectedSpacecraftTransform;
+    [Header("Transition Trajectory")]
+    [SerializeField] private Transform trajectoryParent;
+    [SerializeField] private GameObject transitionTrajectoryPrefab;
     
-    private List<string[]> _nominalTrajectoryData;
-    private List<string[]> _offNominalTrajectoryData;
-    private List<string[]> _transitionTrajectoryData;
-    private List<string[]> _selectedTrajectoryData;
+    #region Trajectory Data
     
-    private LineRenderer _pastNominalTrajectoryRenderer;
-    private LineRenderer _pastOffNominalTrajectoryRenderer;
-    
-    private LineRenderer _pastMergeTrajectoryRenderer;
-    private LineRenderer _futureMergeTrajectoryRenderer;
-    
-    #region Index and Time Variables
-
-    private float _previousElapsedTime = 0.0f;
-    private int _previousTimeLowerIndex = 0;
-    private int _previousTimeUpperIndex = 1;
-    
-    private float _currentElapsedTime = 0.0f;
-    private int _currentTimeLowerIndex = 0;
-    private int _currentTimeUpperIndex = 1;
+    private string[][] _nominalTrajectoryData;
+    private string[][] _offNominalTrajectoryData;
+    private string[][] _transitionTrajectoryData;
+    private string[][] _selectedTrajectoryData;
     
     #endregion
     
     
+    #region Line Renderers
+    
+    private LineRenderer _pastNominalTrajectoryRenderer;
+    private LineRenderer _pastOffNominalTrajectoryRenderer;
+    
+    private LineRenderer _pastTransitionTrajectoryRenderer;
+    private LineRenderer _futureTransitionTrajectoryRenderer;
+    
+    #endregion
+    
+    
+    #region Index and Time Variables
+    
+    private int _previousTimeLowerIndex = 0;
+    private int _previousTimeUpperIndex = 1;
+    
+    private int _currentTimeLowerIndex = 0;
+    private int _currentTimeUpperIndex = 1;
+
+    private bool _isTransitioning = false;
+    
+    #endregion
+    
+    
+    #region Event Functions
+
     private void Update()
     {
-        _currentElapsedTime += Time.deltaTime * timeScale;
         
-        UpdateIndexBounds();
-        
-        _previousElapsedTime = _currentElapsedTime;
     }
-
-
+    
     private void OnEnable()
     {
-        DataManager.OnDataLoaded += LoadData;
+        DataManager.DataIndexUpdated += UpdateIndexBounds;
+        DataManager.DataLoaded += LoadData;
+        DataManager.MissionStageUpdated += UpdatePastTrajectoryRenderers;
+        
+        HttpManager.PathCalculated += PlotTransitionTrajectory;
+        
+        SpacecraftManager.PositionUpdated += UpdateTrajectories;
+        SpacecraftManager.SpacecraftStateUpdated += SetIsTransitioning;
+        SpacecraftManager.SpacecraftStateUpdated += UpdateSelectedTrajectoryData;
     }
-
+    
     private void OnDisable()
     {
-        DataManager.OnDataLoaded -= LoadData;
+        DataManager.DataIndexUpdated -= UpdateIndexBounds;
+        DataManager.DataLoaded -= LoadData;
+        DataManager.MissionStageUpdated -= UpdatePastTrajectoryRenderers;
+        
+        HttpManager.PathCalculated -= PlotTransitionTrajectory;
+        
+        SpacecraftManager.PositionUpdated -= UpdateTrajectories;
+        SpacecraftManager.SpacecraftStateUpdated -= SetIsTransitioning;
+        SpacecraftManager.SpacecraftStateUpdated -= UpdateSelectedTrajectoryData;
     }
-
+    
+    #endregion
+    
     private void LoadData(DataLoadedEventArgs data)
     {
         // Get both the nominal and off-nominal trajectory data.
@@ -70,21 +93,62 @@ public class TrajectoryManager : MonoBehaviour
         _offNominalTrajectoryData = data.OffNominalTrajectoryData;
         // Get both the nominal and off-nominal line renderers.
         _pastNominalTrajectoryRenderer = data.MissionStage.nominalLineRenderer;
-        _pastOffNominalTrajectoryRenderer = data.MissionStage.offnominalLineRenderer;
+        _pastOffNominalTrajectoryRenderer = data.MissionStage.offNominalLineRenderer;
         // Generate an initial plot of both trajectories. 
         PlotTrajectory(_nominalTrajectoryData, _pastNominalTrajectoryRenderer, futureNominalTrajectory);
         PlotTrajectory(_offNominalTrajectoryData, _pastOffNominalTrajectoryRenderer, futureOffNominalTrajectory);
+        // By default, select the nominal trajectory data.
+        _selectedTrajectoryData = _nominalTrajectoryData;
     }
     
-    private void UpdateIndexBounds()
+    private void UpdateTrajectories()
     {
-        int[] lowerIndexBounds = GetIndexBoundsFromTime(_selectedTrajectoryData, _previousElapsedTime);
-        int[] upperIndexBounds = GetIndexBoundsFromTime(_selectedTrajectoryData, _currentElapsedTime);
+        UpdateTrajectory(
+            SpacecraftManager.Instance.NominalSpacecraftTransform.position,
+            _pastNominalTrajectoryRenderer,
+            futureNominalTrajectory
+        );
+        UpdateTrajectory(
+            SpacecraftManager.Instance.OffNominalSpacecraftTransform.position,
+            _pastOffNominalTrajectoryRenderer,
+            futureOffNominalTrajectory
+        );
+        if (_isTransitioning)
+        {
+            UpdateTrajectory(
+                SpacecraftManager.Instance.TransitionSpacecraftTransform.position,
+                _pastTransitionTrajectoryRenderer,
+                _futureTransitionTrajectoryRenderer
+            );
+        }
         
-        _previousTimeLowerIndex = lowerIndexBounds[0];
-        _previousTimeUpperIndex = lowerIndexBounds[1];
-        _currentTimeLowerIndex = upperIndexBounds[0];
-        _currentTimeUpperIndex = upperIndexBounds[1];
+        // Ensures the trajectory does not continuously remove points even if the lower index does not change.
+        _previousTimeLowerIndex = _currentTimeLowerIndex;
+    }
+    
+    private void UpdateIndexBounds(int newLowerIndex)
+    {
+        _previousTimeLowerIndex = _currentTimeLowerIndex;
+        _previousTimeUpperIndex = _currentTimeUpperIndex;
+        
+        _currentTimeLowerIndex = newLowerIndex;
+        _currentTimeUpperIndex = newLowerIndex + 1;
+    }
+    
+    private void UpdatePastTrajectoryRenderers(MissionStage stage)
+    {
+        if (_pastNominalTrajectoryRenderer.Equals(stage.nominalLineRenderer))
+        {
+            return;
+        }
+        
+        _pastNominalTrajectoryRenderer = stage.nominalLineRenderer;
+        _pastNominalTrajectoryRenderer.SetPosition(0, SpacecraftManager.Instance.NominalSpacecraftTransform.position);
+
+        _pastOffNominalTrajectoryRenderer = stage.offNominalLineRenderer;
+        _pastOffNominalTrajectoryRenderer.SetPosition(0, SpacecraftManager.Instance.OffNominalSpacecraftTransform.position);
+        
+        // trigger animation here if it is correct stage
     }
     
     /// <summary>
@@ -93,10 +157,10 @@ public class TrajectoryManager : MonoBehaviour
     /// <param name="data">A list of three-dimensional points</param>
     /// <param name="past">A line to represent the past path</param>
     /// <param name="future">A line to represent the future path</param>
-    private void PlotTrajectory(List<string[]> data, LineRenderer past, LineRenderer future)
+    private void PlotTrajectory(string[][] data, LineRenderer past, LineRenderer future)
     {
         // An array of three-dimensional points is constructed by processing the CSV file.
-        int numberOfPoints = data.Count;
+        int numberOfPoints = data.Length;
         Vector3[] futurePoints = new Vector3[numberOfPoints];
         
         for (int index = 0; index < numberOfPoints; index++)
@@ -106,9 +170,10 @@ public class TrajectoryManager : MonoBehaviour
             try
             {
                 Vector3 pointAsVector = new Vector3(
-                    float.Parse(point[1]) * trajectoryScale,
-                    float.Parse(point[2]) * trajectoryScale,
-                    float.Parse(point[3]) * trajectoryScale);
+                    float.Parse(point[1]),
+                    float.Parse(point[2]),
+                    float.Parse(point[3])
+                ) * trajectoryScale;
                 
                 futurePoints[index] = pointAsVector;
             }
@@ -124,41 +189,14 @@ public class TrajectoryManager : MonoBehaviour
         future.positionCount = numberOfPoints;
         future.SetPositions(futurePoints);
     }
-
-    private void UpdateSpacecraftPosition(List<string[]> data, Transform trajectoryTransform)
-    {
-        float interpolationRatio = Mathf.InverseLerp(
-            float.Parse(data[_currentTimeLowerIndex][0]),
-            float.Parse(data[_currentTimeUpperIndex][0]),
-            _currentElapsedTime
-        );
-        
-        Vector3 interpolatedPosition = Vector3.Lerp(
-            new Vector3(
-                float.Parse(data[_currentTimeLowerIndex][1]),
-                float.Parse(data[_currentTimeLowerIndex][2]),
-                float.Parse(data[_currentTimeLowerIndex][3])
-            ),
-            new Vector3(
-                float.Parse(data[_currentTimeUpperIndex][1]),
-                float.Parse(data[_currentTimeUpperIndex][2]),
-                float.Parse(data[_currentTimeUpperIndex][3])
-            ),
-            interpolationRatio
-        );
-        
-        trajectoryTransform.position = interpolatedPosition;
-    }
     
     /// <summary>
     /// Updates the trajectory
     /// </summary>
-    /// <param name="spacecraftTransform"></param>
-    /// <param name="past"></param>
-    /// <param name="future"></param>
-    /// <param name="indexUpdated"></param>
-    /// <param name="positionUpdated"></param>
-    private void UpdateTrajectory(Transform spacecraftTransform, LineRenderer past, LineRenderer future)
+    /// <param name="spacecraftPosition">The current position of the spacecraft</param>
+    /// <param name="past">The past trajectory line renderer</param>
+    /// <param name="future">The future trajectory line renderer</param>
+    private void UpdateTrajectory(Vector3 spacecraftPosition, LineRenderer past, LineRenderer future)
     {
         int indexChange = _currentTimeLowerIndex - _previousTimeLowerIndex;
         
@@ -245,13 +283,50 @@ public class TrajectoryManager : MonoBehaviour
             }
         }
         
-        past.SetPosition(past.positionCount - 1, spacecraftTransform.position);
-        future.SetPosition(0, spacecraftTransform.position);
+        past.SetPosition(past.positionCount - 1, spacecraftPosition);
+        future.SetPosition(0, spacecraftPosition);
+    }
+    
+    private void PlotTransitionTrajectory(string dataAsString)
+    {
+        Debug.Log($"Transition Trajectory CSV File\n{dataAsString}");
+        
+        _transitionTrajectoryData = CsvReader.ReadCsvString(dataAsString);
+        _transitionTrajectoryData = new ArraySegment<string[]>(
+            _transitionTrajectoryData, 1, _transitionTrajectoryData.Length).ToArray();
+        
+        GameObject transitionTrajectory = Instantiate(this.transitionTrajectoryPrefab, trajectoryParent);
+        LineRenderer[] transitionTrajectoryRenderers = transitionTrajectory.GetComponentsInChildren<LineRenderer>();
+        
+        _pastTransitionTrajectoryRenderer = transitionTrajectoryRenderers[0];
+        _futureTransitionTrajectoryRenderer = transitionTrajectoryRenderers[1];
+        
+        PlotTrajectory(
+            _transitionTrajectoryData,
+            _pastTransitionTrajectoryRenderer,
+            _futureTransitionTrajectoryRenderer
+        );
+    }
+
+    private void SetIsTransitioning(SpacecraftManager.SpacecraftState state)
+    {
+        _isTransitioning = state == SpacecraftManager.SpacecraftState.Transition;
+    }
+
+    private void UpdateSelectedTrajectoryData(SpacecraftManager.SpacecraftState state)
+    {
+        _selectedTrajectoryData = state switch
+        {
+            SpacecraftManager.SpacecraftState.Nominal => _nominalTrajectoryData,
+            SpacecraftManager.SpacecraftState.OffNominal => _offNominalTrajectoryData,
+            SpacecraftManager.SpacecraftState.Transition => _transitionTrajectoryData,
+            _ => _nominalTrajectoryData
+        };
     }
     
     #region Helper Functions
     
-    private static int[] GetIndexBoundsFromTime(List<string[]> data, float elapsedTime)
+    private static int[] GetIndexBoundsFromTime(string[][] data, float elapsedTime)
     {
         // Convert string times to floats once for retrieval efficiency.
         float[] times = data.Select(line => float.Parse(line[0])).ToArray();

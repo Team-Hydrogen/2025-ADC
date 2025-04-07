@@ -32,25 +32,25 @@ public class MinimapManager : MonoBehaviour
     
     private void OnEnable()
     {
-        DataManager.OnDataLoaded += OnDataLoaded;
-        DataManager.OnMissionStageUpdated += OnMissionStageUpdated;
-        SpacecraftManager.OnCurrentIndexUpdated += UpdateMinimapTrajectory;
+        DataManager.DataIndexUpdated += UpdateMinimapTrajectory;
+        DataManager.DataLoaded += DataLoaded;
+        DataManager.MissionStageUpdated += MissionStageUpdated;
     }
 
     private void OnDisable()
     {
-        DataManager.OnDataLoaded -= OnDataLoaded;
-        DataManager.OnMissionStageUpdated -= OnMissionStageUpdated;
-        SpacecraftManager.OnCurrentIndexUpdated -= UpdateMinimapTrajectory;
+        DataManager.DataIndexUpdated -= UpdateMinimapTrajectory;
+        DataManager.DataLoaded -= DataLoaded;
+        DataManager.MissionStageUpdated -= MissionStageUpdated;
     }
     
-    private void OnDataLoaded(DataLoadedEventArgs data)
+    private void DataLoaded(DataLoadedEventArgs data)
     {
         _currentMinimapTrajectory = data.MissionStage.minimapLineRenderer;
         PlotMinimapTrajectory(data.NominalTrajectoryData);
     }
 
-    private void OnMissionStageUpdated(MissionStage missionStage)
+    private void MissionStageUpdated(MissionStage missionStage)
     {
         if (!_currentMinimapTrajectory.Equals(missionStage.minimapLineRenderer))
         {
@@ -58,10 +58,10 @@ public class MinimapManager : MonoBehaviour
         }
     }
     
-    private void PlotMinimapTrajectory(List<string[]> nominalTrajectoryData)
+    private void PlotMinimapTrajectory(string[][] nominalTrajectoryData)
     {
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = nominalTrajectoryData.Count;
+        int numberOfPoints = nominalTrajectoryData.Length;
         Vector3[] futureTrajectoryPoints = new Vector3[numberOfPoints];
         for (int index = 0; index < numberOfPoints; index++)
         {

@@ -39,29 +39,44 @@ public class DataManager : MonoBehaviour
     [SerializeField] private Color endGizmosLineColor;
     [SerializeField, Range(1f, 100f)] private int gizmosLevelOfDetail;
     
-    // State management
-    private SpacecraftManager.SpacecraftState _spacecraftState;
     public MissionStage CurrentMissionStage { get; private set; }
+    
+    // Tracks the current link budget algorithm
+    public enum LinkBudgetAlgorithm { None, Signal, Switch, Asset }
     public LinkBudgetAlgorithm PriorityAlgorithm { get; private set; }
     
-    // Calculated data
-    // public float ElapsedTime { get; private set; }
-    
     // Given data
-    private List<string[]> _nominalTrajectoryDataValues;
-    private List<string[]> _offNominalTrajectoryDataValues;
-    private List<string[]> _nominalAntennaAvailabilityDataValues;
-    private List<string[]> _offNominalAntennaAvailabilityDataValues;
-    private List<string[]> _thrustDataValues;
-    private List<string[]> _nominalLinkBudgetDataValues;
-    private List<string[]> _offNominalLinkBudgetDataValues;
+    private string[][] _nominalTrajectoryData;
+    private string[][] _offNominalTrajectoryData;
+    private string[][] _nominalAntennaAvailabilityData;
+    private string[][] _offNominalAntennaAvailabilityData;
+    private string[][] _nominalLinkBudgetData;
+    private string[][] _offNominalLinkBudgetData;
+    private string[][] _thrustData;
+
+    private string[][] _selectedTrajectoryData;
+    private string[][] _selectedAntennaAvailabilityData;
+    private string[][] _selectedLinkBudgetData;
     
+    // Index tracking
+    private const int SecondStageFireIndex = 120;
+    
+    private int _lowerIndex;
+    private int _upperIndex;
+    private float _progress; // This must always fall between 0.0 and 1.0.
+    
+    // Link budget prioritization
     public string PrioritizedAntenna { get; private set; }
     private List<Vector3> _positionVectorsForGizmos;
     
     // Actions
-    public static event Action<DataLoadedEventArgs> OnDataLoaded;
-    public static event Action<MissionStage> OnMissionStageUpdated;
+    public static event Action<DataLoadedEventArgs> DataLoaded;
+    public static event Action<MissionStage> MissionStageUpdated;
+    public static event Action<int> DataIndexUpdated;
+    public static event Action<float> ProgressUpdated;
+    public static event Action<float> SpacecraftMassUpdated;
+    public static event Action<string> ShowNotification;
+    public static event Action<Vector3> CoordinatesUpdated;
     
     
     #region Event Functions
@@ -81,70 +96,212 @@ public class DataManager : MonoBehaviour
     {
         CurrentMissionStage = stages[0];
         
-        _nominalTrajectoryDataValues = ReadDataFile(nominalTrajectoryDataFile);
-        _offNominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
+        _nominalTrajectoryData = ReadDataFile(nominalTrajectoryDataFile);
+        _offNominalTrajectoryData = ReadDataFile(offNominalTrajectoryDataFile);
         
-        _nominalAntennaAvailabilityDataValues = ReadDataFile(nominalAntennaAvailabilityDataFile);
-        _offNominalAntennaAvailabilityDataValues = ReadDataFile(offNominalAntennaAvailabilityDataFile);
+        _nominalAntennaAvailabilityData = ReadDataFile(nominalAntennaAvailabilityDataFile);
+        _offNominalAntennaAvailabilityData = ReadDataFile(offNominalAntennaAvailabilityDataFile);
         
-        _nominalLinkBudgetDataValues = ReadDataFile(nominalLinkBudgetDataFile);
-        _offNominalLinkBudgetDataValues = ReadDataFile(offNominalLinkBudgetDataFile);
+        _nominalLinkBudgetData = ReadDataFile(nominalLinkBudgetDataFile);
+        _offNominalLinkBudgetData = ReadDataFile(offNominalLinkBudgetDataFile);
         
-        _thrustDataValues = ReadDataFile(thrustDataFile);
+        _thrustData = ReadDataFile(thrustDataFile);
         
-        OnDataLoaded?.Invoke(
+        // The nominal trajectory is the default trajectory.
+        _selectedTrajectoryData = _nominalTrajectoryData;
+        _selectedAntennaAvailabilityData = _nominalAntennaAvailabilityData;
+        _selectedLinkBudgetData = _nominalLinkBudgetData;
+        
+        DataLoaded?.Invoke(
             new DataLoadedEventArgs(
-                _nominalTrajectoryDataValues, 
-                _offNominalTrajectoryDataValues, 
-                _nominalAntennaAvailabilityDataValues,
-                _offNominalAntennaAvailabilityDataValues,
-                _nominalLinkBudgetDataValues,
-                _offNominalLinkBudgetDataValues,
-                _thrustDataValues,
-                stages[0]) // First stage should start right after simulation begins
-            );
+                _nominalTrajectoryData, 
+                _offNominalTrajectoryData, 
+                _nominalAntennaAvailabilityData,
+                _offNominalAntennaAvailabilityData,
+                _nominalLinkBudgetData,
+                _offNominalLinkBudgetData,
+                _thrustData,
+                stages[0] // The first stage should start right after simulation begins.
+            )
+        );
+    }
+
+    private void Update()
+    {
+        UpdateCoordinates();
+        UpdateSpacecraftMass();
+        UpdateMissionStage(_lowerIndex);
+        HandleNotifications(_lowerIndex);
+        PrioritizedAntenna = GetHighestPriorityAntenna(_lowerIndex);
     }
     
     private void OnEnable()
     {
-        SpacecraftManager.OnCurrentIndexUpdated += UpdateDataManager;
-        SpacecraftManager.OnSpacecraftStateUpdated += UpdateSpacecraftState;
-        UIManager.OnPrioritizationChanged += SetPriorityAlgorithm;
+        SimulationManager.ElapsedTimeUpdated += UpdateIndexTrackers;
+        SpacecraftManager.SpacecraftStateUpdated += UpdateSelectedData;
+        UIManager.PrioritizationAlgorithmSelected += SetPrioritizationAlgorithm;
     }
     
     private void OnDisable()
     {
-        SpacecraftManager.OnCurrentIndexUpdated -= UpdateDataManager;
-        SpacecraftManager.OnSpacecraftStateUpdated -= UpdateSpacecraftState;
-        UIManager.OnPrioritizationChanged -= SetPriorityAlgorithm;
+        SimulationManager.ElapsedTimeUpdated -= UpdateIndexTrackers;
+        SpacecraftManager.SpacecraftStateUpdated -= UpdateSelectedData;
+        UIManager.PrioritizationAlgorithmSelected -= SetPrioritizationAlgorithm;
     }
     
     #endregion
     
-    private void UpdateDataManager(int index)
-    {
-        UpdateMissionStage(index);
-        PrioritizedAntenna = GetHighestPriorityAntenna(index);
-    }
+    
+    #region Data Processing
     
     /// <summary>
     /// Reads and processes a given CSV file.
     /// </summary>
     /// <param name="dataFile">The raw data file (CSV only)</param>
     /// <returns>The processed data file</returns>
-    private static List<string[]> ReadDataFile(TextAsset dataFile)
+    private static string[][] ReadDataFile(TextAsset dataFile)
     {
-        List<string[]> dataValues = CsvReader.ReadCsvFile(dataFile);
-        dataValues.RemoveAt(0); // The first row of headers is removed.
-        return dataValues;
+        string[][] data = CsvReader.ReadCsvFile(dataFile);
+        return new ArraySegment<string[]>(data, 1, data.Length - 1).ToArray();
     }
-
-    private void UpdateSpacecraftState(SpacecraftManager.SpacecraftState state)
+    
+    private void UpdateSelectedData(SpacecraftManager.SpacecraftState state)
     {
-        _spacecraftState = state;
+        bool isOnNominalTrajectory = state == SpacecraftManager.SpacecraftState.Nominal;
+        
+        _selectedTrajectoryData = isOnNominalTrajectory
+            ? _nominalTrajectoryData
+            : _offNominalTrajectoryData;
+        _selectedAntennaAvailabilityData = isOnNominalTrajectory
+            ? _nominalAntennaAvailabilityData
+            : _offNominalAntennaAvailabilityData;
+        _selectedLinkBudgetData = isOnNominalTrajectory
+            ? _nominalLinkBudgetData
+            : _offNominalLinkBudgetData;
     }
-
-    private void SetPriorityAlgorithm(int algorithmIndex)
+    
+    #endregion
+    
+    
+    #region Index Tracking
+    
+    private void UpdateIndexTrackers(float elapsedTime)
+    {
+        int[] indexBounds = GetIndexBoundsFromTime(_selectedTrajectoryData, elapsedTime);
+        
+        // If the bounds have changed, update the bounds.
+        if (_lowerIndex != indexBounds[0] || _upperIndex != indexBounds[1])
+        {
+            _lowerIndex = indexBounds[0];
+            _upperIndex = indexBounds[1];
+            
+            DataIndexUpdated?.Invoke(_lowerIndex);
+        }
+        
+        // Update the progress between the lower and upper bounds.
+        _progress = GetProgress(elapsedTime);
+        ProgressUpdated?.Invoke(_progress);
+    }
+    
+    private float GetProgress(float elapsedTime)
+    {
+        float lowerTime = float.Parse(_selectedTrajectoryData[_lowerIndex][0]);
+        float upperTime = float.Parse(_selectedTrajectoryData[_upperIndex][0]);
+        return Mathf.InverseLerp(lowerTime, upperTime, elapsedTime);
+    }
+    
+    private static int[] GetIndexBoundsFromTime(string[][] data, float elapsedTime)
+    {
+        // Convert string times to floats once for retrieval efficiency.
+        float[] times = data.Select(line => float.Parse(line[0])).ToArray();
+        
+        // `Array.BinarySearch` is used to achieve O(log n) performance. If `elapsedTime` is not found, the method
+        // returns the negative index of its otherwise sorted position. The bitwise complement operator is used to get
+        // the positive array index.
+        int closestIndex = Array.BinarySearch(times, elapsedTime);
+        closestIndex = closestIndex >= 0 ? closestIndex : ~closestIndex;
+        
+        // Determine the lower and upper index bounds.
+        int lowerIndex = Mathf.Clamp(0, closestIndex - 1, times.Length - 1);
+        int upperIndex = Mathf.Clamp(0, closestIndex, times.Length - 1);
+        
+        // Returns the index bounds as an integer array.
+        return new[] { lowerIndex, upperIndex };
+    }
+    
+    #endregion
+    
+    
+    #region Timeline
+    
+    /// <summary>
+    /// Updates the mission stage.
+    /// </summary>
+    /// <param name="dataIndex"></param>
+    private void UpdateMissionStage(int dataIndex)
+    {
+        int index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
+        
+        if (index == -1 || stages[index].Equals(CurrentMissionStage))
+        {
+            return;
+        }
+        
+        CurrentMissionStage = stages[index];
+        MissionStageUpdated?.Invoke(stages[index]);
+    }
+    
+    #endregion
+    
+    
+    #region Coordinates
+    
+    public Vector3 GetCoordinates(string[][] data)
+    {
+        Vector3 lowerCoordinate = new Vector3(
+            float.Parse(data[_lowerIndex][1]),
+            float.Parse(data[_lowerIndex][2]),
+            float.Parse(data[_lowerIndex][3])
+        );
+        
+        Vector3 upperCoordinate = new Vector3(
+            float.Parse(data[_upperIndex][1]),
+            float.Parse(data[_upperIndex][2]),
+            float.Parse(data[_upperIndex][3])
+        );
+        
+        return Vector3.Lerp(lowerCoordinate, upperCoordinate, _progress);
+    }
+    
+    private void UpdateCoordinates()
+    {
+        Vector3 selectedTrajectoryCoordinates = GetCoordinates(_selectedTrajectoryData);
+        CoordinatesUpdated?.Invoke(selectedTrajectoryCoordinates);
+    }
+    
+    #endregion
+    
+    
+    #region Mass
+    
+    private void UpdateSpacecraftMass()
+    {
+        bool isMassRecorded = float.TryParse(_selectedTrajectoryData[_lowerIndex][7], out float spacecraftMass);
+        
+        if (!isMassRecorded)
+        {
+            throw new FormatException($"There is no spacecraft mass recorded on line {_lowerIndex}.");
+        }
+        
+        SpacecraftMassUpdated?.Invoke(spacecraftMass);
+    }
+    
+    #endregion
+    
+    
+    #region Link Budget Prioritization
+    
+    private void SetPrioritizationAlgorithm(int algorithmIndex)
     {
         PriorityAlgorithm = (LinkBudgetAlgorithm)algorithmIndex;
     }
@@ -152,22 +309,18 @@ public class DataManager : MonoBehaviour
     /// <summary>
     /// Determines the highest priority antenna using link budget and future asset changes.
     /// </summary>
-    /// <param name="index">The current data index</param>
+    /// <param name="dataIndex">The current data index</param>
     /// <returns>The name of the highest priority antenna</returns>
-    private string GetHighestPriorityAntenna(int index)
+    private string GetHighestPriorityAntenna(int dataIndex)
     {
-        var currentAntennaName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
-            ? _nominalAntennaAvailabilityDataValues[index][1]
-            : _offNominalAntennaAvailabilityDataValues[index][1];
+        string currentAntennaName = _selectedAntennaAvailabilityData[dataIndex][1];
         
-        if (index <= 0)
+        if (dataIndex <= 0)
         {
             return currentAntennaName;
         }
         
-        var previousAntennaName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
-            ? _nominalAntennaAvailabilityDataValues[index - 1][1]
-            : _offNominalAntennaAvailabilityDataValues[index - 1][1];
+        string previousAntennaName = _selectedAntennaAvailabilityData[dataIndex - 1][1];
 
         if (previousAntennaName == currentAntennaName)
         {
@@ -175,19 +328,15 @@ public class DataManager : MonoBehaviour
         }
         
         int maximumOffset = PriorityAlgorithm == LinkBudgetAlgorithm.Asset ? 60 : 20;
-        int maximumIndex = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
-            ? _nominalAntennaAvailabilityDataValues.Count - 1
-            : _offNominalAntennaAvailabilityDataValues.Count - 1;
+        int maximumIndex = _selectedAntennaAvailabilityData.Length - 1;
         
-        for (int offset = 1; offset <= maximumOffset && index + offset <= maximumIndex; offset++)
+        for (int offset = 1; offset <= maximumOffset && dataIndex + offset <= maximumIndex; offset++)
         {
             string futureAntennaName;
             
             try
             {
-                futureAntennaName = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
-                    ? _nominalAntennaAvailabilityDataValues[index + offset][1]
-                    : _offNominalAntennaAvailabilityDataValues[index + offset][1];
+                futureAntennaName = _selectedAntennaAvailabilityData[dataIndex + offset][1];
             }
             catch (IndexOutOfRangeException)
             {
@@ -203,22 +352,27 @@ public class DataManager : MonoBehaviour
         return currentAntennaName;
     }
     
-    /// <summary>
-    /// Updates the mission stage.
-    /// </summary>
-    /// <param name="dataIndex"></param>
-    private void UpdateMissionStage(int dataIndex)
+    #endregion
+    
+    
+    #region Notifications
+    
+    private void HandleNotifications(int dataIndex)
     {
-        var index = stages.FindLastIndex(stage => dataIndex >= stage.startDataIndex);
-        
-        if (index == -1 || stages[index].Equals(CurrentMissionStage))
+        Dictionary<int, string> notificationMap = new Dictionary<int, string>
         {
-            return;
-        }
+            { SecondStageFireIndex, "Second Stage / Service Module Fired" }
+        }; 
         
-        CurrentMissionStage = stages[index];
-        OnMissionStageUpdated?.Invoke(stages[index]);
+        if (notificationMap.TryGetValue(dataIndex, out string message))
+        {
+            // The second stage is the equivalent of the service module.
+            ShowNotification?.Invoke(message);
+        }
     }
+    
+    #endregion
+    
     
     #region Gizmos
     
@@ -258,16 +412,16 @@ public class DataManager : MonoBehaviour
     [ContextMenu("Reload Gizmos Path Data")]
     private void LoadGizmosPathData()
     {
-        _nominalTrajectoryDataValues = ReadDataFile(offNominalTrajectoryDataFile);
+        _nominalTrajectoryData = ReadDataFile(offNominalTrajectoryDataFile);
 
         float trajectoryScale = 0.01f;
 
         // An array of trajectory points is constructed by reading the processed CSV file.
-        int numberOfPoints = _nominalTrajectoryDataValues.Count;
+        int numberOfPoints = _nominalTrajectoryData.Length;
         Vector3[] trajectoryPoints = new Vector3[numberOfPoints];
-        for (int i = 0; i < _nominalTrajectoryDataValues.Count; i++)
+        for (int i = 0; i < _nominalTrajectoryData.Length; i++)
         {
-            string[] point = _nominalTrajectoryDataValues[i];
+            string[] point = _nominalTrajectoryData[i];
 
             try
             {
@@ -287,15 +441,9 @@ public class DataManager : MonoBehaviour
     }
     #endregion
     
-    public enum LinkBudgetAlgorithm
-    {
-        None,
-        Signal,
-        Switch,
-        Asset
-    }
     
-    public enum NominalDataStructure
+    // Reference
+    private enum NominalDataStructure
     {
         Time,
         PositionX,
@@ -307,8 +455,8 @@ public class DataManager : MonoBehaviour
         SpacecraftMass
     }
 
-    public enum OffNominalDataStructure
+    private enum OffNominalDataStructure
     {
-        
+        Time,
     }
 }

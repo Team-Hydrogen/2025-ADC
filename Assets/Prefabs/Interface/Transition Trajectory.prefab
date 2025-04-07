@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3912455620301429015}
   m_Layer: 0
-  m_Name: Merge Trajectory
+  m_Name: Transition Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +44,7 @@ GameObject:
   - component: {fileID: 9044257898049919045}
   - component: {fileID: 8377812013669484058}
   m_Layer: 0
-  m_Name: Future Merge Trajectory
+  m_Name: Future Transition Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -181,7 +181,7 @@ GameObject:
   - component: {fileID: 5448806295764070577}
   - component: {fileID: 2445068108604853976}
   m_Layer: 0
-  m_Name: Current Merge Trajectory
+  m_Name: Past Transition Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

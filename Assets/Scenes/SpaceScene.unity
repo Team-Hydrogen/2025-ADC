@@ -437,7 +437,9 @@ Transform:
   - {fileID: 64974402}
   - {fileID: 1803617427}
   - {fileID: 1104766443}
+  - {fileID: 1891229251}
   - {fileID: 534708853}
+  - {fileID: 885186446}
   - {fileID: 512236117}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1014,7 +1016,7 @@ GameObject:
   m_Component:
   - component: {fileID: 42023201}
   m_Layer: 0
-  m_Name: Merge Spacecraft Position
+  m_Name: Transition Spacecraft Position
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1769,12 +1771,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 135697657}
   m_CullTransparentMesh: 1
---- !u!4 &135701040 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-    type: 3}
-  m_PrefabInstance: {fileID: 5649280817646709898}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &150258434
 GameObject:
   m_ObjectHideFlags: 0
@@ -2718,9 +2714,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 534708854}
-        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
-        m_MethodName: RewindButtonPressed
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: SlowDownButtonPressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2779,7 +2775,7 @@ GameObject:
   - component: {fileID: 238558268}
   - component: {fileID: 238558269}
   m_Layer: 0
-  m_Name: Returning To Earth Offnominal Trajectory
+  m_Name: Returning To Earth Off Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4094,9 +4090,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 534708854}
-        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
-        m_MethodName: ForwardButtonPressed
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: SkipForwardButtonPressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7723,15 +7719,11 @@ MonoBehaviour:
   velocityVector: {fileID: 129352371}
   <NominalSpacecraftTransform>k__BackingField: {fileID: 485032613}
   <OffNominalSpacecraftTransform>k__BackingField: {fileID: 1549028642}
-  <MergeSpacecraftTransform>k__BackingField: {fileID: 42023201}
+  <TransitionSpacecraftTransform>k__BackingField: {fileID: 42023201}
   futureNominalTrajectory: {fileID: 943471396}
   futureOffNominalTrajectory: {fileID: 1270632034}
-  trajectoryParent: {fileID: 1679061964}
-  mergeTrajectoryPrefab: {fileID: 131132662837808010, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-    type: 3}
   earth: {fileID: 2095082124}
   moon: {fileID: 555256270}
-  timeScale: 1
 --- !u!1 &537078521
 GameObject:
   m_ObjectHideFlags: 0
@@ -8448,22 +8440,22 @@ MonoBehaviour:
     stageType: 2
     nominalLineRenderer: {fileID: 1187994444}
     minimapLineRenderer: {fileID: 352545630}
-    offnominalLineRenderer: {fileID: 2090706359}
+    offNominalLineRenderer: {fileID: 2090706359}
   - startDataIndex: 1500
     stageType: 3
     nominalLineRenderer: {fileID: 813950156}
     minimapLineRenderer: {fileID: 2048727790}
-    offnominalLineRenderer: {fileID: 1867264470}
+    offNominalLineRenderer: {fileID: 1867264470}
   - startDataIndex: 6700
     stageType: 4
     nominalLineRenderer: {fileID: 2035502656}
     minimapLineRenderer: {fileID: 27402070}
-    offnominalLineRenderer: {fileID: 1852343220}
+    offNominalLineRenderer: {fileID: 1852343220}
   - startDataIndex: 7700
     stageType: 5
     nominalLineRenderer: {fileID: 1185995610}
     minimapLineRenderer: {fileID: 975485234}
-    offnominalLineRenderer: {fileID: 238558269}
+    offNominalLineRenderer: {fileID: 238558269}
   drawGizmos: 0
   beginningGizmosLineColor: {r: 0, g: 0.9339623, b: 0.58373624, a: 1}
   endGizmosLineColor: {r: 1, g: 0, b: 0.30254555, a: 1}
@@ -11946,6 +11938,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 859750576}
   m_CullTransparentMesh: 1
+--- !u!1 &885186445
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 885186446}
+  - component: {fileID: 885186447}
+  m_Layer: 0
+  m_Name: Trajectory Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &885186446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885186445}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 17614485}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &885186447
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 885186445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e149ed716f7fb4c6aba1fb8bb6003edd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  trajectoryScale: 0.01
+  timeScale: 1
+  futureNominalTrajectory: {fileID: 943471396}
+  futureOffNominalTrajectory: {fileID: 1270632034}
+  trajectoryParent: {fileID: 1679061964}
+  transitionTrajectoryPrefab: {fileID: 131132662837808010, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
+    type: 3}
 --- !u!1 &894691733
 GameObject:
   m_ObjectHideFlags: 0
@@ -19101,7 +19144,7 @@ GameObject:
   - component: {fileID: 1270632033}
   - component: {fileID: 1270632034}
   m_Layer: 0
-  m_Name: Future Offnominal Trajectory
+  m_Name: Future Off Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19919,7 +19962,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1353478432}
   m_Layer: 0
-  m_Name: Offnominal Trajectory
+  m_Name: Off Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20373,9 +20416,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 534708854}
-        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
-        m_MethodName: BackwardButtonPressed
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: SkipBackwardButtonPressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -21453,7 +21496,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1549028642}
   m_Layer: 0
-  m_Name: Offnominal Spacecraft Position
+  m_Name: Off Nominal Spacecraft Position
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23648,7 +23691,6 @@ Transform:
   m_Children:
   - {fileID: 461094687}
   - {fileID: 1353478432}
-  - {fileID: 135701040}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1680334983
@@ -24707,9 +24749,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 534708854}
-        m_TargetAssemblyTypeName: SatelliteManager, Assembly-CSharp
-        m_MethodName: FastForwardButtonPressed
+      - m_Target: {fileID: 512236118}
+        m_TargetAssemblyTypeName: UIManager, Assembly-CSharp
+        m_MethodName: SpeedUpButtonPressed
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -26694,7 +26736,7 @@ GameObject:
   - component: {fileID: 1852343219}
   - component: {fileID: 1852343220}
   m_Layer: 0
-  m_Name: Flying By Moon Offnominal Trajectory
+  m_Name: Flying By Moon Off Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26928,7 +26970,7 @@ GameObject:
   - component: {fileID: 1867264469}
   - component: {fileID: 1867264470}
   m_Layer: 0
-  m_Name: Travelling To Moon Offnominal Trajectory
+  m_Name: Travelling To Moon Off Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27192,6 +27234,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1872471980}
   m_CullTransparentMesh: 1
+--- !u!1 &1891229250
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1891229251}
+  - component: {fileID: 1891229252}
+  m_Layer: 0
+  m_Name: Simulation Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1891229251
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891229250}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 17614485}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1891229252
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891229250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a13d57676c9c84b5f9cf770ce91d1b67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1897948888
 GameObject:
   m_ObjectHideFlags: 0
@@ -31051,7 +31137,7 @@ GameObject:
   - component: {fileID: 2090706358}
   - component: {fileID: 2090706359}
   m_Layer: 0
-  m_Name: Orbiting Earth Offnominal Trajectory
+  m_Name: Orbiting Earth Off Nominal Trajectory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32329,74 +32415,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cdd6c1d2d87fae746861d2910429c3e8, type: 3}
---- !u!1001 &5649280817646709898
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1679061964}
-    m_Modifications:
-    - target: {fileID: 131132662837808010, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_Name
-      value: Merge Trajectory
-      objectReference: {fileID: 0}
-    - target: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3912455620301429015, guid: d1a7f7090640b4ccbb743ec36ea52f6b,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: d1a7f7090640b4ccbb743ec36ea52f6b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

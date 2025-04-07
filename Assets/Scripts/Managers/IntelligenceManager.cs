@@ -1,15 +1,21 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class IntelligenceManager : MonoBehaviour
 {
     public static IntelligenceManager Instance { get; private set; }
     
-    private List<string[]> _thrustData;
     private int _dataIndex;
-    private float _currentTime;
+    private float _time;
+    
+    // Thrust
+    private string[][] _thrustData;
+    
+    // Transition Path
+    private const string TransitionPathApiUri = "https://5ef6-2601-18c-500-fbb-18f2-2a3b-3c1e-d7bb.ngrok-free.app/trajectory";
+    private const string TransitionPathApiContentType = "application/json";
+    
+    public static event Action<string> PathCalculated;
     
     
     #region Event Functions
@@ -25,35 +31,40 @@ public class IntelligenceManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Update()
+    {
+        
+    }
+
     private void OnEnable()
     {
-        DataManager.OnDataLoaded += LoadThrustData;
-        SpacecraftManager.OnCurrentIndexUpdated += SetDataIndex;
-        SpacecraftManager.OnTimeUpdated += SetCurrentTimeUpdated;
-        UIManager.OnTransitionPathPressed += StartTransitionPath;
+        DataManager.DataIndexUpdated += SetDataIndex;
+        DataManager.DataLoaded += LoadThrustData;
+        SimulationManager.ElapsedTimeUpdated += SetElapsedTime;
+        UIManager.TransitionPath += StartTransitionPath;
     }
 
     private void OnDisable()
     {
-        DataManager.OnDataLoaded -= LoadThrustData;
-        SpacecraftManager.OnCurrentIndexUpdated -= SetDataIndex;
-        SpacecraftManager.OnTimeUpdated -= SetCurrentTimeUpdated;
-        UIManager.OnTransitionPathPressed -= StartTransitionPath;
+        DataManager.DataIndexUpdated -= SetDataIndex;
+        DataManager.DataLoaded -= LoadThrustData;
+        SimulationManager.ElapsedTimeUpdated -= SetElapsedTime;
+        UIManager.TransitionPath -= StartTransitionPath;
     }
     
     #endregion
     
     
     # region Getters and Setters
-
-    private void SetCurrentTimeUpdated(float time)
-    {
-        _currentTime = time;
-    }
     
     private void SetDataIndex(int index)
     {
         _dataIndex = index;
+    }
+
+    private void SetElapsedTime(float elapsedTime)
+    {
+        _time = elapsedTime;
     }
     
     # endregion
@@ -95,7 +106,7 @@ public class IntelligenceManager : MonoBehaviour
     #endregion
     
     
-    #region Bump Off Course
+    #region Transition Path
 
     private static Vector3 GetDistanceVector()
     {
@@ -134,7 +145,7 @@ public class IntelligenceManager : MonoBehaviour
                           - SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
         // Creates a vector where the starting endpoint is the opposite path's present position, and the ending endpoint
         // is the opposite path's future position.
-        var toFuturePosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_currentTime + deltaTime) 
+        var toFuturePosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_time + deltaTime) 
                                - SpacecraftManager.Instance.NominalSpacecraftTransform.position;
         
         var thetaInDegrees = Vector3.Angle(toOtherPath, toFuturePosition);
@@ -153,8 +164,8 @@ public class IntelligenceManager : MonoBehaviour
         Vector3 originPosition = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
         Vector3 originVelocity = SpacecraftManager.Instance.OffNominalSpacecraftTransform.rotation.eulerAngles;
         Vector3 oppositePathPosition = SpacecraftManager.Instance.NominalSpacecraftTransform.position;
-        Vector3 destinationPosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_currentTime + deltaTime);
-        Vector3 destinationVelocity = SpacecraftManager.Instance.GetNominalVelocityFromTime(_currentTime + deltaTime);
+        Vector3 destinationPosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_time + deltaTime);
+        Vector3 destinationVelocity = SpacecraftManager.Instance.GetNominalVelocityFromTime(_time + deltaTime);
         
         var flightTime = CalculateFlightTime(originPosition, oppositePathPosition, destinationPosition, deltaTime);
         
@@ -163,10 +174,17 @@ public class IntelligenceManager : MonoBehaviour
             originVelocity,
             destinationPosition, 
             destinationVelocity,
-            _currentTime,
+            _time,
             flightTime
         );
     }
+    
+    #endregion
+    
+    
+    #region Bump Off Course
+    
+    
     
     #endregion
 }

@@ -17,7 +17,10 @@ public class CutsceneManager : MonoBehaviour
     [SerializeField] private Transform skipCutsceneHint;
     [SerializeField] private GameObject blackScreen;
     
+    private Image _blackScreenImage;
+    
     private int _cutscenesPlayed = 0;
+    private enum CutsceneState { NotPlaying, FadeOut, Playing, FadeIn }
     private CutsceneState _state = CutsceneState.NotPlaying;
 
     public static event Action<int> OnCutsceneStart;
@@ -40,6 +43,8 @@ public class CutsceneManager : MonoBehaviour
 
     private void Start()
     {
+        _blackScreenImage = blackScreen.GetComponent<Image>();
+        
         ShowBlackScreen();
         videoPlayer.Prepare();
         StartCoroutine(HideBlackScreenOnStart());
@@ -56,13 +61,13 @@ public class CutsceneManager : MonoBehaviour
 
     private void OnEnable()
     {
-        SpacecraftManager.OnTimeUpdated += TryPlayCutscene;
+        SimulationManager.ElapsedTimeUpdated += TryPlayCutscene;
         videoPlayer.loopPointReached += StopCutscene;
     }
     
     private void OnDisable()
     {
-        SpacecraftManager.OnTimeUpdated -= TryPlayCutscene;
+        SimulationManager.ElapsedTimeUpdated -= TryPlayCutscene;
         videoPlayer.loopPointReached -= StopCutscene;
     }
     
@@ -144,22 +149,21 @@ public class CutsceneManager : MonoBehaviour
 
     private void ShowBlackScreen()
     {
-        blackScreen.GetComponent<Image>().color = new Color(0, 0, 0, 1);
+        _blackScreenImage.color = new Color(0, 0, 0, 1);
         blackScreen.SetActive(true);
     }
 
     private IEnumerator HideBlackScreenOnStart()
     {
-        yield return new WaitForSeconds(.2f);
+        yield return new WaitForSeconds(0.2f);
 
         float fadeOutSpeedMultiplier = 2.0f;
-        Image blackScreenImage = blackScreen.GetComponent<Image>();
-        Color color = blackScreenImage.color;
+        Color color = _blackScreenImage.color;
 
         while (color.a > 0)
         {
             color.a -= Time.deltaTime * fadeOutSpeedMultiplier;
-            blackScreenImage.color = color;
+            _blackScreenImage.color = color;
             yield return null;
         }
 
@@ -169,24 +173,15 @@ public class CutsceneManager : MonoBehaviour
     private IEnumerator HideBlackScreen()
     {
         float fadeOutSpeedMultiplier = 2.0f;
-        Image blackScreenImage = blackScreen.GetComponent<Image>();
-        Color color = blackScreenImage.color;
+        Color color = _blackScreenImage.color;
 
         while (color.a > 0)
         {
             color.a -= Time.deltaTime * fadeOutSpeedMultiplier;
-            blackScreenImage.color = color;
+            _blackScreenImage.color = color;
             yield return null;
         }
 
         blackScreen.SetActive(false);
-    }
-
-    private enum CutsceneState
-    {
-        NotPlaying,
-        FadeOut,
-        Playing,
-        FadeIn,
     }
 }

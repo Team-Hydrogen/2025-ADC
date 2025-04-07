@@ -23,12 +23,12 @@ public class RotateEarth : MonoBehaviour
 
     private void OnEnable()
     {
-        SpacecraftManager.OnTimeScaleSet += UpdateRotationSpeed;
+        SimulationManager.TimeScaleSet += UpdateRotationSpeed;
     }
 
     private void OnDisable()
     {
-        SpacecraftManager.OnTimeScaleSet -= UpdateRotationSpeed;
+        SimulationManager.TimeScaleSet -= UpdateRotationSpeed;
     }
 
     private void Update()

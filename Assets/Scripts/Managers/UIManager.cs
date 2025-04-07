@@ -5,7 +5,6 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -97,15 +96,23 @@ public class UIManager : MonoBehaviour
     
     private readonly List<string> _disabledAntennas = new();
     
-    // Trajectory Generation
-    public static event Action OnTransitionPathPressed;
-    public static event Action OnBumpOffCoursePressed;
-    public static event Action<SpacecraftManager.SpacecraftState> OnCurrentPathChanged;
-    public static event Action<int> OnPrioritizationChanged;
+    // Timeline actions
+    public static event Action IncreaseTimeScale;
+    public static event Action DecreaseTimeScale;
+    public static event Action IncreaseTime;
+    public static event Action DecreaseTime;
 
-    private List<string[]> _nominalLinkBudgetData;
-    private List<string[]> _offNominalLinkBudgetData;
-    private List<string[]> _thrustData;
+    public static event Action PauseTime;
+    public static event Action ResumeTime;
+    // Actions panel
+    public static event Action<SpacecraftManager.SpacecraftState> TrajectorySelected;
+    public static event Action<int> PrioritizationAlgorithmSelected;
+    public static event Action TransitionPath;
+    public static event Action BumpOffCourse;
+
+    private string[][] _nominalLinkBudgetData;
+    private string[][] _offNominalLinkBudgetData;
+    private string[][] _thrustData;
     private SpacecraftManager.SpacecraftState _spacecraftState;
 
     private bool _showedStageFiredNotification = false;
@@ -130,7 +137,7 @@ public class UIManager : MonoBehaviour
         _bar = timeElapsedBar.transform.GetChild(0);
         _barXMargin = _bar.GetComponent<HorizontalLayoutGroup>().padding.horizontal;
         
-        OnPrioritizationChanged?.Invoke(prioritizationMethod.value);
+        PrioritizationAlgorithmSelected?.Invoke(prioritizationMethod.value);
 
         ShowNotification("Show Color Key?", Notification.NotificationType.AskYesNo, ShowColorKey);
     }
@@ -142,31 +149,36 @@ public class UIManager : MonoBehaviour
     
     private void OnEnable()
     {
-        SpacecraftManager.OnTimeUpdated += UpdateTimeFromMinutes;
-        SpacecraftManager.OnDistanceCalculated += UpdateDistances;
-        SpacecraftManager.OnCoordinatesUpdated += CoordinatesUpdatedText;
-        SpacecraftManager.OnMassUpdated += SetSpacecraftMassUpdated;
-        SpacecraftManager.OnCurrentIndexUpdated += UpdateAntennasFromData;
-        SpacecraftManager.OnCurrentIndexUpdated += UpdateThrust;
-        SpacecraftManager.OnStageFired += ShowStageFiredNotification;
-        SpacecraftManager.OnSpacecraftStateUpdated += UpdateSpacecraftState;
-        SpacecraftManager.OnTimeScaleSet += SetTimeScaleIndicator;
-        DataManager.OnDataLoaded += OnDataLoaded;
-        DataManager.OnMissionStageUpdated += UpdateMissionStage;
+        DataManager.CoordinatesUpdated += UpdateCoordinatesText;
+        DataManager.DataIndexUpdated += UpdateAntennasFromData;
+        DataManager.DataIndexUpdated += UpdateThrust;
+        DataManager.DataLoaded += DataLoaded;
+        DataManager.MissionStageUpdated += UpdateMissionStage;
+        DataManager.ShowNotification += ShowStageFiredNotification;
+        DataManager.SpacecraftMassUpdated += SetSpacecraftMassUpdated;
+        
+        SimulationManager.ElapsedTimeUpdated += UpdateTimeFromMinutes;
+        SimulationManager.TimeScaleSet += SetTimeScaleIndicator;
+        
+        SpacecraftManager.DistancesUpdated += UpdateDistances;
+        SpacecraftManager.SpacecraftStateUpdated += UpdateSpacecraftState;
     }
     
     private void OnDisable()
     {
-        SpacecraftManager.OnTimeUpdated -= UpdateTimeFromMinutes;
-        SpacecraftManager.OnDistanceCalculated -= UpdateDistances;
-        SpacecraftManager.OnCoordinatesUpdated -= CoordinatesUpdatedText;
-        SpacecraftManager.OnMassUpdated -= SetSpacecraftMassUpdated;
-        SpacecraftManager.OnCurrentIndexUpdated -= UpdateAntennasFromData;
-        SpacecraftManager.OnCurrentIndexUpdated -= UpdateThrust;
-        SpacecraftManager.OnStageFired -= ShowStageFiredNotification;
-        SpacecraftManager.OnSpacecraftStateUpdated -= UpdateSpacecraftState;
-        DataManager.OnDataLoaded -= OnDataLoaded;
-        DataManager.OnMissionStageUpdated -= UpdateMissionStage;
+        DataManager.CoordinatesUpdated -= UpdateCoordinatesText;
+        DataManager.DataIndexUpdated -= UpdateAntennasFromData;
+        DataManager.DataIndexUpdated -= UpdateThrust;
+        DataManager.DataLoaded -= DataLoaded;
+        DataManager.MissionStageUpdated -= UpdateMissionStage;
+        DataManager.ShowNotification -= ShowStageFiredNotification;
+        DataManager.SpacecraftMassUpdated -= SetSpacecraftMassUpdated;
+        
+        SimulationManager.ElapsedTimeUpdated -= UpdateTimeFromMinutes;
+        SimulationManager.TimeScaleSet -= SetTimeScaleIndicator;
+        
+        SpacecraftManager.DistancesUpdated -= UpdateDistances;
+        SpacecraftManager.SpacecraftStateUpdated -= UpdateSpacecraftState;
     }
     
     #endregion
@@ -176,14 +188,34 @@ public class UIManager : MonoBehaviour
     
     public void PlayButtonPressed()
     {
-        Time.timeScale = 1.0f;
+        ResumeTime?.Invoke();
     }
 
     public void PauseButtonPressed()
     {
-        Time.timeScale = 0.0f;
+        PauseTime?.Invoke();
     }
     
+    public void SpeedUpButtonPressed()
+    {
+        IncreaseTimeScale?.Invoke();
+    }
+
+    public void SlowDownButtonPressed()
+    {
+        DecreaseTimeScale?.Invoke();
+    }
+
+    public void SkipForwardButtonPressed()
+    {
+        IncreaseTime?.Invoke();
+    }
+
+    public void SkipBackwardButtonPressed()
+    {
+        DecreaseTime?.Invoke();
+    }
+
     public void RestartButtonPressed()
     {
         Time.timeScale = 1.0f;
@@ -242,12 +274,12 @@ public class UIManager : MonoBehaviour
     
     public void OnTransitionPathButtonPressed()
     {
-        OnTransitionPathPressed?.Invoke();
+        TransitionPath?.Invoke();
     }
     
     public void OnBumpOffCourseButtonPressed()
     {
-        OnBumpOffCoursePressed?.Invoke();
+        BumpOffCourse?.Invoke();
     }
     
     #endregion
@@ -307,7 +339,12 @@ public class UIManager : MonoBehaviour
     /// <param name="timeScale">Current simulation time scale</param>
     private void SetTimeScaleIndicator(float timeScale)
     {
-        timeScaleIndicator.text = Mathf.Approximately(timeScale, 1.0f) ? "" : $"{timeScale:F0}x";
+        // The time indicator will only appear if the timescale is neither 0 (paused) nor 1 (normal speed).
+        bool isTimeIndicatorVisible = !Mathf.Approximately(timeScale, 0.0f) && !Mathf.Approximately(timeScale, 1.0f);
+        
+        timeScaleIndicator.text = isTimeIndicatorVisible
+            ? $"{timeScale:F0}x"
+            : "";
     }
     
     #endregion
@@ -330,7 +367,7 @@ public class UIManager : MonoBehaviour
     
     #region Coordinates
     
-    private void CoordinatesUpdatedText(Vector3 position)
+    private void UpdateCoordinatesText(Vector3 position)
     {
         string units;
 
@@ -407,14 +444,14 @@ public class UIManager : MonoBehaviour
 
     public void ToggleAntennaPrioritization(int selectedIndex)
     {
-        OnPrioritizationChanged?.Invoke(prioritizationMethod.value);
+        PrioritizationAlgorithmSelected?.Invoke(prioritizationMethod.value);
     }
 
     private void UpdateAntennasFromData(int currentIndex)
     {
         float[] currentLinkBudget = new float[antennaNames.Count];
 
-        List<string[]> linkBudgetData = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
+        string[][] linkBudgetData = _spacecraftState == SpacecraftManager.SpacecraftState.Nominal
             ? _nominalLinkBudgetData
             : _offNominalLinkBudgetData;
         string[] currentLinkBudgetValues = linkBudgetData[currentIndex][^4..^1];
@@ -542,7 +579,7 @@ public class UIManager : MonoBehaviour
     
     #endregion
     
-    private void OnDataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
+    private void DataLoaded(DataLoadedEventArgs dataLoadedEventArgs)
     {
         UpdateMissionStage(dataLoadedEventArgs.MissionStage);
         _nominalLinkBudgetData = dataLoadedEventArgs.NominalLinkBudget;
@@ -662,12 +699,12 @@ public class UIManager : MonoBehaviour
     
     public void NominalTogglePressed()
     {
-        OnCurrentPathChanged?.Invoke(SpacecraftManager.SpacecraftState.Nominal);
+        TrajectorySelected?.Invoke(SpacecraftManager.SpacecraftState.Nominal);
     }
 
     public void OffnominalTogglePressed()
     {
-        OnCurrentPathChanged?.Invoke(SpacecraftManager.SpacecraftState.OffNominal);
+        TrajectorySelected?.Invoke(SpacecraftManager.SpacecraftState.OffNominal);
     }
     
     private enum UnitSystem {

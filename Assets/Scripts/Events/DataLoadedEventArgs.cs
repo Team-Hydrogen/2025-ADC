@@ -3,22 +3,23 @@ using System.Collections.Generic;
 
 public class DataLoadedEventArgs : EventArgs
 {
-    public List<string[]> NominalTrajectoryData { get; }
-    public List<string[]> OffNominalTrajectoryData { get; }
-    public List<string[]> NominalAntennaAvailabilityData { get; }
-    public List<string[]> OffNominalAntennaAvailabilityData { get; }
-    public List<string[]> NominalLinkBudget { get; }
-    public List<string[]> OffNominalLinkBudget { get; }
-    public List<string[]> ThrustData { get; }
+    public string[][] NominalTrajectoryData { get; }
+    public string[][] OffNominalTrajectoryData { get; }
+    public string[][] NominalAntennaAvailabilityData { get; }
+    public string[][] OffNominalAntennaAvailabilityData { get; }
+    public string[][] NominalLinkBudget { get; }
+    public string[][] OffNominalLinkBudget { get; }
+    public string[][] ThrustData { get; }
     public MissionStage MissionStage { get; }
 
-    public DataLoadedEventArgs(List<string[]> nominalTrajectoryData,
-        List<string[]> offNominalTrajectoryData,
-        List<string[]> nominalAntennaAvailability,
-        List<string[]> offNominalAntennaAvailability,
-        List<string[]> nominalLinkBudget,
-        List<string[]> offNominalLinkBudget,
-        List<string[]> thrustData, 
+    public DataLoadedEventArgs(
+        string[][] nominalTrajectoryData,
+        string[][] offNominalTrajectoryData,
+        string[][] nominalAntennaAvailability,
+        string[][] offNominalAntennaAvailability,
+        string[][] nominalLinkBudget,
+        string[][] offNominalLinkBudget,
+        string[][] thrustData, 
         MissionStage missionStage)
     {
         NominalTrajectoryData = nominalTrajectoryData;
