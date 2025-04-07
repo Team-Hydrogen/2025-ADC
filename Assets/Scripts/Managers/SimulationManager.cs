@@ -24,7 +24,7 @@ public class SimulationManager : MonoBehaviour
     
     private void Start()
     {
-        
+        // 
     }
     
     private void Update()
@@ -70,12 +70,14 @@ public class SimulationManager : MonoBehaviour
     
     private void PauseTime()
     {
-        TimeScale = 0f;
+        Time.timeScale = 0f;
+        TimeScale = 1f;
         TimeScaleSet?.Invoke(TimeScale);
     }
 
     private void ResumeTime()
     {
+        Time.timeScale = 1f;
         TimeScale = _timeScaleFactors[_timeScaleFactorIndex];
         TimeScaleSet?.Invoke(TimeScale);
     }

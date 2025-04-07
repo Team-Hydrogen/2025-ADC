@@ -234,7 +234,7 @@ public class SpacecraftManager : MonoBehaviour
     }
     
     
-    // NOTE: UpdateTrajectoryPosition should be entirely weeded out since other functions handle that responsibility.
+    /* TODO: UpdateTrajectoryPosition should be entirely removed since other functions handle that responsibility. */
     private float UpdateTrajectoryPosition(string[][] data, Transform spacecraftTransform)
     {
         // Determine the index bounds.
