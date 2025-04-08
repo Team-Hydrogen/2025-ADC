@@ -358,8 +358,8 @@ public class UIManager : MonoBehaviour
     {
         spacecraftMass.text = _currentLengthUnit switch
         {
-            UnitSystem.Metric => $"{massInKilograms:F3} kg",
-            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilogramsToPounds(massInKilograms):F3} lb",
+            UnitSystem.Metric => $"{massInKilograms:N3} kg",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilogramsToPounds(massInKilograms):N3} lb",
             _ => spacecraftMass.text
         };
     }
@@ -377,15 +377,15 @@ public class UIManager : MonoBehaviour
         {
             case UnitSystem.Metric:
                 units = " km";
-                xCoordinate.text = $"{position.x:F3} {units}";
-                yCoordinate.text = $"{position.y:F3} {units}";
-                zCoordinate.text = $"{position.z:F3} {units}";
+                xCoordinate.text = $"{position.x:N3} {units}";
+                yCoordinate.text = $"{position.y:N3} {units}";
+                zCoordinate.text = $"{position.z:N3} {units}";
                 break;
             case UnitSystem.Imperial:
                 units = " mi";
-                xCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.x):F3} {units}";
-                yCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.y):F3} {units}";
-                zCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.z):F3} {units}";
+                xCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.x):N3} {units}";
+                yCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.y):N3} {units}";
+                zCoordinate.text = $"{UnitAndCoordinateConverter.KilometersToMiles(position.z):N3} {units}";
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -401,8 +401,8 @@ public class UIManager : MonoBehaviour
     {
         totalDistanceTravelledText.text = _currentLengthUnit switch
         {
-            UnitSystem.Metric => $"{totalDistance:F3} km",
-            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(totalDistance):F3} mi",
+            UnitSystem.Metric => $"{totalDistance:N3} km",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(totalDistance):N3} mi",
             _ => totalDistanceTravelledText.text
         };
     }
@@ -411,8 +411,8 @@ public class UIManager : MonoBehaviour
     {
         distanceFromEarthText.text = _currentLengthUnit switch
         {
-            UnitSystem.Metric => $"{fromEarth:F3} km",
-            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(fromEarth):F3} mi",
+            UnitSystem.Metric => $"{fromEarth:N3} km",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(fromEarth):N3} mi",
             _ => distanceFromEarthText.text
         };
     }
@@ -421,13 +421,13 @@ public class UIManager : MonoBehaviour
     {
         distanceFromMoonText.text = _currentLengthUnit switch
         {
-            UnitSystem.Metric => $"{fromMoon:F3} km",
-            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(fromMoon):F3} mi",
+            UnitSystem.Metric => $"{fromMoon:N3} km",
+            UnitSystem.Imperial => $"{UnitAndCoordinateConverter.KilometersToMiles(fromMoon):N3} mi",
             _ => distanceFromMoonText.text
         };
     }
     
-    private void UpdateDistances(DistanceCalculatedEventArgs distances)
+    private void UpdateDistances(DistanceEventArgs distances)
     {
         SetDistanceFromEarth(distances.DistanceFromEarth);
         SetDistanceFromMoon(distances.DistanceFromMoon);
@@ -607,7 +607,7 @@ public class UIManager : MonoBehaviour
 
         if (_spacecraftState == SpacecraftManager.SpacecraftState.OffNominal)
         {
-            thrustText.text = $"{magnitude:f3} N";
+            thrustText.text = $"{magnitude:N3} N";
         }
     }
 

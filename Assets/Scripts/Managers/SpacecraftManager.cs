@@ -118,7 +118,7 @@ public class SpacecraftManager : MonoBehaviour
     
     #region Actions
     
-    public static event Action<DistanceCalculatedEventArgs> DistancesUpdated;
+    public static event Action<DistanceEventArgs> DistancesUpdated;
     public static event Action PositionUpdated;
     public static event Action<SpacecraftState> SpacecraftStateUpdated;
     
@@ -235,7 +235,7 @@ public class SpacecraftManager : MonoBehaviour
         
         // The spacecraft data is updated.
         UpdateCoordinates();
-        UpdateDistances();
+        UpdateDistancesFromCelestialBodies();
         UpdateVelocityVector(_dataIndex);
         // Set the spacecraft to its selected position and rotation.
         SetSpacecraftTransform();
@@ -326,8 +326,7 @@ public class SpacecraftManager : MonoBehaviour
         // Get both the nominal and off-nominal trajectory data.
         _nominalTrajectoryData = data.NominalTrajectoryData;
         _offNominalTrajectoryData = data.OffNominalTrajectoryData;
-        // Get both the nominal and off-nominal line renderers.
-
+        
         UpdateVelocityVector(_dataIndex);
         
         _isPlaying = true;
@@ -359,13 +358,12 @@ public class SpacecraftManager : MonoBehaviour
         PositionUpdated?.Invoke();
     }
     
-    private void UpdateDistances()
+    private void UpdateDistancesFromCelestialBodies()
     {
         // Get the distance between the spacecraft and the celestial bodies.
-        float distanceToEarth = Vector3.Distance(spacecraft.position, earth.position) / trajectoryScale;
-        float distanceToMoon = Vector3.Distance(spacecraft.position, moon.position) / trajectoryScale;
-        DistanceCalculatedEventArgs distanceArguments =
-            new DistanceCalculatedEventArgs(0.0f, distanceToEarth, distanceToMoon);
+        float distanceFromEarth = Vector3.Distance(spacecraft.position, earth.position) / trajectoryScale;
+        float distanceFromMoon = Vector3.Distance(spacecraft.position, moon.position) / trajectoryScale;
+        DistanceEventArgs distanceArguments = new DistanceEventArgs(distanceFromEarth, distanceFromMoon);
         
         DistancesUpdated?.Invoke(distanceArguments);
     }
@@ -389,7 +387,8 @@ public class SpacecraftManager : MonoBehaviour
             float.Parse(selectedTrajectoryData[upperDataIndex][5]),
             float.Parse(selectedTrajectoryData[upperDataIndex][6])
         );
-
+        var interpolatedVelocityVector = Vector3.Lerp(lowerVelocityVector, upperVelocityVector, _interpolationRatio);
+        
         velocityVector.position = spacecraft.position - spacecraft.forward;
         // velocityVector.rotation = Quaternion.Slerp(
         //     Quaternion.LookRotation(currentVelocityVector),
@@ -397,7 +396,7 @@ public class SpacecraftManager : MonoBehaviour
         //     _progress
         // );
         
-        float magnitude = Mathf.Lerp(lowerVelocityVector.magnitude, upperVelocityVector.magnitude, _interpolationRatio);
+        float magnitude = interpolatedVelocityVector.magnitude;
         Transform velocityVectorModel = velocityVector.GetChild(0);
         
         velocityVectorModel.GetChild(1).localScale = new Vector3(1.0f, magnitude, 1.0f);
