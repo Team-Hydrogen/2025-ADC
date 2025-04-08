@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SimulationManager : MonoBehaviour
@@ -8,6 +7,8 @@ public class SimulationManager : MonoBehaviour
 
     public float ElapsedTimeInMinutes { get; private set; } = 0.0f;
     public float TimeScale { get; private set; } = 1.0f;
+
+    private float _endTime;
 
     private const float SecondsPerMinutes = 60f;
     private const float SkipForwardTimeInMinutes = 0.16666666666f;
@@ -22,11 +23,6 @@ public class SimulationManager : MonoBehaviour
     
     #region Event Functions
     
-    private void Start()
-    {
-        // 
-    }
-    
     private void Update()
     {
         UpdateElapsedTime();
@@ -40,6 +36,7 @@ public class SimulationManager : MonoBehaviour
         UIManager.DecreaseTimeScale += DecreaseTimeScale;
         UIManager.PauseTime += PauseTime;
         UIManager.ResumeTime += ResumeTime;
+        DataManager.DataLoaded += OnDataLoaded;
     }
 
     private void OnDisable()
@@ -50,6 +47,7 @@ public class SimulationManager : MonoBehaviour
         UIManager.DecreaseTimeScale -= DecreaseTimeScale;
         UIManager.PauseTime -= PauseTime;
         UIManager.ResumeTime -= ResumeTime;
+        DataManager.DataLoaded -= OnDataLoaded;
     }
     
     #endregion
@@ -65,6 +63,10 @@ public class SimulationManager : MonoBehaviour
         }
         
         ElapsedTimeInMinutes += Time.deltaTime * TimeScale / SecondsPerMinutes;
+
+        // TODO: Might need to reorder this call and put it after the invoke
+        CheckIfEndOfSimulation();
+
         ElapsedTimeUpdated?.Invoke(ElapsedTimeInMinutes);
     }
     
@@ -84,7 +86,9 @@ public class SimulationManager : MonoBehaviour
     
     private void IncreaseTime()
     {
-        ElapsedTimeInMinutes += SkipForwardTimeInMinutes * TimeScale;
+        ElapsedTimeInMinutes = Mathf.Min(ElapsedTimeInMinutes + SkipForwardTimeInMinutes * TimeScale, _endTime);
+
+        CheckIfEndOfSimulation();
     }
 
     private void DecreaseTime()
@@ -105,6 +109,22 @@ public class SimulationManager : MonoBehaviour
         TimeScale = _timeScaleFactors[_timeScaleFactorIndex];
         TimeScaleSet?.Invoke(TimeScale);
     }
-    
+
+    private void CheckIfEndOfSimulation()
+    {
+        if (ElapsedTimeInMinutes >= _endTime)
+        {
+            ElapsedTimeInMinutes = _endTime;
+            TimeScale = 0f;
+            TimeScaleSet?.Invoke(TimeScale);
+        }
+    }
+
     #endregion
+
+    private void OnDataLoaded(DataLoadedEventArgs eventArgs)
+    {
+        // Gets last time in the trajectory data
+        _endTime = float.Parse(eventArgs.NominalTrajectoryData[^1][0]);
+    }
 }
