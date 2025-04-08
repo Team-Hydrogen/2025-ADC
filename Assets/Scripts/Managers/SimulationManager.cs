@@ -85,12 +85,11 @@ public class SimulationManager : MonoBehaviour
     private void IncreaseTime()
     {
         ElapsedTimeInMinutes += SkipForwardTimeInMinutes * TimeScale;
-        Debug.Log(TimeScale);
     }
 
     private void DecreaseTime()
     {
-        ElapsedTimeInMinutes = Mathf.Max(ElapsedTimeInMinutes - SkipBackwardTimeInMinutes, 0f) * TimeScale;
+        ElapsedTimeInMinutes = Mathf.Max(ElapsedTimeInMinutes - SkipBackwardTimeInMinutes * TimeScale, 0f);
     }
     
     private void IncreaseTimeScale()
