@@ -20,7 +20,7 @@ public class HttpHelper
             if (webRequest.result != UnityWebRequest.Result.Success)
             {
                 String errorMessage = $"Error: {webRequest.error}";
-                UIManager.Instance.ShowNotification(errorMessage, Notification.NotificationType.Dismissable);
+                UIManager.Instance.ShowNotification(errorMessage);
                 Debug.Log(webRequest.error);
                 Debug.Log(webRequest.result);
             }

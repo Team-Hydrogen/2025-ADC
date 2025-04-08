@@ -633,11 +633,16 @@ public class UIManager : MonoBehaviour
             return;
         }
 
-        ShowNotification(text, Notification.NotificationType.Dismissable);
+        ShowNotification(text);
         _showedStageFiredNotification = true;
     }
 
-    public void ShowNotification(string text, Notification.NotificationType notificationType, Action? onYesButtonPressedCallback = null)
+    public void ShowNotification(string text)
+    {
+        ShowNotification(text, Notification.NotificationType.Dismissable, null);
+    }
+
+    public void ShowNotification(string text, Notification.NotificationType notificationType, Action onYesButtonPressedCallback)
     {
         //notification.SetActive(true);
         //notificationText.text = text;
