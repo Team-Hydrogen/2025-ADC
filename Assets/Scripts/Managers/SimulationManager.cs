@@ -10,8 +10,8 @@ public class SimulationManager : MonoBehaviour
     public float TimeScale { get; private set; } = 1.0f;
 
     private const float SecondsPerMinutes = 60f;
-    private const float SkipForwardTimeInMinutes = 10.0f;
-    private const float SkipBackwardTimeInMinutes = 10.0f;
+    private const float SkipForwardTimeInMinutes = 0.16666666666f;
+    private const float SkipBackwardTimeInMinutes = 0.16666666666f;
     
     private int _timeScaleFactorIndex = 0;
     private readonly float[] _timeScaleFactors = { 1f, 10f, 100f, 1_000f, 10_000f, 100_000f };
