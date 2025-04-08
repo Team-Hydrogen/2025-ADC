@@ -29,22 +29,22 @@ public class UIManager : MonoBehaviour
     
     [SerializeField] private TMP_Dropdown prioritizationMethod;
     
-    [Header("Time Counter")]
+    [Header("Timeline")]
     [SerializeField] private GameObject timeCounter;
     [SerializeField] private TextMeshProUGUI dayCounter;
     [SerializeField] private TextMeshProUGUI hourCounter;
     [SerializeField] private TextMeshProUGUI minuteCounter;
     [SerializeField] private TextMeshProUGUI secondCounter;
+    [Space]
+    [SerializeField] private GameObject playButton;
+    [SerializeField] private GameObject pauseButton;
+    [Space]
+    [SerializeField] private GameObject timeElapsedBar;
+    [SerializeField] private TextMeshProUGUI timeScaleIndicator;
 
     [Header("Color Key")]
     [SerializeField] private Toggle colorKeyToggle;
     [SerializeField] private GameObject colorKey;
-
-    [Header("Time Elapsed Bar")]
-    [SerializeField] private GameObject timeElapsedBar;
-
-    [Header("Time Scale")]
-    [SerializeField] private TextMeshProUGUI timeScaleIndicator;
     
     [Header("Spacecraft")]
     [SerializeField] private TextMeshProUGUI spacecraftMass;
@@ -159,8 +159,8 @@ public class UIManager : MonoBehaviour
         DataManager.TotalDistanceTraveledUpdated += SetTotalDistance;
         
         SimulationManager.ElapsedTimeUpdated += UpdateTimeFromMinutes;
-        SimulationManager.TimeScaleSet += SetTimeScaleIndicator;
-        
+        SimulationManager.TimeScaleSet += OnTimeScaleSet;
+
         SpacecraftManager.DistancesUpdated += UpdateDistances;
         SpacecraftManager.SpacecraftStateUpdated += UpdateSpacecraftState;
     }
@@ -177,14 +177,13 @@ public class UIManager : MonoBehaviour
         DataManager.TotalDistanceTraveledUpdated -= SetTotalDistance;
         
         SimulationManager.ElapsedTimeUpdated -= UpdateTimeFromMinutes;
-        SimulationManager.TimeScaleSet -= SetTimeScaleIndicator;
-        
+        SimulationManager.TimeScaleSet -= OnTimeScaleSet;
+
         SpacecraftManager.DistancesUpdated -= UpdateDistances;
         SpacecraftManager.SpacecraftStateUpdated -= UpdateSpacecraftState;
     }
     
     #endregion
-    
     
     #region Timeline Controls
     
@@ -228,6 +227,88 @@ public class UIManager : MonoBehaviour
     {
         LoadingSceneManager.sceneToLoad = 1;
         SceneManager.LoadScene(0);
+    }
+
+    #endregion
+
+    #region Time Counter and Elapsed Bar
+
+    private void UpdateTimeFromMinutes(float timeInMinutes)
+    {
+        const int minutesPerDay = 1440;
+        const int minutesPerHour = 60;
+        const int secondsPerMinute = 60;
+
+        var minutesLeft = timeInMinutes;
+
+        int days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
+        minutesLeft %= minutesPerDay;
+        int hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
+        minutesLeft %= minutesPerHour;
+        int minutes = Mathf.FloorToInt(minutesLeft);
+        minutesLeft -= minutes;
+        int seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
+
+        SetTimeCounter(days, hours, minutes, seconds);
+        SetTimeElapsedBar(timeInMinutes);
+    }
+
+    private void SetTimeCounter(int days, int hours, int minutes, int seconds)
+    {
+        const int maxNumberLength = 2;
+        dayCounter.text = days.ToString().PadLeft(maxNumberLength, '0');
+        hourCounter.text = hours.ToString().PadLeft(maxNumberLength, '0');
+        minuteCounter.text = minutes.ToString().PadLeft(maxNumberLength, '0');
+        secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
+    }
+
+    private void SetTimeElapsedBar(float timeInMinutes)
+    {
+        var barWidth = ((RectTransform)_bar.transform).sizeDelta.x;
+        var barContentWidth = barWidth - _barXMargin;
+
+        var stageIndex = (int)DataManager.Instance.CurrentMissionStage.stageType - 1;
+
+        var stageSection = _bar.transform.GetChild(stageIndex);
+        var stageSectionTransform = (RectTransform)stageSection;
+        var stageSectionWidth = timeInMinutes / 12983.16998f * barContentWidth
+                                - stageSectionTransform.anchoredPosition.x + _barXMargin / 2.0f;
+
+        stageSectionTransform.sizeDelta = new Vector2(stageSectionWidth, stageSectionTransform.sizeDelta.y);
+    }
+
+    private void OnTimeScaleSet(float timeScale)
+    {
+        SetTimeScaleIndicator(timeScale);
+        SetPausePlayButton();
+    }
+
+    /// <summary>
+    /// Updates the time scale indicator
+    /// </summary>
+    /// <param name="timeScale">Current simulation time scale</param>
+    private void SetTimeScaleIndicator(float timeScale)
+    {
+        // The time indicator will only appear if the timescale is neither 0 (paused) nor 1 (normal speed).
+        bool isTimeIndicatorVisible = !Mathf.Approximately(timeScale, 0.0f) && !Mathf.Approximately(timeScale, 1.0f);
+
+        timeScaleIndicator.text = isTimeIndicatorVisible
+            ? $"{timeScale:F0}x"
+            : "";
+    }
+
+    private void SetPausePlayButton()
+    {
+        if (Time.timeScale == 0.0f)
+        {
+            playButton.SetActive(true);
+            pauseButton.SetActive(false);
+        }
+        else
+        {
+            playButton.SetActive(false);
+            pauseButton.SetActive(true);
+        }
     }
 
     #endregion
@@ -285,69 +366,6 @@ public class UIManager : MonoBehaviour
     }
     
     #endregion
-    
-    #endregion
-    
-    
-    #region Time Counter and Elapsed Bar
-    
-    private void UpdateTimeFromMinutes(float timeInMinutes)
-    {
-        const int minutesPerDay = 1440;
-        const int minutesPerHour = 60;
-        const int secondsPerMinute = 60;
-        
-        var minutesLeft = timeInMinutes;
-        
-        int days = Mathf.FloorToInt(minutesLeft / minutesPerDay);
-        minutesLeft %= minutesPerDay;
-        int hours = Mathf.FloorToInt(minutesLeft / minutesPerHour);
-        minutesLeft %= minutesPerHour;
-        int minutes = Mathf.FloorToInt(minutesLeft);
-        minutesLeft -= minutes;
-        int seconds = Mathf.FloorToInt(minutesLeft * secondsPerMinute);
-
-        SetTimeCounter(days, hours, minutes, seconds);
-        SetTimeElapsedBar(timeInMinutes);
-    }
-    
-    private void SetTimeCounter(int days, int hours, int minutes, int seconds)
-    {
-        const int maxNumberLength = 2;
-        dayCounter.text = days.ToString().PadLeft(maxNumberLength, '0');
-        hourCounter.text = hours.ToString().PadLeft(maxNumberLength, '0');
-        minuteCounter.text = minutes.ToString().PadLeft(maxNumberLength, '0');
-        secondCounter.text = seconds.ToString().PadLeft(maxNumberLength, '0');
-    }
-    
-    private void SetTimeElapsedBar(float timeInMinutes)
-    {
-        var barWidth = ((RectTransform)_bar.transform).sizeDelta.x;
-        var barContentWidth = barWidth - _barXMargin;
-        
-        var stageIndex = (int) DataManager.Instance.CurrentMissionStage.stageType - 1;
-        
-        var stageSection = _bar.transform.GetChild(stageIndex);
-        var stageSectionTransform = (RectTransform)stageSection;
-        var stageSectionWidth = timeInMinutes / 12983.16998f * barContentWidth 
-                                - stageSectionTransform.anchoredPosition.x + _barXMargin / 2.0f;
-        
-        stageSectionTransform.sizeDelta = new Vector2(stageSectionWidth, stageSectionTransform.sizeDelta.y);
-    }
-    
-    /// <summary>
-    /// Updates the time scale indicator
-    /// </summary>
-    /// <param name="timeScale">Current simulation time scale</param>
-    private void SetTimeScaleIndicator(float timeScale)
-    {
-        // The time indicator will only appear if the timescale is neither 0 (paused) nor 1 (normal speed).
-        bool isTimeIndicatorVisible = !Mathf.Approximately(timeScale, 0.0f) && !Mathf.Approximately(timeScale, 1.0f);
-        
-        timeScaleIndicator.text = isTimeIndicatorVisible
-            ? $"{timeScale:F0}x"
-            : "";
-    }
     
     #endregion
     

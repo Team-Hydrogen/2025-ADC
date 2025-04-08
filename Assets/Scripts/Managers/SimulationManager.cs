@@ -19,6 +19,8 @@ public class SimulationManager : MonoBehaviour
     
     public static event Action<float> ElapsedTimeUpdated;
     public static event Action<float> TimeScaleSet;
+
+    private bool _isPaused = false;
     
     
     #region Event Functions
@@ -37,6 +39,12 @@ public class SimulationManager : MonoBehaviour
         UIManager.PauseTime += PauseTime;
         UIManager.ResumeTime += ResumeTime;
         DataManager.DataLoaded += OnDataLoaded;
+
+        InputManager.Instance.OnSkipForward += IncreaseTime;
+        InputManager.Instance.OnSkipBackward += DecreaseTime;
+        InputManager.Instance.OnPlayPause += PlayPause;
+        InputManager.Instance.OnAccelerateTime += IncreaseTimeScale;
+        InputManager.Instance.OnDecelerateTime += DecreaseTimeScale;
     }
 
     private void OnDisable()
@@ -48,6 +56,12 @@ public class SimulationManager : MonoBehaviour
         UIManager.PauseTime -= PauseTime;
         UIManager.ResumeTime -= ResumeTime;
         DataManager.DataLoaded -= OnDataLoaded;
+
+        InputManager.Instance.OnSkipForward -= IncreaseTime;
+        InputManager.Instance.OnSkipBackward -= DecreaseTime;
+        InputManager.Instance.OnPlayPause -= PlayPause;
+        InputManager.Instance.OnAccelerateTime -= IncreaseTimeScale;
+        InputManager.Instance.OnDecelerateTime -= DecreaseTimeScale;
     }
     
     #endregion
@@ -73,6 +87,7 @@ public class SimulationManager : MonoBehaviour
     private void PauseTime()
     {
         Time.timeScale = 0f;
+        _isPaused = true;
         //TimeScale = 1f;
         TimeScaleSet?.Invoke(TimeScale);
     }
@@ -80,10 +95,24 @@ public class SimulationManager : MonoBehaviour
     private void ResumeTime()
     {
         Time.timeScale = 1f;
+        _isPaused = false;
         TimeScale = _timeScaleFactors[_timeScaleFactorIndex];
         TimeScaleSet?.Invoke(TimeScale);
     }
-    
+
+    private void PlayPause()
+    {
+        if (_isPaused)
+        {
+            ResumeTime();
+        }
+        else
+        {
+            PauseTime();
+        }
+    }
+
+
     private void IncreaseTime()
     {
         ElapsedTimeInMinutes = Mathf.Min(ElapsedTimeInMinutes + SkipForwardTimeInMinutes * TimeScale, _endTime);

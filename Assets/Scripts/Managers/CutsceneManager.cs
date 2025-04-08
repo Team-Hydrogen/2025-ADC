@@ -24,7 +24,7 @@ public class CutsceneManager : MonoBehaviour
     private CutsceneState _state = CutsceneState.NotPlaying;
 
     public static event Action<int> OnCutsceneStart;
-    public static event Action OnCutsceneEnd; // unused
+    public static event Action OnCutsceneEnd;
 
     private bool _playCutscenes = true;
     
@@ -51,27 +51,31 @@ public class CutsceneManager : MonoBehaviour
         TryPlayCutscene(-3);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space) && _state == CutsceneState.Playing)
-        {
-            StopCutscene(videoPlayer);
-        }
-    }
-
     private void OnEnable()
     {
         SimulationManager.ElapsedTimeUpdated += TryPlayCutscene;
         videoPlayer.loopPointReached += StopCutscene;
+
+        InputManager.Instance.OnSkipCutscene += SkipCutscene;
     }
     
     private void OnDisable()
     {
         SimulationManager.ElapsedTimeUpdated -= TryPlayCutscene;
         videoPlayer.loopPointReached -= StopCutscene;
+
+        InputManager.Instance.OnSkipCutscene -= SkipCutscene;
     }
-    
+
     #endregion
+
+    private void SkipCutscene()
+    {
+        if (_state == CutsceneState.Playing)
+        {
+            StopCutscene(videoPlayer);
+        }
+    }
 
     public void TogglePlayCutscenes(bool value)
     {
