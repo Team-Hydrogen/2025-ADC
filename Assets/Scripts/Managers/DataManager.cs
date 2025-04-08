@@ -82,6 +82,7 @@ public class DataManager : MonoBehaviour
     public static event Action<string> ShowNotification;
     public static event Action<float> TotalDistanceTraveledUpdated;
     public static event Action<Vector3> CoordinatesUpdated;
+    public static event Action<Vector3> VelocityUpdated;
     public static event Action<float> SpacecraftMassUpdated;
     
     
@@ -140,6 +141,7 @@ public class DataManager : MonoBehaviour
     private void Update()
     {
         UpdateCoordinates();
+        UpdateVelocity();
         UpdateDistanceTraveled();
         UpdateSpacecraftMass();
         UpdateMissionStage(_lowerIndex);
@@ -315,6 +317,7 @@ public class DataManager : MonoBehaviour
     
     #endregion
     
+    
     #region Coordinates
     
     public Vector3 GetCoordinates(string[][] data)
@@ -338,6 +341,34 @@ public class DataManager : MonoBehaviour
     {
         Vector3 selectedTrajectoryCoordinates = GetCoordinates(_selectedTrajectoryData);
         CoordinatesUpdated?.Invoke(selectedTrajectoryCoordinates);
+    }
+    
+    #endregion
+    
+    
+    #region Velocity
+    
+    public Vector3 GetVelocity(string[][] data)
+    {
+        Vector3 lowerVelocity = new Vector3(
+            float.Parse(data[_lowerIndex][4]),
+            float.Parse(data[_lowerIndex][5]),
+            float.Parse(data[_lowerIndex][6])
+        );
+        
+        Vector3 upperVelocity = new Vector3(
+            float.Parse(data[_upperIndex][4]),
+            float.Parse(data[_upperIndex][5]),
+            float.Parse(data[_upperIndex][6])
+        );
+        
+        return Vector3.Lerp(lowerVelocity, upperVelocity, _progress);
+    }
+    
+    private void UpdateVelocity()
+    {
+        Vector3 selectedVelocity = GetVelocity(_selectedTrajectoryData);
+        VelocityUpdated?.Invoke(selectedVelocity);
     }
     
     #endregion

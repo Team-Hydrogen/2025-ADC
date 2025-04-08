@@ -225,8 +225,8 @@ public class SpacecraftManager : MonoBehaviour
             return;
         }
         
-        _nominalDistanceTraveled += UpdateTrajectoryPosition(_nominalTrajectoryData, NominalSpacecraftTransform);
-        _offNominalDistanceTraveled += UpdateTrajectoryPosition(_offNominalTrajectoryData, OffNominalSpacecraftTransform);
+        UpdateTrajectoryPosition(_nominalTrajectoryData, NominalSpacecraftTransform);
+        UpdateTrajectoryPosition(_offNominalTrajectoryData, OffNominalSpacecraftTransform);
         
         if (_state == SpacecraftState.Transition)
         {
@@ -243,7 +243,7 @@ public class SpacecraftManager : MonoBehaviour
     
     
     /* TODO: UpdateTrajectoryPosition should be entirely removed since other functions handle that responsibility. */
-    private float UpdateTrajectoryPosition(string[][] data, Transform spacecraftTransform)
+    private void UpdateTrajectoryPosition(string[][] data, Transform spacecraftTransform)
     {
         // Determine the index bounds.
         int lowerIndex = _dataIndex;
@@ -277,19 +277,11 @@ public class SpacecraftManager : MonoBehaviour
             float.Parse(upperData[6])
         );
         
-        // Interpolate position based on progress between the lower and upper index.
-        Vector3 previousPosition = spacecraftTransform.position;
-        spacecraftTransform.position = Vector3.Lerp(lowerPosition, upperPosition, _interpolationRatio);
-        
-        /* TODO: Transfer data calculation code to the TrajectoryManager for more accurate calculations. Please view
-            the server for more information regarding this issue. */
-        float netDistance = Vector3.Distance(previousPosition, spacecraftTransform.position) / trajectoryScale;
-        
         // Calculate spacecraft direction
         Vector3 direction = (upperPosition - lowerPosition).normalized;
         if (direction == Vector3.zero)
         {
-            return netDistance;
+            return;
         }
         
         /* TODO: Rockets point in the direction of motion, not velocity. The code should change, so the velocity vector
@@ -301,8 +293,6 @@ public class SpacecraftManager : MonoBehaviour
             Quaternion.LookRotation(upperVelocity) * Quaternion.Euler(90.0f, 0.0f, 0.0f), 
             _interpolationRatio
         );
-        
-        return netDistance;
     }
     
     private void SetSpacecraftTransform()
