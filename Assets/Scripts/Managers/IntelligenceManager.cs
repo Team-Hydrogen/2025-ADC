@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class IntelligenceManager : MonoBehaviour
@@ -30,12 +31,7 @@ public class IntelligenceManager : MonoBehaviour
         
         Instance = this;
     }
-
-    private void Update()
-    {
-        
-    }
-
+    
     private void OnEnable()
     {
         DataManager.DataIndexUpdated += SetDataIndex;
@@ -168,15 +164,22 @@ public class IntelligenceManager : MonoBehaviour
         Vector3 destinationVelocity = SpacecraftManager.Instance.GetNominalVelocityFromTime(_time + deltaTime);
         
         var flightTime = CalculateFlightTime(originPosition, oppositePathPosition, destinationPosition, deltaTime);
-        
-        HttpManager.Instance.TransitionPathApi(
+
+        string transitionPathPostData = TransitionPathRequest.ToJson(
             originPosition,
             originVelocity,
             destinationPosition, 
             destinationVelocity,
             _time,
-            flightTime
-        );
+            flightTime);
+        
+        IEnumerator request = HttpRequest.RequestApi(
+            TransitionPathApiUri,
+            transitionPathPostData,
+            TransitionPathApiContentType,
+            csvData => PathCalculated?.Invoke(csvData));
+        
+        StartCoroutine(request);
     }
     
     #endregion

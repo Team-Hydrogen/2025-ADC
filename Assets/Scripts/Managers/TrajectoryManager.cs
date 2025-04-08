@@ -49,13 +49,14 @@ public class TrajectoryManager : MonoBehaviour
     
     #endregion
     
+    #region Properties
+    
+    
+    
+    #endregion
+    
     
     #region Event Functions
-
-    private void Update()
-    {
-        
-    }
     
     private void OnEnable()
     {
@@ -63,7 +64,7 @@ public class TrajectoryManager : MonoBehaviour
         DataManager.DataLoaded += LoadData;
         DataManager.MissionStageUpdated += UpdatePastTrajectoryRenderers;
         
-        HttpManager.PathCalculated += PlotTransitionTrajectory;
+        IntelligenceManager.PathCalculated += PlotTransitionTrajectory;
         
         SpacecraftManager.PositionUpdated += UpdateTrajectories;
         SpacecraftManager.SpacecraftStateUpdated += SetIsTransitioning;
@@ -76,7 +77,7 @@ public class TrajectoryManager : MonoBehaviour
         DataManager.DataLoaded -= LoadData;
         DataManager.MissionStageUpdated -= UpdatePastTrajectoryRenderers;
         
-        HttpManager.PathCalculated -= PlotTransitionTrajectory;
+        IntelligenceManager.PathCalculated -= PlotTransitionTrajectory;
         
         SpacecraftManager.PositionUpdated -= UpdateTrajectories;
         SpacecraftManager.SpacecraftStateUpdated -= SetIsTransitioning;

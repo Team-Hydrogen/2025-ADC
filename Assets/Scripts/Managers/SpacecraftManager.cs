@@ -160,22 +160,30 @@ public class SpacecraftManager : MonoBehaviour
     private void OnEnable()
     {
         CutsceneManager.OnCutsceneStart += UpdateModel;
+        
         DataManager.DataLoaded += LoadData;
         DataManager.DataIndexUpdated += SetIndex;
         DataManager.ProgressUpdated += SetInterpolationRatio;
-        HttpManager.PathCalculated += StartTransition;
+        
+        IntelligenceManager.PathCalculated += StartTransition;
+        
         SimulationManager.ElapsedTimeUpdated += SyncElapsedTime;
+        
         UIManager.TrajectorySelected += SetTrajectory;
     }
     
     private void OnDisable()
     {
         CutsceneManager.OnCutsceneStart -= UpdateModel;
+        
         DataManager.DataLoaded -= LoadData;
         DataManager.DataIndexUpdated -= SetIndex;
         DataManager.ProgressUpdated -= SetInterpolationRatio;
-        HttpManager.PathCalculated -= StartTransition;
+        
+        IntelligenceManager.PathCalculated -= StartTransition;
+        
         SimulationManager.ElapsedTimeUpdated -= SyncElapsedTime;
+        
         UIManager.TrajectorySelected -= SetTrajectory;
     }
     
@@ -366,14 +374,10 @@ public class SpacecraftManager : MonoBehaviour
         // Get the distance between the spacecraft and the celestial bodies.
         float distanceToEarth = Vector3.Distance(spacecraft.position, earth.position) / trajectoryScale;
         float distanceToMoon = Vector3.Distance(spacecraft.position, moon.position) / trajectoryScale;
+        DistanceCalculatedEventArgs distanceArguments =
+            new DistanceCalculatedEventArgs(0.0f, distanceToEarth, distanceToMoon);
         
-        // Get the distance the spacecraft traveled along its selected path.
-        float selectedDistanceTraveled = _state == SpacecraftState.Nominal
-            ? _nominalDistanceTraveled
-            : _offNominalDistanceTraveled;
-
-        DistancesUpdated?.Invoke(
-            new DistanceCalculatedEventArgs(selectedDistanceTraveled, distanceToEarth, distanceToMoon));
+        DistancesUpdated?.Invoke(distanceArguments);
     }
     
     private void UpdateVelocityVector(int lowerDataIndex)

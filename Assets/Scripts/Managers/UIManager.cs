@@ -156,6 +156,7 @@ public class UIManager : MonoBehaviour
         DataManager.MissionStageUpdated += UpdateMissionStage;
         DataManager.ShowNotification += ShowStageFiredNotification;
         DataManager.SpacecraftMassUpdated += SetSpacecraftMassUpdated;
+        DataManager.TotalDistanceTraveledUpdated += SetTotalDistance;
         
         SimulationManager.ElapsedTimeUpdated += UpdateTimeFromMinutes;
         SimulationManager.TimeScaleSet += SetTimeScaleIndicator;
@@ -173,6 +174,7 @@ public class UIManager : MonoBehaviour
         DataManager.MissionStageUpdated -= UpdateMissionStage;
         DataManager.ShowNotification -= ShowStageFiredNotification;
         DataManager.SpacecraftMassUpdated -= SetSpacecraftMassUpdated;
+        DataManager.TotalDistanceTraveledUpdated -= SetTotalDistance;
         
         SimulationManager.ElapsedTimeUpdated -= UpdateTimeFromMinutes;
         SimulationManager.TimeScaleSet -= SetTimeScaleIndicator;
@@ -427,7 +429,6 @@ public class UIManager : MonoBehaviour
     
     private void UpdateDistances(DistanceCalculatedEventArgs distances)
     {
-        SetTotalDistance(distances.TotalDistanceTraveled);
         SetDistanceFromEarth(distances.DistanceFromEarth);
         SetDistanceFromMoon(distances.DistanceFromMoon);
     }
