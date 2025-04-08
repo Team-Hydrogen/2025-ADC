@@ -71,7 +71,7 @@ public class SimulationManager : MonoBehaviour
     private void PauseTime()
     {
         Time.timeScale = 0f;
-        TimeScale = 1f;
+        //TimeScale = 1f;
         TimeScaleSet?.Invoke(TimeScale);
     }
 
@@ -84,12 +84,13 @@ public class SimulationManager : MonoBehaviour
     
     private void IncreaseTime()
     {
-        ElapsedTimeInMinutes += SkipForwardTimeInMinutes;
+        ElapsedTimeInMinutes += SkipForwardTimeInMinutes * TimeScale;
+        Debug.Log(TimeScale);
     }
 
     private void DecreaseTime()
     {
-        ElapsedTimeInMinutes = Mathf.Max(ElapsedTimeInMinutes - SkipBackwardTimeInMinutes, 0f);
+        ElapsedTimeInMinutes = Mathf.Max(ElapsedTimeInMinutes - SkipBackwardTimeInMinutes, 0f) * TimeScale;
     }
     
     private void IncreaseTimeScale()
