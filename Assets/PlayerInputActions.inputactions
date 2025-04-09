@@ -832,6 +832,74 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "SidePanel",
+            "id": "52ba4c4f-b804-467a-ac41-ea6fe4a03a27",
+            "actions": [
+                {
+                    "name": "ToggleSkipCutscene",
+                    "type": "Button",
+                    "id": "5bbc5f0a-507f-4364-945c-38773fd6c785",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SwitchDataPanel",
+                    "type": "Button",
+                    "id": "c2713a52-ce58-4958-8386-3a8fb8e0a755",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SwitchActionsPanel",
+                    "type": "Button",
+                    "id": "8df208e1-d2ad-45f2-a962-d8a964f5b9aa",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "990d59bc-bc5e-4c8b-b230-92ebaccb916f",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleSkipCutscene",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4b6b85dc-390d-48da-8a94-645d5c1bc0ad",
+                    "path": "<Gamepad>/leftShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchDataPanel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "58e2d8aa-5c28-412f-b143-73f2d6b80070",
+                    "path": "<Gamepad>/rightShoulder",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchActionsPanel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": [

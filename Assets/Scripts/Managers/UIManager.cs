@@ -28,7 +28,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Color disabledAntennaBackgroundColor = new(0.8431f, 0.8510f, 0.9098f);
     
     [SerializeField] private TMP_Dropdown prioritizationMethod;
-    
+
+    [SerializeField] private GameObject dataPanel;
+    [SerializeField] private GameObject actionsPanel;
+    [SerializeField] private Button dataPanelButton;
+    [SerializeField] private Button actionsPanelButton;
+    [SerializeField] private GameObject dataPanelEnabledBar;
+    [SerializeField] private GameObject actionsPanelEnabledBar;
+
     [Header("Timeline")]
     [SerializeField] private GameObject timeCounter;
     [SerializeField] private TextMeshProUGUI dayCounter;
@@ -163,6 +170,9 @@ public class UIManager : MonoBehaviour
 
         SpacecraftManager.DistancesUpdated += UpdateDistances;
         SpacecraftManager.SpacecraftStateUpdated += UpdateSpacecraftState;
+
+        InputManager.OnSwitchActionsPanel += ShowActionsPanel;
+        InputManager.OnSwitchDataPanel += ShowDataPanel;
     }
     
     private void OnDisable()
@@ -181,13 +191,17 @@ public class UIManager : MonoBehaviour
 
         SpacecraftManager.DistancesUpdated -= UpdateDistances;
         SpacecraftManager.SpacecraftStateUpdated -= UpdateSpacecraftState;
+
+        InputManager.OnSwitchActionsPanel -= ShowActionsPanel;
+        InputManager.OnSwitchDataPanel -= ShowDataPanel;
     }
-    
+
     #endregion
-    
-    
+
+
+    #region Timeline
     #region Timeline Controls
-    
+
     public void PlayButtonPressed()
     {
         ResumeTime?.Invoke();
@@ -314,6 +328,7 @@ public class UIManager : MonoBehaviour
     }
 
     #endregion
+    #endregion
 
 
     #region Actions Panel
@@ -370,6 +385,30 @@ public class UIManager : MonoBehaviour
     #endregion
     
     #endregion
+
+    public void ShowActionsPanel()
+    {
+        dataPanel.SetActive(false);
+        actionsPanel.SetActive(true);
+
+        dataPanelButton.interactable = true;
+        actionsPanelButton.interactable = false;
+
+        actionsPanelEnabledBar.SetActive(true);
+        dataPanelEnabledBar.SetActive(false);
+    }
+
+    public void ShowDataPanel()
+    {
+        actionsPanel.SetActive(false);
+        dataPanel.SetActive(true);
+
+        dataPanelButton.interactable = false;
+        actionsPanelButton.interactable = true;
+
+        actionsPanelEnabledBar.SetActive(false);
+        dataPanelEnabledBar.SetActive(true);
+    }
     
     
     #region Spacecraft

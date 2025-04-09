@@ -25,6 +25,7 @@ public class CutsceneManager : MonoBehaviour
 
     public static event Action<int> OnCutsceneStart;
     public static event Action OnCutsceneEnd;
+    public static event Action<bool> OnCutsceneVisibilityChanged;
 
     private bool _playCutscenes = true;
     
@@ -57,6 +58,7 @@ public class CutsceneManager : MonoBehaviour
         videoPlayer.loopPointReached += StopCutscene;
 
         InputManager.OnSkipCutscene += SkipCutscene;
+        InputManager.OnToggleCutsceneVisibility += SwitchCutsceneVisibility;
     }
     
     private void OnDisable()
@@ -65,6 +67,7 @@ public class CutsceneManager : MonoBehaviour
         videoPlayer.loopPointReached -= StopCutscene;
 
         InputManager.OnSkipCutscene -= SkipCutscene;
+        InputManager.OnToggleCutsceneVisibility -= SwitchCutsceneVisibility;
     }
 
     #endregion
@@ -77,9 +80,16 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
+    private void SwitchCutsceneVisibility()
+    {
+        _playCutscenes = !_playCutscenes;
+        OnCutsceneVisibilityChanged?.Invoke(_playCutscenes);
+    }
+
     public void TogglePlayCutscenes(bool value)
     {
         _playCutscenes = value;
+        OnCutsceneVisibilityChanged?.Invoke(_playCutscenes);
     }
     
     private void TryPlayCutscene(float currentTimeInMinutes)

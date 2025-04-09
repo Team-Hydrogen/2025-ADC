@@ -918,6 +918,74 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""SidePanel"",
+            ""id"": ""52ba4c4f-b804-467a-ac41-ea6fe4a03a27"",
+            ""actions"": [
+                {
+                    ""name"": ""ToggleSkipCutscene"",
+                    ""type"": ""Button"",
+                    ""id"": ""5bbc5f0a-507f-4364-945c-38773fd6c785"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwitchDataPanel"",
+                    ""type"": ""Button"",
+                    ""id"": ""c2713a52-ce58-4958-8386-3a8fb8e0a755"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwitchActionsPanel"",
+                    ""type"": ""Button"",
+                    ""id"": ""8df208e1-d2ad-45f2-a962-d8a964f5b9aa"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""990d59bc-bc5e-4c8b-b230-92ebaccb916f"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleSkipCutscene"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4b6b85dc-390d-48da-8a94-645d5c1bc0ad"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwitchDataPanel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""58e2d8aa-5c28-412f-b143-73f2d6b80070"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwitchActionsPanel"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -976,6 +1044,11 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_Orbit = m_Camera.FindAction("Orbit", throwIfNotFound: true);
         m_Camera_Zoom = m_Camera.FindAction("Zoom", throwIfNotFound: true);
+        // SidePanel
+        m_SidePanel = asset.FindActionMap("SidePanel", throwIfNotFound: true);
+        m_SidePanel_ToggleSkipCutscene = m_SidePanel.FindAction("ToggleSkipCutscene", throwIfNotFound: true);
+        m_SidePanel_SwitchDataPanel = m_SidePanel.FindAction("SwitchDataPanel", throwIfNotFound: true);
+        m_SidePanel_SwitchActionsPanel = m_SidePanel.FindAction("SwitchActionsPanel", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -984,6 +1057,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         UnityEngine.Debug.Assert(!m_Timeline.enabled, "This will cause a leak and performance issues, PlayerInputActions.Timeline.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerInputActions.UI.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_Camera.enabled, "This will cause a leak and performance issues, PlayerInputActions.Camera.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_SidePanel.enabled, "This will cause a leak and performance issues, PlayerInputActions.SidePanel.Disable() has not been called.");
     }
 
     /// <summary>
@@ -1593,6 +1667,124 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="CameraActions" /> instance referencing this action map.
     /// </summary>
     public CameraActions @Camera => new CameraActions(this);
+
+    // SidePanel
+    private readonly InputActionMap m_SidePanel;
+    private List<ISidePanelActions> m_SidePanelActionsCallbackInterfaces = new List<ISidePanelActions>();
+    private readonly InputAction m_SidePanel_ToggleSkipCutscene;
+    private readonly InputAction m_SidePanel_SwitchDataPanel;
+    private readonly InputAction m_SidePanel_SwitchActionsPanel;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "SidePanel".
+    /// </summary>
+    public struct SidePanelActions
+    {
+        private @PlayerInputActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public SidePanelActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "SidePanel/ToggleSkipCutscene".
+        /// </summary>
+        public InputAction @ToggleSkipCutscene => m_Wrapper.m_SidePanel_ToggleSkipCutscene;
+        /// <summary>
+        /// Provides access to the underlying input action "SidePanel/SwitchDataPanel".
+        /// </summary>
+        public InputAction @SwitchDataPanel => m_Wrapper.m_SidePanel_SwitchDataPanel;
+        /// <summary>
+        /// Provides access to the underlying input action "SidePanel/SwitchActionsPanel".
+        /// </summary>
+        public InputAction @SwitchActionsPanel => m_Wrapper.m_SidePanel_SwitchActionsPanel;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_SidePanel; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="SidePanelActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(SidePanelActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="SidePanelActions" />
+        public void AddCallbacks(ISidePanelActions instance)
+        {
+            if (instance == null || m_Wrapper.m_SidePanelActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_SidePanelActionsCallbackInterfaces.Add(instance);
+            @ToggleSkipCutscene.started += instance.OnToggleSkipCutscene;
+            @ToggleSkipCutscene.performed += instance.OnToggleSkipCutscene;
+            @ToggleSkipCutscene.canceled += instance.OnToggleSkipCutscene;
+            @SwitchDataPanel.started += instance.OnSwitchDataPanel;
+            @SwitchDataPanel.performed += instance.OnSwitchDataPanel;
+            @SwitchDataPanel.canceled += instance.OnSwitchDataPanel;
+            @SwitchActionsPanel.started += instance.OnSwitchActionsPanel;
+            @SwitchActionsPanel.performed += instance.OnSwitchActionsPanel;
+            @SwitchActionsPanel.canceled += instance.OnSwitchActionsPanel;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="SidePanelActions" />
+        private void UnregisterCallbacks(ISidePanelActions instance)
+        {
+            @ToggleSkipCutscene.started -= instance.OnToggleSkipCutscene;
+            @ToggleSkipCutscene.performed -= instance.OnToggleSkipCutscene;
+            @ToggleSkipCutscene.canceled -= instance.OnToggleSkipCutscene;
+            @SwitchDataPanel.started -= instance.OnSwitchDataPanel;
+            @SwitchDataPanel.performed -= instance.OnSwitchDataPanel;
+            @SwitchDataPanel.canceled -= instance.OnSwitchDataPanel;
+            @SwitchActionsPanel.started -= instance.OnSwitchActionsPanel;
+            @SwitchActionsPanel.performed -= instance.OnSwitchActionsPanel;
+            @SwitchActionsPanel.canceled -= instance.OnSwitchActionsPanel;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="SidePanelActions.UnregisterCallbacks(ISidePanelActions)" />.
+        /// </summary>
+        /// <seealso cref="SidePanelActions.UnregisterCallbacks(ISidePanelActions)" />
+        public void RemoveCallbacks(ISidePanelActions instance)
+        {
+            if (m_Wrapper.m_SidePanelActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="SidePanelActions.AddCallbacks(ISidePanelActions)" />
+        /// <seealso cref="SidePanelActions.RemoveCallbacks(ISidePanelActions)" />
+        /// <seealso cref="SidePanelActions.UnregisterCallbacks(ISidePanelActions)" />
+        public void SetCallbacks(ISidePanelActions instance)
+        {
+            foreach (var item in m_Wrapper.m_SidePanelActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_SidePanelActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="SidePanelActions" /> instance referencing this action map.
+    /// </summary>
+    public SidePanelActions @SidePanel => new SidePanelActions(this);
     private int m_KBMSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -1776,5 +1968,34 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnZoom(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "SidePanel" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="SidePanelActions.AddCallbacks(ISidePanelActions)" />
+    /// <seealso cref="SidePanelActions.RemoveCallbacks(ISidePanelActions)" />
+    public interface ISidePanelActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "ToggleSkipCutscene" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnToggleSkipCutscene(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SwitchDataPanel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSwitchDataPanel(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SwitchActionsPanel" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSwitchActionsPanel(InputAction.CallbackContext context);
     }
 }
