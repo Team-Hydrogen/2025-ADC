@@ -56,7 +56,7 @@ public class CutsceneManager : MonoBehaviour
         SimulationManager.ElapsedTimeUpdated += TryPlayCutscene;
         videoPlayer.loopPointReached += StopCutscene;
 
-        InputManager.Instance.OnSkipCutscene += SkipCutscene;
+        InputManager.OnSkipCutscene += SkipCutscene;
     }
     
     private void OnDisable()
@@ -64,7 +64,7 @@ public class CutsceneManager : MonoBehaviour
         SimulationManager.ElapsedTimeUpdated -= TryPlayCutscene;
         videoPlayer.loopPointReached -= StopCutscene;
 
-        InputManager.Instance.OnSkipCutscene -= SkipCutscene;
+        InputManager.OnSkipCutscene -= SkipCutscene;
     }
 
     #endregion

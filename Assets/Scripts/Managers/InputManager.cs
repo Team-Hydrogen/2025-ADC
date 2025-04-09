@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
@@ -9,13 +8,13 @@ public class InputManager : MonoBehaviour
     private PlayerInputActions inputActions;
 
     #region Events
-    public event Action OnSkipCutscene;
+    public static event Action OnSkipCutscene;
 
-    public event Action OnSkipForward;
-    public event Action OnSkipBackward;
-    public event Action OnPlayPause;
-    public event Action OnAccelerateTime;
-    public event Action OnDecelerateTime;
+    public static event Action OnSkipForward;
+    public static event Action OnSkipBackward;
+    public static event Action OnPlayPause;
+    public static event Action OnAccelerateTime;
+    public static event Action OnDecelerateTime;
 
     public event Action<float> OnCameraZoom;
     #endregion
@@ -26,9 +25,13 @@ public class InputManager : MonoBehaviour
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
 
         Instance = this;
+
+        //transform.SetParent(null);
+        //DontDestroyOnLoad(gameObject);
 
         inputActions = new PlayerInputActions();
 
