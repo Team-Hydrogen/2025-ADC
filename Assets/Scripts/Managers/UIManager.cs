@@ -185,6 +185,7 @@ public class UIManager : MonoBehaviour
     
     #endregion
     
+    
     #region Timeline Controls
     
     public void PlayButtonPressed()
@@ -230,7 +231,8 @@ public class UIManager : MonoBehaviour
     }
 
     #endregion
-
+    
+    
     #region Time Counter and Elapsed Bar
 
     private void UpdateTimeFromMinutes(float timeInMinutes)
@@ -478,8 +480,7 @@ public class UIManager : MonoBehaviour
         for (int antennaIndex = 0; antennaIndex < currentLinkBudgetValues.Length; antennaIndex++)
         {
             float antennaLinkBudgetValue = float.Parse(currentLinkBudgetValues[antennaIndex]);
-            currentLinkBudget[antennaIndex] = antennaLinkBudgetValue > MaximumConnectionSpeed
-                ? MaximumConnectionSpeed : antennaLinkBudgetValue;
+            currentLinkBudget[antennaIndex] = Mathf.Min(antennaLinkBudgetValue, MaximumConnectionSpeed);
         }
         
         // Updates each antenna with the latest link budget value.
@@ -495,7 +496,7 @@ public class UIManager : MonoBehaviour
             ColorAntennas();
         }
     }
-
+    
     private void UpdateAntenna(string antennaName, float connectionSpeed = 0.0f)
     {
         // Gets the index of the antenna name and maps it to its text object.
@@ -505,10 +506,10 @@ public class UIManager : MonoBehaviour
         
         // The connection speed and units text is fetched and updated.
         TextMeshProUGUI[] antennaTexts = antennaLabel.GetComponentsInChildren<TextMeshProUGUI>();
-        var connectionSpeedText = antennaTexts[1];
-        var unitsText = antennaTexts[2];
+        TextMeshProUGUI connectionSpeedText = antennaTexts[1];
+        TextMeshProUGUI unitsText = antennaTexts[2];
         
-        connectionSpeedText.text = $"{connectionSpeed:F0}";
+        connectionSpeedText.text = $"{connectionSpeed:N0}";
         unitsText.text = $" {ConnectionSpeedUnit}";
         
         switch (connectionSpeed)
@@ -522,18 +523,18 @@ public class UIManager : MonoBehaviour
                 break;
         }
     }
-
+    
     /// <summary>
     /// Reorders antenna labels by distance, by changing hierarchy.
     /// </summary>
     private void PrioritizeAntennas()
     {
-        var childCount = antennasGrid.childCount;
-        var antennaLabels = new Transform[childCount];
+        int childCount = antennasGrid.childCount;
+        Transform[] antennaLabels = new Transform[childCount];
         
-        for (var index = 0; index < childCount; index++)
+        for (int index = 0; index < childCount; index++)
         {
-            var antennaLabel = antennasGrid.GetChild(index);
+            Transform antennaLabel = antennasGrid.GetChild(index);
             antennaLabels[index] = antennaLabel;
         }
         
@@ -578,7 +579,7 @@ public class UIManager : MonoBehaviour
                 break;
         }
         
-        foreach (var label in sortedAntennaLabels)
+        foreach (Transform label in sortedAntennaLabels)
         {
             label.SetSiblingIndex(sortedAntennaLabels.IndexOf(label));
         }
@@ -586,7 +587,7 @@ public class UIManager : MonoBehaviour
     
     private void ColorAntennas()
     {
-        var index = 0;
+        int index = 0;
         foreach (Transform antennaBackground in antennasGrid)
         {
             antennaBackground.GetComponent<Image>().color = index < 4 - _disabledAntennas.Count

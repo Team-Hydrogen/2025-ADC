@@ -42,13 +42,6 @@ public class SpacecraftManager : MonoBehaviour
     
     #endregion
     
-    #region Data Variables
-    
-    private float _nominalDistanceTraveled = 0.0f;
-    private float _offNominalDistanceTraveled = 0.0f;
-    
-    #endregion
-    
     #region Index Variables
     
     private int _dataIndex = 0;
@@ -140,7 +133,6 @@ public class SpacecraftManager : MonoBehaviour
     
     private void Start()
     {
-        _nominalDistanceTraveled = 0.0f;
         _vectorRenderers = velocityVector.GetComponentsInChildren<Renderer>();
     }
     

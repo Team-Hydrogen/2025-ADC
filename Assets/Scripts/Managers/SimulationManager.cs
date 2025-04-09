@@ -40,11 +40,11 @@ public class SimulationManager : MonoBehaviour
         UIManager.ResumeTime += ResumeTime;
         DataManager.DataLoaded += OnDataLoaded;
 
-        InputManager.Instance.OnSkipForward += IncreaseTime;
-        InputManager.Instance.OnSkipBackward += DecreaseTime;
-        InputManager.Instance.OnPlayPause += PlayPause;
-        InputManager.Instance.OnAccelerateTime += IncreaseTimeScale;
-        InputManager.Instance.OnDecelerateTime += DecreaseTimeScale;
+        InputManager.OnSkipForward += IncreaseTime;
+        InputManager.OnSkipBackward += DecreaseTime;
+        InputManager.OnPlayPause += PlayPause;
+        InputManager.OnAccelerateTime += IncreaseTimeScale;
+        InputManager.OnDecelerateTime += DecreaseTimeScale;
     }
 
     private void OnDisable()
@@ -57,11 +57,11 @@ public class SimulationManager : MonoBehaviour
         UIManager.ResumeTime -= ResumeTime;
         DataManager.DataLoaded -= OnDataLoaded;
 
-        InputManager.Instance.OnSkipForward -= IncreaseTime;
-        InputManager.Instance.OnSkipBackward -= DecreaseTime;
-        InputManager.Instance.OnPlayPause -= PlayPause;
-        InputManager.Instance.OnAccelerateTime -= IncreaseTimeScale;
-        InputManager.Instance.OnDecelerateTime -= DecreaseTimeScale;
+        InputManager.OnSkipForward -= IncreaseTime;
+        InputManager.OnSkipBackward -= DecreaseTime;
+        InputManager.OnPlayPause -= PlayPause;
+        InputManager.OnAccelerateTime -= IncreaseTimeScale;
+        InputManager.OnDecelerateTime -= DecreaseTimeScale;
     }
     
     #endregion

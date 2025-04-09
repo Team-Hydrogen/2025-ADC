@@ -65,10 +65,10 @@ public class DataManager : MonoBehaviour
     private int _upperIndex;
     private float _progress; // This must always fall between 0.0 and 1.0.
     
-    // Squared distance traveled
-    private float[] _nominalCumulativeSquaredDistances;
-    private float[] _offNominalCumulativeSquaredDistances;
-    private float[] _selectedCumulativeSquaredDistances;
+    // Total distance traveled
+    private float[] _nominalCumulativeDistances;
+    private float[] _offNominalCumulativeDistances;
+    private float[] _selectedCumulativeDistances;
     
     // Link budget prioritization
     public string PrioritizedAntenna { get; private set; }
@@ -119,10 +119,10 @@ public class DataManager : MonoBehaviour
         _selectedAntennaAvailabilityData = _nominalAntennaAvailabilityData;
         _selectedLinkBudgetData = _nominalLinkBudgetData;
         
-        // The squared distance arrays are assigned.
-        _nominalCumulativeSquaredDistances = CalculateCumulativeSquaredDistances(_nominalTrajectoryData);
-        _offNominalCumulativeSquaredDistances = CalculateCumulativeSquaredDistances(_offNominalTrajectoryData);
-        _selectedCumulativeSquaredDistances = _nominalCumulativeSquaredDistances;
+        // The cumulative distance arrays are assigned.
+        _nominalCumulativeDistances = CalculateCumulativeDistances(_nominalTrajectoryData);
+        _offNominalCumulativeDistances = CalculateCumulativeDistances(_offNominalTrajectoryData);
+        _selectedCumulativeDistances = _nominalCumulativeDistances;
         
         DataLoaded?.Invoke(
             new DataLoadedEventArgs(
@@ -192,9 +192,9 @@ public class DataManager : MonoBehaviour
         _selectedLinkBudgetData = isOnNominalTrajectory
             ? _nominalLinkBudgetData
             : _offNominalLinkBudgetData;
-        _selectedCumulativeSquaredDistances = isOnNominalTrajectory
-            ? _nominalCumulativeSquaredDistances
-            : _offNominalCumulativeSquaredDistances;
+        _selectedCumulativeDistances = isOnNominalTrajectory
+            ? _nominalCumulativeDistances
+            : _offNominalCumulativeDistances;
     }
     
     #endregion
@@ -274,45 +274,44 @@ public class DataManager : MonoBehaviour
 
     private void UpdateDistanceTraveled()
     {
-        float totalDistanceTraveled = GetTotalDistanceTraveled(_selectedCumulativeSquaredDistances);
+        float totalDistanceTraveled = GetTotalDistanceTraveled(_selectedCumulativeDistances);
         TotalDistanceTraveledUpdated?.Invoke(totalDistanceTraveled);
     }
     
-    private float[] CalculateCumulativeSquaredDistances(string[][] trajectoryData)
+    private float[] CalculateCumulativeDistances(string[][] trajectoryData)
     {
-        float[] cumulativeSquaredDistances = new float[trajectoryData.Length];
+        float[] cumulativeDistances = new float[trajectoryData.Length];
         
-        float cumulativeSquaredDistance = 0.0f;
+        float cumulativeDistance = 0.0f;
         Vector3 previousPosition = Vector3.zero;
         
         for (var index = 0; index < trajectoryData.Length; index++)
         {
-            // Assign the cumulative squared distance to the current item.
-            cumulativeSquaredDistances[index] = cumulativeSquaredDistance;
+            // Assign the cumulative total distance to the current item.
+            cumulativeDistances[index] = cumulativeDistance;
             // Determine the current position at a given index.
             Vector3 currentPosition = new Vector3(
                 float.Parse(trajectoryData[index][1]),
                 float.Parse(trajectoryData[index][2]),
                 float.Parse(trajectoryData[index][3])
             );
-            // Add the magnitude's square to the cumulative squared distance. 
-            cumulativeSquaredDistance += (currentPosition - previousPosition).sqrMagnitude;
+            // Add the difference vector's magnitude to the cumulative distance. 
+            cumulativeDistance += (currentPosition - previousPosition).magnitude;
             // To prepare for the next iteration, set the previous position to be the current position.
             previousPosition = currentPosition;
         }
         
-        return cumulativeSquaredDistances;
+        return cumulativeDistances;
     }
     
-    private float GetTotalDistanceTraveled(float[] cumulativeSquaredDistances)
+    /// <summary>
+    /// Finds the approximate distance traveled along a trajectory using linear interpolation. 
+    /// </summary>
+    /// <param name="cumulativeDistances">An array of cumulative distances along each timestamp of a trajectory</param>
+    /// <returns>The approximate total distance traveled as a float</returns>
+    private float GetTotalDistanceTraveled(float[] cumulativeDistances)
     {
-        float interpolatedSquaredDistance = Mathf.Lerp(
-            cumulativeSquaredDistances[_lowerIndex],
-            cumulativeSquaredDistances[_upperIndex],
-            _progress
-        );
-        // Return the approximated distance by taking the square root of the squared distance.
-        return Mathf.Sqrt(interpolatedSquaredDistance);
+        return Mathf.Lerp(cumulativeDistances[_lowerIndex], cumulativeDistances[_upperIndex], _progress);
     }
     
     #endregion
