@@ -698,7 +698,7 @@ public class UIManager : MonoBehaviour
 
     public void ShowNotification(string text)
     {
-        ShowNotification(text, Notification.NotificationType.Dismissable, null);
+        ShowNotification(text, Notification.NotificationType.Dismissible, null);
     }
 
     public void ShowNotification(string text, Notification.NotificationType notificationType, Action onYesButtonPressedCallback)

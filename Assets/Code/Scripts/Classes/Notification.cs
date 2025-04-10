@@ -4,34 +4,50 @@ using UnityEngine;
 
 public class Notification : MonoBehaviour
 {
-    private string title;
-    private NotificationType type;
-
+    #region References
     [SerializeField] private TextMeshProUGUI titleText;
     [SerializeField] private GameObject closeButton;
     [SerializeField] private GameObject yesButton;
     [SerializeField] private GameObject cancelButton;
-
+    #endregion
+    
+    #region Private Variables
+    private string _title;
+    private NotificationType _type;
+    
+    private RectTransform _rectTransform;
+    #endregion
+    
+    #region Actions
     private Action OnYesButtonPressedCallback;
-
+    #endregion
+    
+    #region Event Functions
+    
+    private void Start()
+    {
+        _rectTransform = GetComponent<RectTransform>();
+    }
+    
+    #endregion
+    
     public void Setup(string title)
     {
-        Setup(title, NotificationType.Dismissable, null);
+        Setup(title, NotificationType.Dismissible, null);
     }
 
     public void Setup(string title, NotificationType type, Action onYesButtonPressedCallback)
     {
         //transform.position = new Vector3(0, -123, 0);
         //RectTransform rectTransform = GetComponent<RectTransform>();
-
-        RectTransform rectTransform = transform.GetComponent<RectTransform>();
-        rectTransform.anchoredPosition = new Vector2(0f, 417f);
-
-        this.title = title;
-        this.type = type;
-
+        
+        _rectTransform.anchoredPosition = new Vector2(0f, 417f);
+        
+        _title = title;
+        _type = type;
+        
         titleText.text = title;
-
+        
         closeButton.SetActive(false);
         yesButton.SetActive(false);
         cancelButton.SetActive(false);
@@ -52,19 +68,21 @@ public class Notification : MonoBehaviour
             }
         }
 
-        else if (type == NotificationType.Dismissable)
+        else if (type == NotificationType.Dismissible)
         {
             closeButton.SetActive(true);
         }
     }
-
+    
     public void OnYesButtonPressed()
     {
-        if (type == NotificationType.AskYesCancel || type == NotificationType.AskYesNo)
+        if (_type != NotificationType.AskYesCancel && _type != NotificationType.AskYesNo)
         {
-            OnYesButtonPressedCallback?.Invoke();
-            DismissNotification();
+            return;
         }
+        
+        OnYesButtonPressedCallback?.Invoke();
+        DismissNotification();
     }
 
     public void DismissNotification()
@@ -74,7 +92,7 @@ public class Notification : MonoBehaviour
 
     public enum NotificationType
     {
-        Dismissable,
+        Dismissible,
         AskYesNo,
         AskYesCancel
     }
