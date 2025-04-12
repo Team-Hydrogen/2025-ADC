@@ -90,6 +90,8 @@ public class MinimapManager : MonoBehaviour
 
     private void UpdateMinimapTrajectory(int index)
     {
+        // TODO: fix this
+        return;
         int indexChange = index - _previousIndex;
         _previousIndex = index;
 

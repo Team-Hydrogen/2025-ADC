@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2262c656c086414ca0adee3c8e49190, type: 3}
+  m_Name: TextGraphicalTimes
+  m_EditorClassIdentifier: 
+  title: Text, Graphical Times
+  text: By default, the amount of time passed in the simulation is seen as text.
+    A visual representation of the mission is supported. In the <i>Actions</i> panel,
+    enable <i>Show Time Elapsed as Bar</i>.
+  clip: {fileID: 32900000, guid: 695663cd2c68a4c2ba9c4a59bf8ac03e, type: 3}

@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2262c656c086414ca0adee3c8e49190, type: 3}
+  m_Name: DataSection
+  m_EditorClassIdentifier: 
+  title: Data Section
+  text: Critical mission data is easily accessible in the <i>Data</i> panel. The
+    data includes the distance between the satellite and Earth, distance between
+    satellite and Moon, total distance traveled along the selected trajectory, spacecraft
+    mass, relative position to Earth, and velocity vector. The minimap and link budget
+    prioritization is featured too.
+  clip: {fileID: 32900000, guid: a4fbd3720afff4c4ea3753142b7e3f4b, type: 3}

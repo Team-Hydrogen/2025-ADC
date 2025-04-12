@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class TrajectoryManager : MonoBehaviour
 {
@@ -15,6 +17,8 @@ public class TrajectoryManager : MonoBehaviour
     [Header("Transition Trajectory")]
     [SerializeField] private Transform trajectoryParent;
     [SerializeField] private GameObject transitionTrajectoryPrefab;
+
+    private MissionStage[] _allMissionStages;
     
     #region Trajectory Data
     
@@ -33,11 +37,13 @@ public class TrajectoryManager : MonoBehaviour
     
     private LineRenderer _pastTransitionTrajectoryRenderer;
     private LineRenderer _futureTransitionTrajectoryRenderer;
-    
+
     #endregion
-    
-    
+
+
     #region Index and Time Variables
+
+    private float _currentTime;
     
     private int _previousTimeLowerIndex = 0;
     private int _previousTimeUpperIndex = 1;
@@ -69,6 +75,8 @@ public class TrajectoryManager : MonoBehaviour
         SpacecraftManager.PositionUpdated += UpdateTrajectories;
         SpacecraftManager.SpacecraftStateUpdated += SetIsTransitioning;
         SpacecraftManager.SpacecraftStateUpdated += UpdateSelectedTrajectoryData;
+
+        SimulationManager.ElapsedTimeUpdated += UpdateElapsedTime;
     }
     
     private void OnDisable()
@@ -82,6 +90,8 @@ public class TrajectoryManager : MonoBehaviour
         SpacecraftManager.PositionUpdated -= UpdateTrajectories;
         SpacecraftManager.SpacecraftStateUpdated -= SetIsTransitioning;
         SpacecraftManager.SpacecraftStateUpdated -= UpdateSelectedTrajectoryData;
+
+        SimulationManager.ElapsedTimeUpdated -= UpdateElapsedTime;
     }
     
     #endregion
@@ -99,6 +109,8 @@ public class TrajectoryManager : MonoBehaviour
         PlotTrajectory(_offNominalTrajectoryData, _pastOffNominalTrajectoryRenderer, futureOffNominalTrajectory);
         // By default, select the nominal trajectory data.
         _selectedTrajectoryData = _nominalTrajectoryData;
+
+        _allMissionStages = data.AllMissionStages;
     }
     
     private void UpdateTrajectories()
@@ -199,7 +211,7 @@ public class TrajectoryManager : MonoBehaviour
     private void UpdateTrajectory(Vector3 spacecraftPosition, LineRenderer past, LineRenderer future)
     {
         int indexChange = _currentTimeLowerIndex - _previousTimeLowerIndex;
-        
+
         switch (indexChange)
         {
             // If the index change is positive, the spacecraft moves forward across data points.
@@ -244,6 +256,8 @@ public class TrajectoryManager : MonoBehaviour
             // Otherwise, if the index change is negative, the spacecraft moves backward across data points.
             case < 0:
             {
+                ReplotTrajectory();
+                return;
                 indexChange = -indexChange;
                 
                 // Get all past trajectory data points.
@@ -282,11 +296,137 @@ public class TrajectoryManager : MonoBehaviour
                 break;
             }
         }
-        
+
         past.SetPosition(past.positionCount - 1, spacecraftPosition);
+
+        //try
+        //{
+        //    past.SetPosition(past.positionCount - 1, spacecraftPosition);
+        //} catch (IndexOutOfRangeException e)
+        //{
+        //    past.positionCount++;
+        //    past.SetPosition(past.positionCount - 1, spacecraftPosition);
+        //}
+
         future.SetPosition(0, spacecraftPosition);
     }
-    
+
+    private void ReplotTrajectory()
+    {
+        for (int i = 0; i < _allMissionStages.Length; i++)
+        {
+            _allMissionStages[i].nominalLineRenderer.positionCount = 0;
+            _allMissionStages[i].nominalLineRenderer.positionCount = 2;
+            _allMissionStages[i].offNominalLineRenderer.positionCount = 0;
+            _allMissionStages[i].offNominalLineRenderer.positionCount = 2;
+            _allMissionStages[i].minimapLineRenderer.positionCount = 0;
+        }
+
+        PlotTrajectory(_nominalTrajectoryData, _allMissionStages[0].nominalLineRenderer, futureNominalTrajectory);
+        PlotTrajectory(_offNominalTrajectoryData, _allMissionStages[0].offNominalLineRenderer, futureOffNominalTrajectory);
+
+        int[] indexBounds = GetIndexBoundsFromTime(_nominalTrajectoryData, _currentTime);
+        _currentTimeLowerIndex = indexBounds[0];
+        _currentTimeUpperIndex = indexBounds[1];
+
+        int indexesUntilCurrentIndex = _currentTimeLowerIndex;
+
+        MissionStage spacecraftMissionStage = _allMissionStages[0];
+        int spacecraftMissionStageIndex = 0;
+
+        for (int i = 0; i < _allMissionStages.Length; i++)
+        {
+            if (_allMissionStages[i].startDataIndex > indexesUntilCurrentIndex)
+            {
+                spacecraftMissionStage = _allMissionStages[i];
+                spacecraftMissionStageIndex = i;
+                break;
+            }
+        }
+
+        int currentMissionStageIndex = 0;
+        for (int i = 0; i < _nominalTrajectoryData.Length; i++)
+        {
+            if (i >= _currentTimeLowerIndex)
+            {
+                break;
+            }
+
+            if (i >= _allMissionStages[currentMissionStageIndex].startDataIndex)
+            {
+                currentMissionStageIndex++;
+            }
+
+            Vector3 position = new Vector3(
+                float.Parse(_nominalTrajectoryData[i][1]),
+                float.Parse(_nominalTrajectoryData[i][2]),
+                float.Parse(_nominalTrajectoryData[i][3])
+            ) * trajectoryScale;
+
+            _allMissionStages[currentMissionStageIndex].nominalLineRenderer.positionCount++;
+            _allMissionStages[currentMissionStageIndex].nominalLineRenderer.SetPosition(
+                _allMissionStages[currentMissionStageIndex].nominalLineRenderer.positionCount - 1,
+                position);
+
+            Vector3[] futureTrajectoryPoints = new Vector3[futureNominalTrajectory.positionCount];
+            futureNominalTrajectory.GetPositions(futureTrajectoryPoints);
+
+            Vector3[] newFutureTrajectoryPoints = new Vector3[futureTrajectoryPoints.Length - 1];
+            Array.Copy(
+                futureTrajectoryPoints,
+                1,
+                newFutureTrajectoryPoints,
+                0,
+                newFutureTrajectoryPoints.Length);
+        }
+
+        _pastNominalTrajectoryRenderer = spacecraftMissionStage.nominalLineRenderer;
+
+        //_pastNominalTrajectoryRenderer = spacecraftMissionStage.nominalLineRenderer;
+
+        //for (int i = 0; i < spacecraftMissionStageIndex; i++)
+        //{
+        //    if (_allMissionStages[i].Equals(spacecraftMissionStage))
+        //    {
+        //        int rowCount = _allMissionStages[i].startDataIndex - _currentTimeLowerIndex;
+
+        //        for (int j = _allMissionStages[i].startDataIndex; j < )
+        //    }
+
+        //    else
+        //    {
+        //        for (int j = _allMissionStages[i].startDataIndex; j < _allMissionStages[i+1].startDataIndex; j++)
+        //        {
+        //            int rowCount = _allMissionStages[i].startDataIndex - _allMissionStages[i + 1].startDataIndex;
+        //            //_allMissionStages[i].nominalLineRenderer.positionCount = rowCount;
+        //            //string[][] data = new string[rowCount][];
+
+        //            //Array.Copy(_nominalTrajectoryData, _allMissionStages[i].startDataIndex, data, 0, rowCount);
+
+        //            //Vector3[] positions = new Vector3[rowCount];
+
+        //            for (int k = 0; k < rowCount; k++)
+        //            {
+        //                Vector3 s = futureNominalTrajectory[k];
+        //                //catch
+        //                //{
+        //                //    Debug.LogWarning($"No positional data exists on line {k}!");
+        //                //}
+        //            }
+
+        //            _allMissionStages[i].nominalLineRenderer.SetPositions(positions);
+        //        }
+        //    }
+        //}
+
+    }
+
+    private void UpdateElapsedTime(float time)
+    {
+        _currentTime = time;
+    }
+
+
     private void PlotTransitionTrajectory(string dataAsString)
     {
         Debug.Log($"Transition Trajectory CSV File\n{dataAsString}");

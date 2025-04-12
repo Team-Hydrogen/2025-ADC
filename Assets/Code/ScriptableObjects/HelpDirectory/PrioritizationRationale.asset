@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2262c656c086414ca0adee3c8e49190, type: 3}
+  m_Name: PrioritizationRationale
+  m_EditorClassIdentifier: 
+  title: Prioritization Rationale
+  text: The algorithm behind the link budget prioritization is documented extensively.
+    In the <i>Actions</i> panel, press <i>View Prioritization Rationale</i> to open
+    prioritization rationale dialog. Press the back button to dismiss the dialog
+    and continue the simulation.
+  clip: {fileID: 0}

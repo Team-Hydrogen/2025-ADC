@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2262c656c086414ca0adee3c8e49190, type: 3}
+  m_Name: MissionStages
+  m_EditorClassIdentifier: 
+  title: Mission Stages
+  text: The Artemis II mission is divided into several mission stages. Each mission
+    stage is color-coded in the trajectory. A color-coded text indicator of the current
+    mission stage can be found directly under the elapsed time.
+  clip: {fileID: 32900000, guid: b5ef4e9d23fa242f0bebb984f54f5234, type: 3}

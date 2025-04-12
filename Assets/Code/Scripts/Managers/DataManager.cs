@@ -133,7 +133,8 @@ public class DataManager : MonoBehaviour
                 _nominalLinkBudgetData,
                 _offNominalLinkBudgetData,
                 _thrustData,
-                stages[0] // The first stage should start right after simulation begins.
+                stages[0], // The first stage should start right after simulation begins.
+                stages.ToArray()
             )
         );
     }

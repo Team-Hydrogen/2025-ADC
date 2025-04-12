@@ -1,6 +1,9 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -12,6 +15,15 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private RectTransform modelViewerButton;
     [SerializeField] private RectTransform helpButton;
     [SerializeField] private RectTransform quitButton;
+
+    [Header("Help Section")]
+    [SerializeField] private TextMeshProUGUI titleText;
+    [SerializeField] private TextMeshProUGUI contentText;
+    [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField] private GameObject videoPlayerOutput;
+    [SerializeField] private Scrollbar helpDirectoryScrollbar;
+    [SerializeField] private ScrollRect scrollRect;
+
 
     private void Start()
     {
@@ -66,5 +78,33 @@ public class MainMenuManager : MonoBehaviour
 
         LoadingSceneManager.sceneToLoad = 2;
         SceneManager.LoadScene(0);
+    }
+
+    public void SwitchHelpSectionInfo(HelpDirectoryInformation information)
+    {
+        titleText.text = information.title;
+        contentText.text = information.text;
+
+        if (information.clip == null)
+        {
+            videoPlayer.Stop();
+            videoPlayerOutput.SetActive(false);
+        } 
+        else
+        {
+            videoPlayer.clip = information.clip;
+            videoPlayer.Play();
+            videoPlayerOutput.SetActive(true);
+        }
+
+        //helpDirectoryScrollbar.value = 1;
+        //StartCoroutine(SetScrollbarPosition());
+        scrollRect.verticalNormalizedPosition = 1f;
+    }
+
+    private IEnumerator SetScrollbarPosition()
+    {
+        yield return new WaitForEndOfFrame();
+        helpDirectoryScrollbar.value = 1;
     }
 }

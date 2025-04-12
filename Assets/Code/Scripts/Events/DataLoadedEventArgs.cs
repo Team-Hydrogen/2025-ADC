@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 public class DataLoadedEventArgs : EventArgs
 {
@@ -11,6 +10,7 @@ public class DataLoadedEventArgs : EventArgs
     public string[][] OffNominalLinkBudget { get; }
     public string[][] ThrustData { get; }
     public MissionStage MissionStage { get; }
+    public MissionStage[] AllMissionStages { get; }
 
     public DataLoadedEventArgs(
         string[][] nominalTrajectoryData,
@@ -20,7 +20,8 @@ public class DataLoadedEventArgs : EventArgs
         string[][] nominalLinkBudget,
         string[][] offNominalLinkBudget,
         string[][] thrustData, 
-        MissionStage missionStage)
+        MissionStage missionStage,
+        MissionStage[] allMissionStages)
     {
         NominalTrajectoryData = nominalTrajectoryData;
         OffNominalTrajectoryData = offNominalTrajectoryData;
@@ -30,5 +31,6 @@ public class DataLoadedEventArgs : EventArgs
         OffNominalLinkBudget = offNominalLinkBudget;
         ThrustData = thrustData;
         MissionStage = missionStage;
+        AllMissionStages = allMissionStages;
     }
 }

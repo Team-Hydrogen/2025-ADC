@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2262c656c086414ca0adee3c8e49190, type: 3}
+  m_Name: ColorKeysSwitches
+  m_EditorClassIdentifier: 
+  title: Color Keys, Switches
+  text: "Color coding is employed in antenna prioritization, the velocity vector,
+    and the mission stage. To open the color key, press turn on <i>Toggle Color Key
+    Visibility</i> in the <i>Actions</i> panel. Also, users can press <i>Yes</i>
+    to the \u201CShow Color Key\u201D notification at the beginning of the simulation.
+    To color antennas in antenna prioritization, enable <i>Color Antennas</i> in
+    the <i>Actions</i> panel."
+  clip: {fileID: 0}
