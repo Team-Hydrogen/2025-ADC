@@ -7,6 +7,10 @@ using UnityEngine.Video;
 
 public class MainMenuManager : MonoBehaviour
 {
+    private static readonly int Intro = Animator.StringToHash("Intro");
+    private static readonly int Outro = Animator.StringToHash("Outro");
+    private static readonly int CanChangeStates = Animator.StringToHash("CanChangeStates");
+
     [Header("Main Menu")]
     [SerializeField] private RectTransform backgroundImage;
     [SerializeField] private RectTransform blackScreen;
@@ -23,6 +27,7 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private GameObject videoPlayerOutput;
     [SerializeField] private Scrollbar helpDirectoryScrollbar;
     [SerializeField] private ScrollRect scrollRect;
+    [SerializeField] private RectTransform contentContainer;
 
 
     private void Start()
@@ -57,7 +62,7 @@ public class MainMenuManager : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
 
-        element.GetComponent<Animator>().SetTrigger("Intro");
+        element.GetComponent<Animator>().SetTrigger(Intro);
 
         yield return null;
     }
@@ -66,8 +71,8 @@ public class MainMenuManager : MonoBehaviour
     {
         yield return new WaitForSeconds(waitTime);
 
-        element.GetComponent<Animator>().SetTrigger("Outro");
-        element.GetComponent<Animator>().SetBool("CanChangeStates", false);
+        element.GetComponent<Animator>().SetTrigger(Outro);
+        element.GetComponent<Animator>().SetBool(CanChangeStates, false);
 
         yield return null;
     }
@@ -84,7 +89,7 @@ public class MainMenuManager : MonoBehaviour
     {
         titleText.text = information.title;
         contentText.text = information.text;
-
+        
         if (information.clip == null)
         {
             videoPlayer.Stop();
@@ -97,8 +102,8 @@ public class MainMenuManager : MonoBehaviour
             videoPlayerOutput.SetActive(true);
         }
 
-        //helpDirectoryScrollbar.value = 1;
-        //StartCoroutine(SetScrollbarPosition());
+        // helpDirectoryScrollbar.value = 1;
+        // StartCoroutine(SetScrollbarPosition());
         scrollRect.verticalNormalizedPosition = 1f;
     }
 
