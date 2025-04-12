@@ -24,7 +24,7 @@ public class Notification : MonoBehaviour
     
     #region Event Functions
     
-    private void Start()
+    private void Awake()
     {
         _rectTransform = GetComponent<RectTransform>();
     }
