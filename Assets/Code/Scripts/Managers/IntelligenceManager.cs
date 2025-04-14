@@ -13,7 +13,7 @@ public class IntelligenceManager : MonoBehaviour
     private string[][] _thrustData;
     
     // Transition Path
-    private const string TransitionPathApiUri = "https://2a4a-2601-18c-500-fbb-461c-868d-44e5-bd5a.ngrok-free.app/trajectory";
+    private const string TransitionPathApiUri = "https://8b1a-2601-18c-500-fbb-50ee-babb-cda7-6d1.ngrok-free.app/trajectory";
     private const string TransitionPathApiContentType = "application/json";
     
     public static event Action<string> PathCalculated;
@@ -172,6 +172,8 @@ public class IntelligenceManager : MonoBehaviour
             destinationVelocity,
             _time,
             flightTime);
+        
+        Debug.Log(transitionPathPostData);
         
         IEnumerator request = HttpRequest.RequestApi(
             TransitionPathApiUri,

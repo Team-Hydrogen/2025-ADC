@@ -2,58 +2,61 @@ using UnityEngine;
 
 public class TransitionPathRequest
 {
-    private float[] originPosition;
-    private float[] originVelocity;
+    public float[] OriginPosition;
+    public float[] OriginVelocity;
 
-    private float[] destinationPosition;
-    private float[] destinationVelocity;
+    public float[] DestinationPosition;
+    public float[] DestinationVelocity;
 
-    private float startTime;
-    private float flightTime;
+    public float StartTime;
+    public float FlightTime;
     
     /// <summary>
     /// Parameter constructor for TransitionPathRequest
     /// </summary>
-    /// <param name="op">The original position</param>
-    /// <param name="ov">The original velocity</param>
-    /// <param name="dp">The destination position</param>
-    /// <param name="dv">The destination velocity</param>
-    /// <param name="st">The initial time</param>
-    /// <param name="ft">The expected flight time</param>
-    public TransitionPathRequest(float[] op, float[] ov, float[] dp, float[] dv, float st, float ft)
+    /// <param name="originPosition">The original position</param>
+    /// <param name="originVelocity">The original velocity</param>
+    /// <param name="destinationPosition">The destination position</param>
+    /// <param name="destinationVelocity">The destination velocity</param>
+    /// <param name="startTime">The initial time</param>
+    /// <param name="flightTime">The expected flight time</param>
+    public TransitionPathRequest(
+        float[] originPosition, float[] originVelocity, float[] destinationPosition, float[] destinationVelocity,
+        float startTime, float flightTime)
     {
-        originPosition = op;
-        originVelocity = ov;
-        destinationPosition = dp;
-        destinationVelocity = dv;
-        startTime = st;
-        flightTime = ft;
+        OriginPosition = originPosition;
+        OriginVelocity = originVelocity;
+        DestinationPosition = destinationPosition;
+        DestinationVelocity = destinationVelocity;
+        StartTime = startTime;
+        FlightTime = flightTime;
     }
     
     /// <summary>
     /// Converts required data for TransitionPathRequest into JSON format
     /// </summary>
-    /// <param name="op">The original position</param>
-    /// <param name="ov">The original velocity</param>
-    /// <param name="dp">The destination position</param>
-    /// <param name="dv">The destination velocity</param>
-    /// <param name="st">The initial time</param>
-    /// <param name="ft">The expected flight time</param>
+    /// <param name="originPosition">The original position</param>
+    /// <param name="originVelocity">The original velocity</param>
+    /// <param name="destinationPosition">The destination position</param>
+    /// <param name="destinationVelocity">The destination velocity</param>
+    /// <param name="startTime">The initial time</param>
+    /// <param name="flightTime">The expected flight time</param>
     /// <returns>A JSON-formatted string with information</returns>
-    public static string ToJson(Vector3 op, Vector3 ov, Vector3 dp, Vector3 dv, float st, float ft)
+    public static string ToJson(Vector3 originPosition, Vector3 originVelocity, Vector3 destinationPosition,
+        Vector3 destinationVelocity, float startTime, float flightTime)
     {
-        float[] originPositionPostData = { op.x, op.y, op.z };
-        float[] originVelocityPostData = { ov.x, ov.y, ov.z };
-        float[] destinationPositionPostData = { dp.x, dp.y, dp.z };
-        float[] destinationVelocityPostData = { dv.x, dv.y, dv.z };
-
+        float[] originPositionPostData = { originPosition.x, originPosition.y, originPosition.z };
+        float[] originVelocityPostData = { originVelocity.x, originVelocity.y, originVelocity.z };
+        float[] destinationPositionPostData = { destinationPosition.x, destinationPosition.y, destinationPosition.z };
+        float[] destinationVelocityPostData = { destinationVelocity.x, destinationVelocity.y, destinationVelocity.z };
+        
         TransitionPathRequest apiRequest = new TransitionPathRequest(
             originPositionPostData,
             originVelocityPostData,
             destinationPositionPostData,
             destinationVelocityPostData,
-            st,
-            ft
+            startTime,
+            flightTime
         );
         
         return JsonUtility.ToJson(apiRequest);
