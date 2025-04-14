@@ -211,6 +211,7 @@ public class TrajectoryManager : MonoBehaviour
                 // Get all future trajectory data points.
                 Vector3[] futureTrajectoryPoints = new Vector3[future.positionCount];
                 future.GetPositions(futureTrajectoryPoints);
+                
                 // Get the traversed points between the past and current indexes.
                 Vector3[] traversedPoints = new ArraySegment<Vector3>(
                     futureTrajectoryPoints,
@@ -252,15 +253,19 @@ public class TrajectoryManager : MonoBehaviour
                 // Get all future trajectory data points.
                 Vector3[] futureTrajectoryPoints = new Vector3[future.positionCount];
                 future.GetPositions(futureTrajectoryPoints);
+                
                 // Get the traversed points between the past and current indexes.
+                int startIndex = Mathf.Max(pastTrajectoryPoints.Length - indexChange - 1, 0);
+                indexChange = Mathf.Min(indexChange, pastTrajectoryPoints.Length - 1);
                 Vector3[] traversedPoints = new ArraySegment<Vector3>(
                     pastTrajectoryPoints,
-                    pastTrajectoryPoints.Length - indexChange - 1,
+                    startIndex,
                     indexChange).ToArray();
                 
                 // Create new trajectory arrays.
                 Vector3[] newPastTrajectoryPoints = new Vector3[past.positionCount - indexChange];
                 Vector3[] newFutureTrajectoryPoints = new Vector3[future.positionCount + indexChange];
+                
                 // Prepend the traversed points with the future trajectory.
                 traversedPoints.CopyTo(newFutureTrajectoryPoints, 0);
                 futureTrajectoryPoints.CopyTo(newFutureTrajectoryPoints, traversedPoints.Length);

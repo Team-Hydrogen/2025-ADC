@@ -13,7 +13,7 @@ public class IntelligenceManager : MonoBehaviour
     private string[][] _thrustData;
     
     // Transition Path
-    private const string TransitionPathApiUri = "https://5ef6-2601-18c-500-fbb-18f2-2a3b-3c1e-d7bb.ngrok-free.app/trajectory";
+    private const string TransitionPathApiUri = "https://2a4a-2601-18c-500-fbb-461c-868d-44e5-bd5a.ngrok-free.app/trajectory";
     private const string TransitionPathApiContentType = "application/json";
     
     public static event Action<string> PathCalculated;

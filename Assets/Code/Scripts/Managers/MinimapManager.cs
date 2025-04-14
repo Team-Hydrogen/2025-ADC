@@ -48,7 +48,7 @@ public class MinimapManager : MonoBehaviour
         _currentMinimapTrajectory = data.MissionStage.minimapLineRenderer;
         PlotMinimapTrajectory(data.NominalTrajectoryData);
     }
-
+    
     private void MissionStageUpdated(MissionStage missionStage)
     {
         if (!_currentMinimapTrajectory.Equals(missionStage.minimapLineRenderer))
@@ -62,6 +62,7 @@ public class MinimapManager : MonoBehaviour
         // An array of trajectory points is constructed by reading the processed CSV file.
         int numberOfPoints = nominalTrajectoryData.Length;
         Vector3[] futureTrajectoryPoints = new Vector3[numberOfPoints];
+        
         for (int index = 0; index < numberOfPoints; index++)
         {
             string[] point = nominalTrajectoryData[index];
