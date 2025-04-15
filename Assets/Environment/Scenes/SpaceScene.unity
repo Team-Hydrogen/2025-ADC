@@ -17098,11 +17098,15 @@ MonoBehaviour:
   - clip: {fileID: 32900000, guid: 689a9494ea89b4c679ac540baa17e39e, type: 3}
     triggerTimeInMinutes: 117.2
   - clip: {fileID: 32900000, guid: 9e93af1b8893340c6bb1661b3e1b6d43, type: 3}
-    triggerTimeInMinutes: 12983.16
+    triggerTimeInMinutes: 12983.15
   - clip: {fileID: 32900000, guid: c0fc066b0e7fb4f73b27f85f640f05c9, type: 3}
-    triggerTimeInMinutes: 12983.16
+    triggerTimeInMinutes: 12983.15
+  - clip: {fileID: 32900000, guid: f2d6287b1f99547659909f3a77712635, type: 3}
+    triggerTimeInMinutes: 12983.15
   - clip: {fileID: 32900000, guid: 0193d3c1f25e74972a4fbfa3f7922ffa, type: 3}
-    triggerTimeInMinutes: 12983.16
+    triggerTimeInMinutes: 12983.15
+  - clip: {fileID: 32900000, guid: f65ec2d5d834a47eebac38fd19dd4e6a, type: 3}
+    triggerTimeInMinutes: 12983.15
   videoPlayer: {fileID: 1850164533}
   cutsceneImage: {fileID: 1541724201}
   skipCutsceneHint: {fileID: 1501029155}
