@@ -15,6 +15,7 @@ public class MainMenuManager : MonoBehaviour
 
     private void Start()
     {
+        Time.timeScale = 1f;
         StartCoroutine(MainMenuUIIntro(backgroundImage, 0f));
         StartCoroutine(MainMenuUIIntro(blackScreen, 1f));
         StartCoroutine(MainMenuUIIntro(startSimulationButton, 1.5f));

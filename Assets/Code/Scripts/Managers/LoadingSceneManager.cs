@@ -7,7 +7,7 @@ public class LoadingSceneManager : MonoBehaviour
 {
     [SerializeField] Slider loadingBar;
 
-    public static int sceneToLoad = 2;
+    public static int sceneToLoad = 1;
 
 
     private void Start()
