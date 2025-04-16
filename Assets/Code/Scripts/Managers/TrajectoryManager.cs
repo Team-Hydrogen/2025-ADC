@@ -298,7 +298,7 @@ public class TrajectoryManager : MonoBehaviour
         
         _transitionTrajectoryData = CsvReader.ReadCsvString(dataAsString);
         _transitionTrajectoryData = new ArraySegment<string[]>(
-            _transitionTrajectoryData, 1, _transitionTrajectoryData.Length).ToArray();
+            _transitionTrajectoryData, 1, _transitionTrajectoryData.Length - 1).ToArray();
         
         GameObject transitionTrajectory = Instantiate(this.transitionTrajectoryPrefab, trajectoryParent);
         LineRenderer[] transitionTrajectoryRenderers = transitionTrajectory.GetComponentsInChildren<LineRenderer>();

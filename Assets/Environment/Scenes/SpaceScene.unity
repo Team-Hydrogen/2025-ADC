@@ -5644,7 +5644,7 @@ Transform:
   m_GameObject: {fileID: 411558178}
   serializedVersion: 2
   m_LocalRotation: {x: 0.70088255, y: 0.0062241233, z: -0.0061164284, w: 0.71322334}
-  m_LocalPosition: {x: 29.748255, y: 16.5, z: -8.849985}
+  m_LocalPosition: {x: 29.747032, y: 23.5, z: -8.919974}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6813,7 +6813,7 @@ Transform:
   m_GameObject: {fileID: 508490928}
   serializedVersion: 2
   m_LocalRotation: {x: 0.70088255, y: 0.0062241247, z: -0.00611643, w: 0.7132233}
-  m_LocalPosition: {x: 29.748255, y: 16.5, z: -8.849985}
+  m_LocalPosition: {x: 29.747032, y: 23.5, z: -8.919974}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6871,14 +6871,14 @@ MonoBehaviour:
   Radius: 0.09999999
   Orbits:
     Top:
-      Radius: 0.09999999
-      Height: 10
+      Radius: 0.17
+      Height: 17
     Center:
-      Radius: 10
+      Radius: 17
       Height: 0
     Bottom:
-      Radius: 0.09999999
-      Height: -10
+      Radius: 0.17
+      Height: -17
     SplineCurvature: 0.2
   RecenteringTarget: 2
   HorizontalAxis:

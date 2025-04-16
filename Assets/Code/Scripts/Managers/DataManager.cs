@@ -151,6 +151,7 @@ public class DataManager : MonoBehaviour
     
     private void OnEnable()
     {
+        IntelligenceManager.PathCalculated += ResetIndexTrackers;
         SimulationManager.ElapsedTimeUpdated += UpdateIndexTrackers;
         SpacecraftManager.SpacecraftStateUpdated += UpdateSelectedData;
         UIManager.PrioritizationAlgorithmSelected += SetPrioritizationAlgorithm;
@@ -158,6 +159,7 @@ public class DataManager : MonoBehaviour
     
     private void OnDisable()
     {
+        IntelligenceManager.PathCalculated -= ResetIndexTrackers;
         SimulationManager.ElapsedTimeUpdated -= UpdateIndexTrackers;
         SpacecraftManager.SpacecraftStateUpdated -= UpdateSelectedData;
         UIManager.PrioritizationAlgorithmSelected -= SetPrioritizationAlgorithm;
@@ -201,6 +203,16 @@ public class DataManager : MonoBehaviour
     
     
     #region Index Tracking
+
+    private void ResetIndexTrackers(string dataAsString="")
+    {
+        _lowerIndex = 0;
+        _upperIndex = 1;
+        _progress = 0.0f;
+        
+        DataIndexUpdated?.Invoke(_lowerIndex);
+        ProgressUpdated?.Invoke(_progress);
+    }
     
     private void UpdateIndexTrackers(float elapsedTime)
     {

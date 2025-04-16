@@ -13,7 +13,7 @@ public class IntelligenceManager : MonoBehaviour
     private string[][] _thrustData;
     
     // Transition Path
-    private const string TransitionPathApiUri = "https://8b1a-2601-18c-500-fbb-50ee-babb-cda7-6d1.ngrok-free.app/trajectory";
+    private const string TransitionPathApiUri = "https://8683-2600-387-15-3a1b-00-2.ngrok-free.app/trajectory";
     private const string TransitionPathApiContentType = "application/json";
     
     public static event Action<string> PathCalculated;
@@ -152,7 +152,7 @@ public class IntelligenceManager : MonoBehaviour
         // Returns the raw flight time with the additional buffer time.
         return rawFlightTime + bufferTime;
     }
-
+    
     private void StartTransitionPath()
     {
         var deltaTime = CalculateDeltaTime(_dataIndex);
@@ -161,19 +161,15 @@ public class IntelligenceManager : MonoBehaviour
         Vector3 originVelocity = SpacecraftManager.Instance.OffNominalSpacecraftTransform.rotation.eulerAngles;
         Vector3 oppositePathPosition = SpacecraftManager.Instance.NominalSpacecraftTransform.position;
         Vector3 destinationPosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_time + deltaTime);
-        Vector3 destinationVelocity = SpacecraftManager.Instance.GetNominalVelocityFromTime(_time + deltaTime);
         
         var flightTime = CalculateFlightTime(originPosition, oppositePathPosition, destinationPosition, deltaTime);
 
         string transitionPathPostData = TransitionPathRequest.ToJson(
             originPosition,
             originVelocity,
-            destinationPosition, 
-            destinationVelocity,
+            destinationPosition,
             _time,
             flightTime);
-        
-        Debug.Log(transitionPathPostData);
         
         IEnumerator request = HttpRequest.RequestApi(
             TransitionPathApiUri,
