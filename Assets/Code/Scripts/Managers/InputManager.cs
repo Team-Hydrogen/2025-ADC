@@ -22,7 +22,7 @@ public class InputManager : MonoBehaviour
 
     public event Action<float> OnCameraZoom;
 
-    public static event Action OnToggleUIVisibility;
+    public static event Action<bool> OnToggleUIVisibility;
     #endregion
 
     private bool _uiWasHidden = false;
@@ -62,7 +62,7 @@ public class InputManager : MonoBehaviour
         inputActions.SidePanel.SwitchDataPanel.performed += ctx => OnSwitchDataPanel?.Invoke();
         inputActions.SidePanel.SwitchActionsPanel.performed += ctx => OnSwitchActionsPanel?.Invoke();
 
-        inputActions.CustomUI.HideUI.performed += ctx => OnToggleUIVisibility?.Invoke();
+        inputActions.CustomUI.HideUI.performed += ctx => OnToggleUIVisibility?.Invoke(false);
 
         // This doesn't quite work for some reason
         //inputActions.Camera.Orbit.performed += ctx => Debug.Log(true);
@@ -95,7 +95,8 @@ public class InputManager : MonoBehaviour
         
         if (UIManager.Instance.isUiHidden)
         {
-            OnToggleUIVisibility?.Invoke();
+            print("hi");
+            OnToggleUIVisibility?.Invoke(true);
             _uiWasHidden = true;
         }
     }
@@ -109,7 +110,7 @@ public class InputManager : MonoBehaviour
 
         if (_uiWasHidden)
         {
-            OnToggleUIVisibility?.Invoke();
+            OnToggleUIVisibility?.Invoke(false);
             _uiWasHidden = false;
         }
     }

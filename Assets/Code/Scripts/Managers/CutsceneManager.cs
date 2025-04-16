@@ -23,7 +23,6 @@ public class CutsceneManager : MonoBehaviour
     private enum CutsceneState { NotPlaying, FadeOut, Playing, FadeIn }
     private CutsceneState _state = CutsceneState.NotPlaying;
 
-    public static event Action<int> OnCutsceneFadeStart;
     public static event Action<int> OnCutsceneStart;
     public static event Action OnCutsceneEnd;
     public static event Action<bool> OnCutsceneVisibilityChanged;
@@ -177,7 +176,7 @@ public class CutsceneManager : MonoBehaviour
 
         while (color.a > 0)
         {
-            color.a -= Time.deltaTime * fadeOutSpeedMultiplier;
+            color.a -= Time.unscaledDeltaTime * fadeOutSpeedMultiplier;
             _blackScreenImage.color = color;
             yield return null;
         }
@@ -192,7 +191,7 @@ public class CutsceneManager : MonoBehaviour
 
         while (color.a > 0)
         {
-            color.a -= Time.deltaTime * fadeOutSpeedMultiplier;
+            color.a -= Time.unscaledDeltaTime * fadeOutSpeedMultiplier;
             _blackScreenImage.color = color;
             yield return null;
         }

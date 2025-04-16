@@ -773,13 +773,20 @@ public class UIManager : MonoBehaviour
         canvasGroup.alpha = 1;
     }
 
-    private void ToggleUiVisibility()
+    private void ToggleUiVisibility(bool setAlphaInsteadOfFade = false)
     {
         isUiHidden = !isUiHidden;
 
         canvasGroup.interactable = !isUiHidden;
         canvasGroup.blocksRaycasts = !isUiHidden;
-        canvasGroup.alpha = 0.0f;
+
+        if (setAlphaInsteadOfFade)
+        {
+            canvasGroup.alpha = 1.0f;
+        } else
+        {
+            canvasGroup.alpha = 0.0f;
+        }
     }
 
     #endregion
