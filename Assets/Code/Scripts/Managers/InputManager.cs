@@ -21,7 +21,11 @@ public class InputManager : MonoBehaviour
     public static event Action OnDecelerateTime;
 
     public event Action<float> OnCameraZoom;
+
+    public static event Action OnToggleUIVisibility;
     #endregion
+
+    private bool _uiWasHidden = false;
 
     #region Event Functions
     private void Awake()
@@ -58,6 +62,8 @@ public class InputManager : MonoBehaviour
         inputActions.SidePanel.SwitchDataPanel.performed += ctx => OnSwitchDataPanel?.Invoke();
         inputActions.SidePanel.SwitchActionsPanel.performed += ctx => OnSwitchActionsPanel?.Invoke();
 
+        inputActions.CustomUI.HideUI.performed += ctx => OnToggleUIVisibility?.Invoke();
+
         // This doesn't quite work for some reason
         //inputActions.Camera.Orbit.performed += ctx => Debug.Log(true);
         //inputActions.Camera.Orbit.canceled += ctx => Debug.Log(false);
@@ -84,12 +90,28 @@ public class InputManager : MonoBehaviour
     {
         inputActions.Cutscene.Enable();
         inputActions.Timeline.Disable();
+
+        inputActions.CustomUI.Disable();
+        
+        if (UIManager.Instance.isUiHidden)
+        {
+            OnToggleUIVisibility?.Invoke();
+            _uiWasHidden = true;
+        }
     }
 
     private void OnCutsceneEnd()
     {
         inputActions.Cutscene.Disable();
         inputActions.Timeline.Enable();
+
+        inputActions.CustomUI.Enable();
+
+        if (_uiWasHidden)
+        {
+            OnToggleUIVisibility?.Invoke();
+            _uiWasHidden = false;
+        }
     }
 
     public float GetCurrentZoomInput()

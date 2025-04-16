@@ -23,6 +23,7 @@ public class CutsceneManager : MonoBehaviour
     private enum CutsceneState { NotPlaying, FadeOut, Playing, FadeIn }
     private CutsceneState _state = CutsceneState.NotPlaying;
 
+    public static event Action<int> OnCutsceneFadeStart;
     public static event Action<int> OnCutsceneStart;
     public static event Action OnCutsceneEnd;
     public static event Action<bool> OnCutsceneVisibilityChanged;
