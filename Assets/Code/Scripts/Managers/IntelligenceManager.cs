@@ -13,7 +13,7 @@ public class IntelligenceManager : MonoBehaviour
     private string[][] _thrustData;
     
     // Transition Path
-    private const string TransitionPathApiUri = "https://8b1a-2601-18c-500-fbb-50ee-babb-cda7-6d1.ngrok-free.app/trajectory";
+    private const string TransitionPathApiUri = "https://8683-2600-387-15-3a1b-00-2.ngrok-free.app/trajectory";
     private const string TransitionPathApiContentType = "application/json";
     
     public static event Action<string> PathCalculated;
@@ -106,19 +106,19 @@ public class IntelligenceManager : MonoBehaviour
 
     private static Vector3 GetDistanceVector()
     {
-        var origin = SpacecraftManager.Instance.NominalSpacecraftTransform.position;
-        var destination = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
+        Vector3 origin = SpacecraftManager.Instance.NominalSpacecraftTransform.position;
+        Vector3 destination = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
         return destination - origin;
     }
 
     private Vector3 GetTimeVector(int dataIndex)
     {
-        var distanceVector = GetDistanceVector();
-        var accelerationVector = GetAccelerationVector(dataIndex);
+        Vector3 distanceVector = GetDistanceVector();
+        Vector3 accelerationVector = GetAccelerationVector(dataIndex);
 
-        var timeX = Mathf.Sqrt(2.0f * distanceVector.x / accelerationVector.x);
-        var timeY = Mathf.Sqrt(2.0f * distanceVector.y / accelerationVector.y);
-        var timeZ = Mathf.Sqrt(2.0f * distanceVector.z / accelerationVector.z);
+        float timeX = Mathf.Sqrt(2.0f * distanceVector.x / accelerationVector.x);
+        float timeY = Mathf.Sqrt(2.0f * distanceVector.y / accelerationVector.y);
+        float timeZ = Mathf.Sqrt(2.0f * distanceVector.z / accelerationVector.z);
         
         return new Vector3(timeX, timeY, timeZ);
     }
@@ -133,47 +133,50 @@ public class IntelligenceManager : MonoBehaviour
         // Creates a buffer time constant to avoid errors where the raw flight time is too little.
         const float bufferTime = 20.0f;
         
-        var deltaTimeSquared = Mathf.Pow(deltaTime, 2);
+        // Determines both the present and future positions on the original and opposite trajectories.
+        Vector3 presentOriginalPosition = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
+        Vector3 presentOppositePosition = SpacecraftManager.Instance.NominalSpacecraftTransform.position;
+        Vector3 futureOppositePosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_time + deltaTime);
         
         // Creates a vector where the starting endpoint is the chosen path's present position, and the ending endpoint
         // is the opposite path's present position.
-        var toOtherPath = SpacecraftManager.Instance.NominalSpacecraftTransform.position 
-                          - SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
+        Vector3 toOtherPath = presentOppositePosition - presentOriginalPosition;
         // Creates a vector where the starting endpoint is the opposite path's present position, and the ending endpoint
         // is the opposite path's future position.
-        var toFuturePosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_time + deltaTime) 
-                               - SpacecraftManager.Instance.NominalSpacecraftTransform.position;
+        Vector3 toFuturePosition = futureOppositePosition - presentOppositePosition;
         
-        var thetaInDegrees = Vector3.Angle(toOtherPath, toFuturePosition);
-        var thetaInRadians = thetaInDegrees * Mathf.Deg2Rad;
+        float thetaInDegrees = Vector3.Angle(toOtherPath, toFuturePosition);
+        float thetaInRadians = thetaInDegrees * Mathf.Deg2Rad;
         
-        var rawFlightTime = Mathf.Sqrt(2 * deltaTimeSquared * (1 + Mathf.Cos(thetaInRadians)));
+        float deltaTimeSquared = deltaTime * deltaTime;
+        float rawFlightTime = Mathf.Sqrt(2 * deltaTimeSquared * (1 + Mathf.Cos(thetaInRadians)));
         
         // Returns the raw flight time with the additional buffer time.
         return rawFlightTime + bufferTime;
     }
-
+    
     private void StartTransitionPath()
     {
-        var deltaTime = CalculateDeltaTime(_dataIndex);
+        float deltaTime = CalculateDeltaTime(_dataIndex);
         
         Vector3 originPosition = SpacecraftManager.Instance.OffNominalSpacecraftTransform.position;
         Vector3 originVelocity = SpacecraftManager.Instance.OffNominalSpacecraftTransform.rotation.eulerAngles;
-        Vector3 oppositePathPosition = SpacecraftManager.Instance.NominalSpacecraftTransform.position;
-        Vector3 destinationPosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_time + deltaTime);
-        Vector3 destinationVelocity = SpacecraftManager.Instance.GetNominalVelocityFromTime(_time + deltaTime);
         
-        var flightTime = CalculateFlightTime(originPosition, oppositePathPosition, destinationPosition, deltaTime);
+        Vector3 presentOppositeTrajectoryPosition = SpacecraftManager.Instance.NominalSpacecraftTransform.position;
+        Vector3 destinationPosition = SpacecraftManager.Instance.GetNominalPositionFromTime(_time + deltaTime);
+        
+        float flightTime = CalculateFlightTime(
+            originPosition,
+            presentOppositeTrajectoryPosition,
+            destinationPosition,
+            deltaTime);
 
         string transitionPathPostData = TransitionPathRequest.ToJson(
             originPosition,
             originVelocity,
-            destinationPosition, 
-            destinationVelocity,
+            destinationPosition,
             _time,
             flightTime);
-        
-        Debug.Log(transitionPathPostData);
         
         IEnumerator request = HttpRequest.RequestApi(
             TransitionPathApiUri,

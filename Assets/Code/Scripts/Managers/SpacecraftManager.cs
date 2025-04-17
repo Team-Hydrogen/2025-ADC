@@ -294,10 +294,14 @@ public class SpacecraftManager : MonoBehaviour
             case SpacecraftState.Nominal:
                 spacecraft.position = NominalSpacecraftTransform.position;
                 spacecraft.rotation = NominalSpacecraftTransform.rotation;
+                TransitionSpacecraftTransform.position = NominalSpacecraftTransform.position;
+                TransitionSpacecraftTransform.rotation = NominalSpacecraftTransform.rotation;
                 break;
             case SpacecraftState.OffNominal:
                 spacecraft.position = OffNominalSpacecraftTransform.position;
                 spacecraft.rotation = OffNominalSpacecraftTransform.rotation;
+                TransitionSpacecraftTransform.position = OffNominalSpacecraftTransform.position;
+                TransitionSpacecraftTransform.rotation = OffNominalSpacecraftTransform.rotation;
                 break;
             case SpacecraftState.Transition:
                 spacecraft.position = TransitionSpacecraftTransform.position;

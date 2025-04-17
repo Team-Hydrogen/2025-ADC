@@ -176,7 +176,7 @@ public class CutsceneManager : MonoBehaviour
 
         while (color.a > 0)
         {
-            color.a -= Time.deltaTime * fadeOutSpeedMultiplier;
+            color.a -= Time.unscaledDeltaTime * fadeOutSpeedMultiplier;
             _blackScreenImage.color = color;
             yield return null;
         }
@@ -191,7 +191,7 @@ public class CutsceneManager : MonoBehaviour
 
         while (color.a > 0)
         {
-            color.a -= Time.deltaTime * fadeOutSpeedMultiplier;
+            color.a -= Time.unscaledDeltaTime * fadeOutSpeedMultiplier;
             _blackScreenImage.color = color;
             yield return null;
         }

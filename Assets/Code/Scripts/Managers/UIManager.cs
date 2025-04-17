@@ -94,7 +94,9 @@ public class UIManager : MonoBehaviour
     private Vector3 _lastMousePosition;
     private float _inactivityTimer = 0.0f;
     private bool _isFadingOut = false;
-    
+    private bool _shouldUiFadeOut = false;
+    public bool isUiHidden { get; private set; } = false;
+
     // Measurement variables
     private UnitSystem _currentLengthUnit = UnitSystem.Metric;
     
@@ -173,6 +175,7 @@ public class UIManager : MonoBehaviour
 
         InputManager.OnSwitchActionsPanel += ShowActionsPanel;
         InputManager.OnSwitchDataPanel += ShowDataPanel;
+        InputManager.OnToggleUIVisibility += ToggleUiVisibility;
     }
     
     private void OnDisable()
@@ -194,6 +197,7 @@ public class UIManager : MonoBehaviour
 
         InputManager.OnSwitchActionsPanel -= ShowActionsPanel;
         InputManager.OnSwitchDataPanel -= ShowDataPanel;
+        InputManager.OnToggleUIVisibility -= ToggleUiVisibility;
     }
 
     #endregion
@@ -723,15 +727,25 @@ public class UIManager : MonoBehaviour
         {
             _inactivityTimer = 0.0f;
             _isFadingOut = false;
-            StartCoroutine(FadeUIIn());
+
+            if (!isUiHidden)
+            {
+                StartCoroutine(FadeUIIn());
+            }
         }
         else
         {
-            _inactivityTimer += Time.deltaTime;
-
-            if (_inactivityTimer >= inputInactivityTime && canvasGroup.alpha > 0)
+            if (!isUiHidden)
             {
-                _isFadingOut = true;
+                if (_shouldUiFadeOut)
+                {
+                    _inactivityTimer += Time.unscaledDeltaTime;
+                }
+
+                if (_inactivityTimer >= inputInactivityTime && canvasGroup.alpha > 0)
+                {
+                    _isFadingOut = true;
+                }
             }
         }
 
@@ -745,22 +759,38 @@ public class UIManager : MonoBehaviour
 
     private void FadeUIOut()
     {
-        canvasGroup.alpha = Mathf.Max(minimumUIVisibility, canvasGroup.alpha - uiFadeSpeed * Time.deltaTime);
+        canvasGroup.alpha = Mathf.Max(minimumUIVisibility, canvasGroup.alpha - uiFadeSpeed * Time.unscaledDeltaTime);
     }
 
     private IEnumerator FadeUIIn()
     {
         while (canvasGroup.alpha < 1)
         {
-            canvasGroup.alpha += uiFadeSpeed * Time.deltaTime;
+            canvasGroup.alpha += uiFadeSpeed * Time.unscaledDeltaTime;
             yield return null;
         }
 
         canvasGroup.alpha = 1;
     }
-    
+
+    private void ToggleUiVisibility(bool setAlphaInsteadOfFade = false)
+    {
+        isUiHidden = !isUiHidden;
+
+        canvasGroup.interactable = !isUiHidden;
+        canvasGroup.blocksRaycasts = !isUiHidden;
+
+        if (setAlphaInsteadOfFade)
+        {
+            canvasGroup.alpha = 1.0f;
+        } else
+        {
+            canvasGroup.alpha = 0.0f;
+        }
+    }
+
     #endregion
-    
+
     public void NominalTogglePressed()
     {
         TrajectorySelected?.Invoke(SpacecraftManager.SpacecraftState.Nominal);
