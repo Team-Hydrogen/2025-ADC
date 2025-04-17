@@ -9,7 +9,7 @@ public class MoveMoon : MonoBehaviour
     private string[][] _data;
     
     private int _dataIndex;
-    private float _progress;
+    private float _interpolationRatio;
     
     private void OnEnable()
     {
@@ -43,7 +43,7 @@ public class MoveMoon : MonoBehaviour
 
     private void UpdateInterpolationRatio(float ratio)
     {
-        _progress = ratio;
+        _interpolationRatio = ratio;
     }
 
     private void UpdatePosition()
@@ -64,7 +64,7 @@ public class MoveMoon : MonoBehaviour
             float.Parse(_data[upperIndex][16])
         ) * 0.01f;
         
-        transform.position = Vector3.Lerp(lowerPosition, upperPosition, _progress);
+        transform.position = Vector3.Lerp(lowerPosition, upperPosition, _interpolationRatio);
     }
 
     private void UpdateRotation()
@@ -85,6 +85,6 @@ public class MoveMoon : MonoBehaviour
             float.Parse(_data[upperIndex][19])
         );
         
-        transform.rotation = Quaternion.Euler(Vector3.Lerp(lowerVelocity, upperVelocity, _progress));
+        transform.rotation = Quaternion.Euler(Vector3.Lerp(lowerVelocity, upperVelocity, _interpolationRatio));
     }
 }
