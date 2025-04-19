@@ -1,14 +1,5 @@
-# Team Hydrogen - 2025 NASA App Development Challenge [WINNERS]
+# Team Hydrogen - 2025 NASA App Development Challenge
 This is Team Hydrogen's application for the 2025 NASA App Development Challenge.
-
-## Download Instructions
-Clone this repository using the command:
-```commandline
-git clone https://github.com/Team-Hydrogen/2025-ADC.git
-```
-You can also download the repository and open it as a separate folder.
-
-Then, open Unity Hub. In the top-right corner, click `Add` > `Add project from disk` and select the repository folder. You can then open the project.
 
 ## Challenge Information
 In the 2025 NASA App Development Challenge, high school teams have ten (10) weeks to create a video showcasing their application visualizing the flight path of Artemis II while indicating which of SCaN’s antennas are available to communicate with Earth in real-time.
@@ -19,6 +10,20 @@ In the 2025 NASA App Development Challenge, high school teams have ten (10) week
 - [Jacob Liu](https://github.com/Dancesthatbreak)[^2]: 3-D Modeler, 3-D Animator
 - [Nathan Apte](https://github.com/Boomexe)[^3]: VFX Artist, Simulation Programmer
 - [Vignesha Jayakumar](https://github.com/vigcode123)[^4]: Data Specialist, AI Developer
+
+## Honors Recieved
+- 2025 NASA App Development Challenge Top Team
+- 2025 NASA App Development Challenge Best Visualization of Orion Capsule
+- Artemis Student Challenge Innovation Award
+
+## Download Instructions
+Clone this repository using the command:
+```commandline
+git clone https://github.com/Team-Hydrogen/2025-ADC.git
+```
+You can also download the repository and open it as a separate folder.
+
+Then, open Unity Hub. In the top-right corner, click `Add` > `Add project from disk` and select the repository folder. You can then open and run the project.
 
 ## Technical Specifications
 - Blender (4.2.8 LTS)
