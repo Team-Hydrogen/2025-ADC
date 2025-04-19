@@ -15,7 +15,7 @@ In the 2025 NASA App Development Challenge (ADC), middle and high school teams h
 
 ## Honors Recieved
 - 2025 NASA App Development Challenge Top Team
-- 2025 NASA App Development Challenge Best Visualization of Orion Capsule
+- 2025 NASA App Development Challenge Most Realistic Visualization of the Capsule
 - Artemis Student Challenge Innovation Award
 
 ## Download Instructions
